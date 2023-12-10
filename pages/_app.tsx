@@ -7,7 +7,7 @@ import Layout from "@/components/layout";
 export default function MyApp({ Component, pageProps }) {
     return (
         <Providers>
-            <div className="w-screen h-screen bg-current relative">
+            <div className="orange-drak w-full h-full relative">
                 <Layout>
                     <Component {...pageProps} />
                 </Layout>

@@ -22,7 +22,7 @@ function NavbarBox(props: NavbarType) {
         return (
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Link color="foreground" href="#">
+                    <Link className="text-f9 text-[14px]" href="/pages/index.tsx">
                         返回首页
                     </Link>
                 </NavbarItem>

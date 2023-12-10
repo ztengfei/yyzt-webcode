@@ -5,17 +5,45 @@ const config: Config = {
     content: [
         "./components/**/*.{js,ts,jsx,tsx}",
         "./pages/**/*.{js,ts,jsx,tsx}",
-        "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
+        "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+        "./public/**/*.{png,svg,jpg}"
     ],
     theme: {
         extend: {
             backgroundImage: {
-                "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-                "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))"
+                "login-bg": "url('/images/login/login_bg.png')",
+                "login-text": "url('/images/login/login-text.png')",
+                "tab-left": "url('/images/login/tab-active-left.png')",
+                "tab-right": "url('/images/login/tab-active-right.png')",
+                wx: "url('/images/login/wx.png')",
+                wb: "url('/images/login/wb.png')",
+                qq: "url('/images/login/qq.png')",
+                zfb: "url('/images/login/zfb.png')"
+            },
+            colors: {
+                f9: "#f9f9f9",
+                66: "#666666",
+                f602: "#FF6002",
+                d1d1: "#D1D1D1",
+                97: "#979797"
             }
         }
     },
     darkMode: "class",
-    plugins: [nextui()]
+    plugins: [
+        nextui({
+            themes: {
+                "orange-drak": {
+                    colors: {
+                        primary: {
+                            DEFAULT: "#FF6002",
+                            foreground: "#ffffff"
+                        },
+                        focus: "#FF6002"
+                    }
+                }
+            }
+        })
+    ]
 };
 export default config;
