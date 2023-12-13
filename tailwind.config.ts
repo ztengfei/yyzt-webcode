@@ -18,14 +18,18 @@ const config: Config = {
                 wx: "url('/images/login/wx.png')",
                 wb: "url('/images/login/wb.png')",
                 qq: "url('/images/login/qq.png')",
-                zfb: "url('/images/login/zfb.png')"
+                zfb: "url('/images/login/zfb.png')",
+                "index-ban-bg": "url('/images/index/baner-bg.png')",
+                "index-ban-top1": "url('/images/index/banner1-top1.png')",
+                "index-ban-top2": "url('/images/index/banner1-top2.png')"
             },
             colors: {
                 f9: "#f9f9f9",
                 66: "#666666",
                 f602: "#FF6002",
                 d1d1: "#D1D1D1",
-                97: "#979797"
+                97: "#979797",
+                FFEBD5: "#FFEBD5"
             }
         }
     },

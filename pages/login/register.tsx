@@ -8,7 +8,13 @@ import {
     Card,
     CardBody,
     CardHeader,
-    Avatar
+    Avatar,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    useDisclosure
 } from "@nextui-org/react";
 
 import styles from "./index.module.css";
@@ -26,6 +32,8 @@ function Register() {
     const [selected, setSelected] = useState("register-message");
     //表单数据的状态
     const [invalidInfo, setInvalidInfo] = useState(initInvalidInfo);
+    // modal 控制器
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     // 手机号码
     const [phone, setPhone] = React.useState<string>("");
@@ -345,7 +353,12 @@ function Register() {
                         </div>
                         <div className="flex flex-clo justify-center mt-[19px]">
                             <span className="text-97 text-[14px]">点击注册代表您已阅读并同意</span>
-                            <span className="text-black text-[14px]">《平台用户使用协议》</span>
+                            <span
+                                className="text-black text-[14px] cursor-pointer"
+                                onClick={onOpen}
+                            >
+                                《平台用户使用协议》
+                            </span>
                         </div>
                         <div className="flex flex-row justify-center my-[20px]">
                             <div className="mx-[10px] text-[12px]">
@@ -358,6 +371,38 @@ function Register() {
                     </div>
                 </Card>
             </div>
+
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1 text-center text-[22px]">
+                                平台用户协议
+                            </ModalHeader>
+                            <ModalBody className="text-[#939393] text-[14px]">
+                                <p>感谢您信任并使用</p>
+                                <p>我们根据最新的法律法规、监管政策要求</p>
+                                <p>
+                                    如果您是未满14周岁的未成年人，请您通知您的父母或其他监护人共同阅读上述协议，并在您使用我们的服务前，取得您的父母或其他监护人的同意。
+                                </p>
+                                <p>如您同意，请点击“同意并继续”，开始接受我们的产品与服务。</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                {/* <Button color="danger" variant="light" onPress={onClose}>
+                                    取消
+                                </Button> */}
+                                <Button
+                                    color="primary"
+                                    className="m-auto w-[300px] h-[46px] bg-f602"
+                                    onPress={onClose}
+                                >
+                                    我同意
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </div>
     );
 }
