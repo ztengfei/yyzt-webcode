@@ -9,20 +9,23 @@ import {
     DropdownTrigger,
     Dropdown,
     DropdownMenu,
-    Avatar
+    Badge
 } from "@nextui-org/react";
 
 interface NavbarType {
     isLogin: boolean;
+    navStyle: string;
 }
 // 头部导航，和头部相关功能
 function NavbarBox(props: NavbarType) {
+    const textColor =
+        props.navStyle == "white" ? "text-black transition-all" : "text-f9 transition-all";
     if (!props.isLogin) {
         // 如果当前没有登录则只有返回首页按钮
         return (
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Link className="text-f9 text-[14px]" href="/pages/index.tsx">
+                    <Link className={textColor + " text-xs"} href="./">
                         返回首页
                     </Link>
                 </NavbarItem>
@@ -31,19 +34,19 @@ function NavbarBox(props: NavbarType) {
     }
     return (
         <>
-            <NavbarContent className="hidden sm:flex gap-4" justify="start">
+            <NavbarContent className="hidden sm:flex gap-4 text-xs">
                 <NavbarItem>
-                    <Link color="foreground" href="#">
+                    <Link className={textColor + " text-f602 text-xs"} href="#">
                         转文字
                     </Link>
                 </NavbarItem>
-                <NavbarItem isActive>
-                    <Link href="#" aria-current="page" color="secondary">
+                <NavbarItem>
+                    <Link href="#" className={textColor + " text-xs"}>
                         翻译
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color="foreground" href="#">
+                    <Link className={textColor + " text-xs"} href="#">
                         充值商城
                     </Link>
                 </NavbarItem>
@@ -51,17 +54,21 @@ function NavbarBox(props: NavbarType) {
 
             <NavbarContent className="hidden sm:flex gap-4" justify="end">
                 <NavbarItem>
-                    <Link color="foreground" href="#">
+                    <Link className={textColor + " text-xs"} href="#">
                         最近文件
                     </Link>
                 </NavbarItem>
-                <NavbarItem isActive>
-                    <Link href="#" aria-current="page" color="secondary">
+                <NavbarItem>
+                    <Link href="#" className={textColor + " text-xs"}>
                         我的时长卡
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link href="#">消息</Link>
+                    <Badge content="5" color="primary">
+                        <Link href="#" className={textColor + " text-xs"}>
+                            消息
+                        </Link>
+                    </Badge>
                 </NavbarItem>
             </NavbarContent>
         </>

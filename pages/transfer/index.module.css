@@ -1,0 +1,6 @@
+.activeLeft {
+    background: url(./../../public/images/transfer/tab-left.png) no-repeat 100% 100%;
+}
+.activeRight {
+    background: url(./../../public/images/transfer/tab-right.png) no-repeat 100% 100%;
+}

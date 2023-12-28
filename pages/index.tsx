@@ -1,14 +1,19 @@
 // import Layout from "@/components/layout";
+import { useRef } from "react";
 import { Button } from "@nextui-org/button";
 import { Image } from "@nextui-org/react";
 import Banner from "@/components/banner";
 import Footer from "@/components/footer";
+import VideoTransfromModal from "@/components/modal/videoTransfrom";
 
 // import styles from "./index.module.css";
 
 export default function Index() {
+    const modalRef = useRef();
     const openModal = (type: "video" | "translate") => {
+        console.log("123132132");
         // 打开人工转写和机器转写弹框，或者直接跳转到翻译界面
+        modalRef.current && modalRef.current.openModal();
     };
     return (
         <div className="w-full absolute left-0 top-0">
@@ -51,6 +56,7 @@ export default function Index() {
                 </div>
             </div>
             <Footer></Footer>
+            <VideoTransfromModal ref={modalRef}></VideoTransfromModal>
         </div>
     );
 }

@@ -14,6 +14,7 @@ import {
 
 interface NavbarUserType {
     isLogin: boolean;
+    navStyle: string;
 }
 // 头部导航，和头部相关功能
 function NavbarUser(props: NavbarUserType) {
@@ -21,20 +22,34 @@ function NavbarUser(props: NavbarUserType) {
         // 如果当前没有登录则只有返回首页按钮
         return <></>;
     }
+    const textColor =
+        props.navStyle == "white" ? "text-black transition-all" : "text-f9 transition-all";
     return (
         <>
-            <NavbarContent className="flex-initial" as="div" justify="end">
+            <NavbarContent
+                className={
+                    " flex-none grow-0 data-[justify=end]:grow-0 data-[justify=start]:grow-0"
+                }
+                as="div"
+            >
                 <Dropdown placement="bottom-end">
                     <DropdownTrigger>
-                        <Avatar
-                            isBordered
-                            as="button"
-                            className="transition-transform"
-                            color="secondary"
-                            name="Jason Hughes"
-                            size="sm"
-                            src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                        />
+                        <span
+                            className={
+                                " flex flex-row text-xs items-center min-w-[160px] justify-end"
+                            }
+                        >
+                            <span className={textColor + " mr-2"}>你好，周腾飞</span>
+                            <Avatar
+                                isBordered
+                                as="button"
+                                className="transition-transform w-6 h-6 text-tiny"
+                                color="secondary"
+                                name="周腾飞"
+                                size="sm"
+                                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                            />
+                        </span>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Profile Actions" variant="flat">
                         <DropdownItem key="profile" className="h-14 gap-2">

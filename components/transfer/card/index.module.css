@@ -1,0 +1,6 @@
+.bg-moon {
+    background: linear-gradient(102deg, #ffdec1 0%, #ffe7d4 63%, #f1be9c 100%);
+}
+.bg-year {
+    background: linear-gradient(102deg, #ffeedf 0%, #ffd6ef 50%, #e1e4ff 100%);
+}

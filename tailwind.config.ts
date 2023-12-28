@@ -21,15 +21,23 @@ const config: Config = {
                 zfb: "url('/images/login/zfb.png')",
                 "index-ban-bg": "url('/images/index/baner-bg.png')",
                 "index-ban-top1": "url('/images/index/banner1-top1.png')",
-                "index-ban-top2": "url('/images/index/banner1-top2.png')"
+                "index-ban-top2": "url('/images/index/banner1-top2.png')",
+                "logo-blck": "url('/images/index/logo-bg-block.png')",
+                "card-img": "url('/images/transfer/card.png')",
+                radio: "url('/images/transfer/radio.png')",
+                "radio-active": "url('/images/transfer/radio-active.png')",
+                linearOrange: "linear-gradient(180deg, #FFF2EA 0%, #FFFFFF 100%)",
+                linearBlue: "linear-gradient(180deg, #EAF2FF 0%, #FFFFFF 100%)"
             },
             colors: {
                 f9: "#f9f9f9",
+                93: "#939393",
                 66: "#666666",
                 f602: "#FF6002",
                 d1d1: "#D1D1D1",
                 97: "#979797",
-                FFEBD5: "#FFEBD5"
+                FFEBD5: "#FFEBD5",
+                bc: "#bcbcbc"
             }
         }
     },
