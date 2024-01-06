@@ -10,7 +10,7 @@ import {
 } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
 
-function VideoTransfrom(props: any, ref) {
+function VideoTransfrom(props: any, ref: any) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     useImperativeHandle(ref, () => ({
         openModal: () => {

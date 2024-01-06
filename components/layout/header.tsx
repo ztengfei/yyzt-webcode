@@ -55,6 +55,10 @@ function Header() {
         },
         [navStyle]
     );
+
+    if (path == "/transfer/editor") {
+        return <></>;
+    }
     return (
         <Navbar
             className={

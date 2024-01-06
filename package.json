@@ -18,7 +18,9 @@
     "next": "14.0.3",
     "react": "^18",
     "react-dom": "^18",
-    "react-filepond": "^7.1.2"
+    "react-filepond": "^7.1.2",
+    "slate": "^0.101.5",
+    "slate-react": "^0.101.5"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -37,7 +37,13 @@ const config: Config = {
                 d1d1: "#D1D1D1",
                 97: "#979797",
                 FFEBD5: "#FFEBD5",
-                bc: "#bcbcbc"
+                bc: "#bcbcbc",
+                black6: "rgba(0,0,0,.66)",
+                black4: "rgba(0,0,0,.46)"
+            },
+            boxShadow: {
+                topxl: "0px -1px 0px 0px rgba(225,225,225,0.5)",
+                topx2: "0px 10px 20px 0px rgba(204,204,204,0.5)"
             }
         }
     },
