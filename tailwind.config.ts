@@ -39,7 +39,8 @@ const config: Config = {
                 FFEBD5: "#FFEBD5",
                 bc: "#bcbcbc",
                 black6: "rgba(0,0,0,.66)",
-                black4: "rgba(0,0,0,.46)"
+                black4: "rgba(0,0,0,.46)",
+                active: "#0CC14B"
             },
             boxShadow: {
                 topxl: "0px -1px 0px 0px rgba(225,225,225,0.5)",

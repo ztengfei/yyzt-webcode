@@ -38,7 +38,11 @@ function Upload(props: uploadProps) {
     let lableHtml =
         '<div class="lable-box"><div class="table-image"></div><div class="table-title">请选择要上传的音频视频拖拽次区域</div><div class="table-info">格式支持: mp3、wav、pcm、n4a、m4v、amr、wma、aac、mp4、mpg、3gp单个文件最长5小时、最大2GB，单次支持上传100个</div></div>';
     return (
-        <div className={styles["upload"] + " " + styles[props.modelType]}>
+        <div
+            className={
+                styles["upload"] + " " + (props.modelType == "translate" && styles["translate"])
+            }
+        >
             <FilePond
                 files={files}
                 onupdatefiles={setFiles}

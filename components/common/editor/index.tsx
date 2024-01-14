@@ -92,7 +92,7 @@ const Editor = (props: editorType) => {
     const [editor] = useState(() => withPlugin(withReact(createEditor())));
 
     const renderElement = useCallback(
-        (elementProps: any) => <EditorElement {...elementProps} />,
+        (elementProps: any) => <EditorElement editor={editor} {...elementProps} />,
         []
     );
     // 渲染 Slate 上下文。

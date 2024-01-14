@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
+import { Input, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { useFocused, useSelected } from "slate-react";
 
+import RoleSelect from "./roleSelect";
+
 // 发言人节点渲染
-const Speaker = ({ attributes, children, element }) => {
+const Speaker = ({ attributes, children, element, editor }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const selected = useSelected();
@@ -26,14 +28,19 @@ const Speaker = ({ attributes, children, element }) => {
         <div {...attributes} contentEditable={false} style={style}>
             <Popover
                 showArrow
-                offset={10}
+                placement="bottom"
                 isOpen={isOpen}
                 onOpenChange={(state) => {
-                    setIsOpen(state);
+                    !state && setIsOpen(state);
                 }}
             >
                 <PopoverTrigger>
-                    <div className="h-[32px] flex items-center pointer-events-auto rounded-[4px] cursor-pointer select-none ml-[-52px]">
+                    <div
+                        className="h-[32px] flex items-center pointer-events-auto rounded-[4px] cursor-pointer select-none ml-[-52px]"
+                        onClick={(element) => {
+                            setIsOpen(true);
+                        }}
+                    >
                         <div
                             style={{
                                 backgroundColor: element.iconBg || "rgb(191, 142, 238)"
@@ -48,10 +55,11 @@ const Speaker = ({ attributes, children, element }) => {
                     </div>
                 </PopoverTrigger>
                 <PopoverContent className="w-[240px]">
-                    <div className="px-1 py-2 w-full">
-                        <p className="text-small font-bold text-foreground">Dimensions</p>
-                        <div className="mt-2 flex flex-col gap-2 w-full"></div>
-                    </div>
+                    <RoleSelect
+                        roleInfo={element}
+                        editor={editor}
+                        setIsOpen={setIsOpen}
+                    ></RoleSelect>
                 </PopoverContent>
             </Popover>
 

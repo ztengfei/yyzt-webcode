@@ -15,10 +15,10 @@ const Paragraph = ({ attributes, children, element }) => {
 };
 
 const Element = (props: any) => {
-    const { attributes, children, element, speakerClickCallback } = props;
+    const { attributes, children, element, editor } = props;
     switch (element.type) {
         case "mention":
-            return <Speaker {...props} speakerClickCallback={speakerClickCallback} />;
+            return <Speaker {...props} editor={editor} />;
         default:
             return <Paragraph {...props}></Paragraph>;
     }

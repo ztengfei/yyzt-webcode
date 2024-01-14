@@ -9,7 +9,7 @@ const DeleteIcon = ({ fill, filled, size, height, width, ...props }: iconProps) 
             fill={filled ? fill : "none"}
             {...props}
         >
-            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
                 <g
                     transform="translate(-624.000000, -701.000000)"
                     fill="#373737"

@@ -1,15 +1,16 @@
-.upload {
+.translate {
     /* background-color: aqua; */
+    position: relative;
 }
-.upload :global(.filepond--credits) {
+.translate :global(.filepond--credits) {
     display: none;
 }
-.upload :global(.filepond--panel-root) {
+.translate :global(.filepond--panel-root) {
     background: transparent;
 }
 /* 机器快转内容高度 */
-.upload :global(.filepond--root) {
-    height: 340px !important;
+.translate :global(.filepond--root) {
+    height: 490px !important;
 }
 /* 人工精转内容高度 */
 .people :global(.filepond--root) {
@@ -17,7 +18,7 @@
     margin-bottom: 0;
 }
 
-.upload :global(.filepond--panel) {
+.translate :global(.filepond--panel) {
     width: 308px;
     height: 340px;
     background: #fff8f4 !important;
@@ -28,14 +29,14 @@
 .people :global(filepond--panel) {
     height: 190px !important;
 }
-.upload :global(.filepond--list-scroller) {
+.translate :global(.filepond--list-scroller) {
     display: none;
 }
-.upload :global(.filepond--drop-label) {
+.translate :global(.filepond--drop-label) {
     width: 100%;
     height: 100%;
 }
-.upload :global(.lable-box) {
+.translate :global(.lable-box) {
     width: 100%;
     height: 100%;
     display: flex;
@@ -44,29 +45,25 @@
     flex-direction: column;
 }
 
-.upload :global(.table-image) {
+.translate :global(.table-image) {
     width: 48px;
     height: 48px;
     background: url("./../../../public/images/transfer/upload-image.png") no-repeat 100% 100%;
     margin-bottom: 16px;
 }
-.upload :global(.table-title) {
+.translate :global(.table-title) {
     font-size: 16px;
     font-weight: 400;
     color: #333333;
     line-height: 14px;
     margin-bottom: 12px;
 }
-.upload :global(.table-info) {
+.translate :global(.table-info) {
     font-size: 12px;
     font-weight: 400;
     color: #acacac;
     line-height: 17px;
 }
-.upload :global(.filepond--list-scroller) {
+.translate :global(.filepond--list-scroller) {
     display: none;
-}
-
-.translate:global(.filepond--root) {
-    height: 100% !important;
 }

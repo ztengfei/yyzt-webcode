@@ -25,7 +25,7 @@ function Header() {
     console.log("path+++++++", path);
 
     const [isLogin, setIsLogin] = useState(true);
-    let pathRouter = ["/transfer", "/transfer/settlement"];
+    let pathRouter = ["/transfer", "/transfer/settlement", "/translate"];
     let initNavStyle = pathRouter.includes(path) ? "white" : "black";
     const [navStyle, setNavStyle] = useState(initNavStyle);
     const navStyleRef = useRef(initNavStyle);

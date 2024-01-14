@@ -1,6 +1,15 @@
 // import Layout from "@/components/layout";
 import React, { useRef, useState } from "react";
-import { Button, Select, SelectItem, Slider, Switch, Tooltip, useUser } from "@nextui-org/react";
+import {
+    Button,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+    Select,
+    SelectItem,
+    Slider,
+    Switch
+} from "@nextui-org/react";
 
 import PlayIcon from "@/components/icon/audioPlay";
 import PauseIcon from "@/components/icon/audioPause";
@@ -145,8 +154,17 @@ export default function AudioControl(props: AudioControlTypes) {
                     </Button>
                 </div>
                 <div>
-                    <Tooltip
-                        content={
+                    <Popover showArrow placement="bottom">
+                        <PopoverTrigger>
+                            <Button
+                                className=" text-black border-[#efefef]"
+                                variant="bordered"
+                                startContent={<SetingIcon size={18} />}
+                            >
+                                篇幅设置
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent>
                             <div className="px-4 py-6 w-[310px] orange-drak">
                                 <div className="text-small flex flex-row items-center justify-between  w-full mb-6">
                                     <div>
@@ -188,16 +206,8 @@ export default function AudioControl(props: AudioControlTypes) {
                                     </div>
                                 </div>
                             </div>
-                        }
-                    >
-                        <Button
-                            className=" text-black border-[#efefef]"
-                            variant="bordered"
-                            startContent={<SetingIcon size={18} />}
-                        >
-                            篇幅设置
-                        </Button>
-                    </Tooltip>
+                        </PopoverContent>
+                    </Popover>
                 </div>
             </div>
         </div>
