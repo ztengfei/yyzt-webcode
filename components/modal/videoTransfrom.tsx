@@ -6,9 +6,11 @@ import {
     ModalBody,
     ModalFooter,
     Button,
-    useDisclosure
+    useDisclosure,
+    Link
 } from "@nextui-org/react";
 import { Image } from "@nextui-org/react";
+import Router from "next/router";
 
 function VideoTransfrom(props: any, ref: any) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -17,6 +19,9 @@ function VideoTransfrom(props: any, ref: any) {
             onOpen();
         }
     }));
+    const goTransferPage = (type: string) => {
+        Router.push({ pathname: "/transfer", query: { type: type } });
+    };
     return (
         <>
             {/* <Button onPress={onOpen} color="primary">
@@ -71,7 +76,15 @@ function VideoTransfrom(props: any, ref: any) {
                                             <p>· 按照专业领域细分转译，快速甄别专属名词</p>
                                             <p>· 标注文稿，按多角色逐条展示</p>
                                         </div>
-                                        <Button color="primary" className="w-[239px] h-[46px] mt-5">
+                                        <Button
+                                            color="primary"
+                                            className="w-[239px] h-[46px] mt-5"
+                                            // onClick={() => {
+                                            //     goTransferPage("1");
+                                            // }}
+                                            href="/transfer?type=1"
+                                            as={Link}
+                                        >
                                             上传音频
                                         </Button>
                                     </div>
@@ -91,7 +104,12 @@ function VideoTransfrom(props: any, ref: any) {
                                             <p>· 按照专业领域细分转译，快速甄别专属名词</p>
                                             <p>· 标准场景时间码</p>
                                         </div>
-                                        <Button color="primary" className="w-[239px] h-[46px] mt-5">
+                                        <Button
+                                            color="primary"
+                                            className="w-[239px] h-[46px] mt-5"
+                                            href="/transfer?type=2"
+                                            as={Link}
+                                        >
                                             上传音频
                                         </Button>
                                     </div>

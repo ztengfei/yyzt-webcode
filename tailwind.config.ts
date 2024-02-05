@@ -27,7 +27,8 @@ const config: Config = {
                 radio: "url('/images/transfer/radio.png')",
                 "radio-active": "url('/images/transfer/radio-active.png')",
                 linearOrange: "linear-gradient(180deg, #FFF2EA 0%, #FFFFFF 100%)",
-                linearBlue: "linear-gradient(180deg, #EAF2FF 0%, #FFFFFF 100%)"
+                linearBlue: "linear-gradient(180deg, #EAF2FF 0%, #FFFFFF 100%)",
+                shoppingBn: "url('/images/shopping/shoping_bg.png')"
             },
             colors: {
                 f9: "#f9f9f9",

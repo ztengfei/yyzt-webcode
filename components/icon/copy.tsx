@@ -14,7 +14,7 @@ const DeleteIcon = ({ fill, filled, size, height, width, ...props }: iconProps) 
                     id="15"
                     transform="translate(-560.000000, -268.000000)"
                     fill={fill || "#FF5200"}
-                    fill-rule="nonzero"
+                    fillRule="nonzero"
                     stroke={fill || "#FF5200"}
                     strokeWidth="0.4"
                 >

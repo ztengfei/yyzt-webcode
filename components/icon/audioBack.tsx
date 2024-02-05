@@ -13,7 +13,7 @@ const DeleteIcon = ({ fill, filled, size, height, width, ...props }: iconProps) 
                 <g
                     transform="translate(-624.000000, -701.000000)"
                     fill="#373737"
-                    fill-rule="nonzero"
+                    fillRule="nonzero"
                 >
                     <g transform="translate(0.000000, 648.000000)">
                         <g transform="translate(624.000000, 26.000000)">

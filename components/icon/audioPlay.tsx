@@ -12,7 +12,7 @@ const DeleteIcon = ({ fill, filled, size, height, width, ...props }: iconProps) 
         >
             <g
                 fill="#ff6002"
-                fill-rule="nonzero"
+                fillRule="nonzero"
                 stroke="none"
                 strokeWidth="1"
                 strokeLinecap="butt"

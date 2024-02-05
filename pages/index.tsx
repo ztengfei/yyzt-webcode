@@ -6,10 +6,13 @@ import Banner from "@/components/banner";
 import Footer from "@/components/footer";
 import VideoTransfromModal from "@/components/modal/videoTransfrom";
 
+import Router from "next/router";
+
 // import styles from "./index.module.css";
 
 export default function Index() {
     const modalRef = useRef();
+
     const openModal = (type: "video" | "translate") => {
         console.log("123132132");
         // 打开人工转写和机器转写弹框，或者直接跳转到翻译界面
@@ -29,7 +32,13 @@ export default function Index() {
                         <p>· 对转写结果可直接编辑，并支持一键导出word、txt、链接等多种格式</p>
                         <p>· 多场景多角色发音人标注</p>
                     </div>
-                    <Button color="primary" className="h-[54px] w-[162px] mt-[46px]">
+                    <Button
+                        color="primary"
+                        className="h-[54px] w-[162px] mt-[46px]"
+                        onClick={() => {
+                            Router.push({ pathname: "/transfer" });
+                        }}
+                    >
                         立即体验
                     </Button>
                 </div>
@@ -50,7 +59,13 @@ export default function Index() {
                         <p>视频翻译：视频添加字幕，Al一键生成</p>
                         <p>人工翻译：智能协作平台，一站式对接制作交付</p>
                     </div>
-                    <Button color="primary" className="h-[54px] w-[162px] mt-[46px]">
+                    <Button
+                        color="primary"
+                        className="h-[54px] w-[162px] mt-[46px]"
+                        onClick={() => {
+                            Router.push({ pathname: "/translate" });
+                        }}
+                    >
                         立即体验
                     </Button>
                 </div>

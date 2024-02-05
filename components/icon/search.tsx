@@ -9,13 +9,13 @@ const LeftIcon = ({ fill = "currentColor", filled, size, height, width, ...props
             fill={filled ? fill : "none"}
             {...props}
         >
-            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" opacity="0.899999976">
+            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd" opacity="0.899999976">
                 <g
                     transform="translate(-1094.000000, -314.000000)"
                     fill="#FF6002"
-                    fill-rule="nonzero"
+                    fillRule="nonzero"
                     stroke="#FF6002"
-                    stroke-width="0.3"
+                    strokeWidth="0.3"
                 >
                     <g transform="translate(121.000000, 259.000000)">
                         <g transform="translate(0.000000, 33.000000)">

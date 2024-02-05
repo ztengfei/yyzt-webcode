@@ -18,6 +18,7 @@ import {
     Radio,
     RadioGroup
 } from "@nextui-org/react";
+import Router from "next/router";
 
 import BuyFooter from "@/components/transfer/buyFooter";
 import CardItem from "@/components/transfer/card/card";
@@ -34,8 +35,15 @@ export default function Order() {
     const modalRef = useRef();
     const [selected, setSelected] = useState("people");
 
+    const submit = () => {
+        Router.push({
+            pathname: "/transfer/complete",
+            query: { name: "Zeit" }
+        });
+    };
+
     return (
-        <div className="w-full absolute left-0 top-0 flex flex-col h-full bg-[#F7F8FA]">
+        <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1">
                 {/* 订单状态 */}
                 <OrderState></OrderState>
@@ -85,7 +93,7 @@ export default function Order() {
                     </RadioGroup>
                 </div>
             </div>
-            <BuyFooter></BuyFooter>
+            <BuyFooter submit={submit}></BuyFooter>
         </div>
     );
 }

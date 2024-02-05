@@ -16,6 +16,7 @@ import {
 import styles from "./index.module.css";
 
 const CustomRadio = (props: any) => {
+    const { bgType } = props;
     const {
         Component,
         children,
@@ -28,6 +29,10 @@ const CustomRadio = (props: any) => {
         getLabelWrapperProps,
         getControlProps
     } = useRadio(props);
+
+    // 组件背景颜色
+    const bgClass = "bg-" + bgType;
+    const textColor = bgType == "purple" ? "text-[#173A83]" : "text-[#994712]";
 
     return (
         <Component
@@ -49,12 +54,9 @@ const CustomRadio = (props: any) => {
             </span> */}
             <div {...getLabelWrapperProps()}>
                 <Card
-                    className={
-                        (props.bgType == "moon" ? styles["bg-moon"] : styles["bg-year"]) +
-                        " h-[127px] w-[272px] rounded-2xl  relative mb-4"
-                    }
+                    className={styles[bgClass] + " h-[127px] w-[272px] rounded-2xl  relative mb-4"}
                 >
-                    <CardHeader className="flex gap-3 p-2 pl-4">
+                    <CardHeader className="flex p-2 pl-4 pb-0">
                         <Image
                             alt="市场卡"
                             height={17}
@@ -62,18 +64,24 @@ const CustomRadio = (props: any) => {
                             src="/images/transfer/diamond.png"
                             width={22}
                         />
-                        <div className="flex flex-col text-[#994712] text-sm">
-                            <p className="text-md">连续包月</p>
+                        <div className={`flex flex-col  text-base font-semibold`}>
+                            <p className="text-md">
+                                {bgType == "moon" && "连续包月"}
+                                {bgType == "year" && "5小时.全年"}
+                            </p>
                         </div>
                     </CardHeader>
-                    <CardBody className="text-[#994712] flex-row items-end p-0 pl-4">
-                        <span className="text-2xl font-semibold">￥88</span>
+                    <CardBody
+                        className={`${textColor} flex-row items-end p-0 pl-4 overflow-hidden`}
+                    >
+                        <span className="text-2xl font-semibold text-[42px]">￥88</span>
                         <span className="text-xs pl-1">/月</span>
-                        <span className="text-xs pl-1 opacity-60 line-through">100</span>
+                        <span className="text-xs pl-1 opacity-60 line-through">￥100</span>
                     </CardBody>
                     <CardFooter className="flex justify-between pl-4 pb-2 pt-2">
-                        <span className="text-[#994712] text-xs opacity-55">
-                            60小时/月 机器快转时长卡
+                        <span className={`${textColor} text-xs opacity-55`}>
+                            {bgType == "moon" && "60小时/月 机器快转时长卡"}
+                            {bgType == "year" && "年度机器快转时长，一年有效"}
                         </span>
                         <div
                             className={

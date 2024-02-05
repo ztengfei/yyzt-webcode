@@ -11,9 +11,12 @@ import {
     CardHeader,
     Avatar
 } from "@nextui-org/react";
+import Router, { useRouter } from "next/router";
 
 import styles from "./index.module.css";
 import CodeBtn from "@/components/from/codeBtn";
+import { forgotPwd } from "@/api/api";
+import { RASEncrypt, getTolocal, randomString, saveToWindow, setToLocal } from "@/components/tool";
 
 const initInvalidInfo = {
     tel: "",
@@ -51,7 +54,7 @@ function FindPassword() {
             setInvalidInfo({ ...initInvalidInfo, telEmail: "请输入正确的手机号或邮箱" });
             return false;
         }
-        if (type == "hasEmail") {
+        if (type == "phoneAndEmail") {
             // 验证码校验邮箱是否正确
             return true;
         }
@@ -117,10 +120,28 @@ function FindPassword() {
         }
     };
 
-    const onLogin = () => {
-        if (getInvalidInfo()) {
-            setInvalidInfo({ ...initInvalidInfo });
-            console.log("校验成功");
+    const onLogin = async () => {
+        if (!getInvalidInfo()) {
+            return;
+        }
+        // 校验通过
+        setInvalidInfo({ ...initInvalidInfo });
+        console.log("校验成功");
+        const timeDate = new Date().getTime();
+        const userKey = randomString(32);
+        // password RASEncrypt().encrypt(`${password},<<<,${timeDate},<<<,${userKey}`)
+        try {
+            const res = await forgotPwd({
+                userName: telEmail,
+                pwd: RASEncrypt().encrypt(`${password}`),
+                smsCode: code,
+                loginType: 11 // 0账号密码  1微信 2支付宝 11验证码
+            });
+            if (res.errorCode == 0) {
+                Router.push("/login");
+            }
+        } catch (error) {
+            // 接口异常
         }
     };
 

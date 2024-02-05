@@ -1,28 +1,27 @@
 .upload {
-    /* background-color: aqua; */
 }
-.upload :global(.filepond--credits) {
+/* .upload :global(.filepond--credits) {
     display: none;
 }
 .upload :global(.filepond--panel-root) {
     background: transparent;
-}
+} */
 /* 机器快转内容高度 */
-.upload :global(.filepond--root) {
+.upload :global(.lable-box) {
     height: 340px !important;
 }
 /* 人工精转内容高度 */
-.people :global(.filepond--root) {
+.people :global(.lable-box) {
     height: 190px !important;
     margin-bottom: 0;
 }
 
-.upload :global(.filepond--panel) {
+.upload :global(.lable-box) {
     width: 308px;
     height: 340px;
-    background: #fff8f4 !important;
+    background: #fff8f4;
     border-radius: 8px;
-    border: 2px dashed #e2c6b6 !important;
+    border: 2px dashed #e2c6b6;
 }
 /* 人工精转内容高度 */
 .people :global(filepond--panel) {
@@ -62,6 +61,7 @@
     font-weight: 400;
     color: #acacac;
     line-height: 17px;
+    text-align: center;
 }
 .upload :global(.filepond--list-scroller) {
     display: none;

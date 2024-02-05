@@ -16,9 +16,14 @@ import {
     ModalFooter,
     useDisclosure
 } from "@nextui-org/react";
+import Router from "next/router";
+import Toast from "react-hot-toast";
+
+import { RASEncrypt } from "@/components/tool";
+import CodeBtn from "@/components/from/codeBtn";
+import { registerAccount } from "@/api/api";
 
 import styles from "./index.module.css";
-import CodeBtn from "@/components/from/codeBtn";
 
 const initInvalidInfo = {
     tel: "",
@@ -142,10 +147,33 @@ function Register() {
         }
     };
 
-    const onLogin = () => {
-        if (getInvalidInfo()) {
-            setInvalidInfo({ ...initInvalidInfo });
-            console.log("校验成功");
+    const onLogin = async () => {
+        if (!getInvalidInfo()) {
+            return;
+        }
+        console.log("校验成功");
+        setInvalidInfo({ ...initInvalidInfo });
+        let a = RASEncrypt;
+        console.log("RASEncrypt.encrypt(password)+++", RASEncrypt().encrypt(password));
+        try {
+            const res = await registerAccount({
+                userName: phone || telEmail,
+                smsCode: code,
+                // pwd: password
+                pwd: RASEncrypt().encrypt(password)
+            });
+            console.log("res+++", res);
+            if (res && res.code == "200") {
+                // 注册成功 ztf1521557
+                Router.push({
+                    pathname: "/login"
+                });
+                return;
+            }
+            Toast.error(res.msg);
+            // 注册成功跳转登陆界面
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -161,6 +189,7 @@ function Register() {
                             selectedKey={selected}
                             onSelectionChange={(key) => {
                                 setSelected(key as string);
+                                setInvalidInfo({ ...initInvalidInfo });
                             }}
                             classNames={{
                                 base: "min-h-[90px] mt-[4px] bg-[#F5F5F5]",

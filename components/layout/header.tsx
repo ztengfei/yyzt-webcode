@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 import {
     Navbar,
     NavbarBrand,
@@ -17,6 +17,9 @@ import { useRouter } from "next/router";
 
 import NavbarBox from "./navbar";
 import NavbarUser from "./navbarUser";
+import { updataTokenTime } from "@/components/config";
+import { getTolocal, setToLocal } from "@/components/tool";
+import { refreshToken } from "@/api/api";
 
 // 头部导航，和头部相关功能
 function Header() {
@@ -24,24 +27,75 @@ function Header() {
     const path = router.pathname;
     console.log("path+++++++", path);
 
-    const [isLogin, setIsLogin] = useState(true);
-    let pathRouter = ["/transfer", "/transfer/settlement", "/translate"];
-    let initNavStyle = pathRouter.includes(path) ? "white" : "black";
+    const getLoginState = () => {
+        // 获取当前页面是否登录
+        if (path.indexOf("login") > -1) {
+            return false;
+        }
+        // 获取缓存中的过期时间
+        const oldTime = Number(getTolocal("expiresTime"));
+        let nowTime = new Date().getTime();
+        if (nowTime > oldTime) {
+            return false;
+        }
+        return true;
+    };
+    // console.log("loginState+++++++", loginState);
+    const [isLogin, setIsLogin] = useState(false);
+
+    let initNavStyle = path == "/" || path.indexOf("login") > -1 ? "black" : "white";
     const [navStyle, setNavStyle] = useState(initNavStyle);
     const navStyleRef = useRef(initNavStyle);
+    console.log("navStyle++++", navStyle, isLogin);
+    // 本地缓存发生改变
+    const localChange = (e: StorageEvent) => {
+        if (e.key == "expiresTime") {
+            setIsLogin(!!e.newValue);
+        }
+    };
+    // 界面路由地址发生改变
+    // const handleRouteChange = (url: string) => {
+    //     setIsLogin(getLoginState());
+    // };
 
-    // const onScrollPositionChange = useMemoizedFn((position: number) => {
-    //     console.log("position++++", position, navStyle);
-    //     if (position > 50 && navStyle == "black") {
-    //         setNavStyle("white");
-    //     } else if (position <= 50 && navStyle == "white") {
-    //         setNavStyle("black");
-    //     }
-    // });
+    useEffect(() => {
+        window.addEventListener("storage", localChange);
+        // router.events.on("routeChangeComplete", handleRouteChange);
+        setIsLogin(getLoginState());
+
+        let navStyle = path == "/" || path.indexOf("login") > -1 ? "black" : "white";
+        setNavStyle(navStyle);
+        navStyleRef.current = navStyle;
+        return () => {
+            window.removeEventListener("storage", localChange);
+            // router.events.off("routeChangeComplete", handleRouteChange);
+        };
+    }, [router]);
+
+    useEffect(() => {
+        // 五分中执行一次
+        setInterval(() => {
+            const oldTime = Number(getTolocal("expiresTime"));
+            let nowTime = new Date().getTime();
+            // 如果现在时间小于过期时间的3倍则取更新本地token
+            if (oldTime && oldTime > nowTime && oldTime - nowTime < updataTokenTime * 3) {
+                refreshToken({}).then((res) => {
+                    if (res.code == 200) {
+                        const { accessToken, refreshToken, expiresTime } = res.data;
+                        setToLocal("accessToken", accessToken);
+                        setToLocal("refreshToken", refreshToken);
+                        setToLocal("expiresTime", expiresTime);
+                        return;
+                    }
+                });
+            }
+        }, updataTokenTime);
+    }, []);
+
     const onScrollPositionChange = useCallback(
         (position: number) => {
             console.log("position++++", position, navStyle);
-            if (pathRouter.includes(path)) {
+            if (path !== "/" && path.indexOf("login") == -1) {
                 // 部分页面导航底色为白色不需要重新替换导航颜色
                 return;
             }

@@ -28,3 +28,9 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+.ellipsis {
+    white-space: nowrap; /* 不换行 */
+    overflow: hidden; /* 隐藏溢出部分 */
+    text-overflow: ellipsis; /* 显示省略号 */
+}

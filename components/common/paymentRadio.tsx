@@ -32,7 +32,9 @@ const PaymentRadio = (props: any) => {
             </span> */}
             <div
                 {...getLabelWrapperProps()}
-                className={"flex justify-center items-center w-full h-full"}
+                className={
+                    "flex justify-center items-center w-full h-full bg-white rounded-lg mr-3"
+                }
             >
                 <Image src={url}></Image>
                 <span className="ml-2">{props.text}</span>

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Input, Button } from "@nextui-org/react";
+import { sendCode } from "@/api/api";
 
 interface codeInputType {
     className?: string;
@@ -29,14 +30,19 @@ function CodeBtn(props: codeInputType) {
         }, 1000);
     };
 
-    const onclick = () => {
+    const onclick = async () => {
         const phone = props.getPhone(props.type);
         if (!phone) {
             return;
         }
-        countNum.current = 60;
-        getText();
-        setDisable(true);
+        try {
+            setDisable(true);
+            getText();
+            await sendCode({ userName: phone });
+            countNum.current = 60;
+        } catch (error) {
+            console.error("验证码获取错误");
+        }
     };
     return (
         <Button

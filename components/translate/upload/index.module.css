@@ -1,6 +1,11 @@
 .translate {
     /* background-color: aqua; */
     position: relative;
+    height: 100%;
+}
+
+.translate :global(.filepond--wrapper) {
+    height: 100%;
 }
 .translate :global(.filepond--credits) {
     display: none;
@@ -10,7 +15,7 @@
 }
 /* 机器快转内容高度 */
 .translate :global(.filepond--root) {
-    height: 490px !important;
+    height: 100% !important;
 }
 /* 人工精转内容高度 */
 .people :global(.filepond--root) {
@@ -18,9 +23,9 @@
     margin-bottom: 0;
 }
 
-.translate :global(.filepond--panel) {
-    width: 308px;
-    height: 340px;
+.translate {
+    width: 100%;
+    height: 100%;
     background: #fff8f4 !important;
     border-radius: 8px;
     border: 2px dashed #e2c6b6 !important;

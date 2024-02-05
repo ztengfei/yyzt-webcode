@@ -2,7 +2,11 @@
 import { useRef, useState } from "react";
 import { Button } from "@nextui-org/react";
 
-export default function BuyFooter() {
+interface footerType {
+    submit: () => void;
+}
+
+export default function BuyFooter(props: footerType) {
     return (
         <>
             <div className="h-[76px] bg-white w-full">
@@ -11,7 +15,13 @@ export default function BuyFooter() {
                     <span className=" text-base text-black">
                         应付金额：<span className="text-f602">￥88.0</span>
                     </span>
-                    <Button color="primary" className="w-[150px] h-[46px] ml-9 min-h-[46px]">
+                    <Button
+                        color="primary"
+                        className="w-[150px] h-[46px] ml-9 min-h-[46px]"
+                        onClick={() => {
+                            props.submit && props.submit();
+                        }}
+                    >
                         确认支付
                     </Button>
                 </div>

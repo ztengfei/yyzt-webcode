@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Tabs,
     Tab,
@@ -10,41 +10,51 @@ import {
     CardHeader,
     Avatar
 } from "@nextui-org/react";
+import Router from "next/router";
+
+import CodeBtn from "@/components/from/codeBtn";
+import { login, loginProp, autnLoginPage } from "@/api/api";
+import { RASEncrypt, getTolocal, randomString, saveToWindow, setToLocal } from "@/components/tool";
 
 import styles from "./index.module.css";
-import CodeBtn from "@/components/from/codeBtn";
+const initVal = {
+    tel: "",
+    code: "",
+    telEmail: "",
+    passWord: ""
+};
 
 //  登陆界面
 function Login() {
     const [selected, setSelected] = useState("login-message");
     //表单数据的状态
-    const [invalidInfo, setInvalidInfo] = useState({
-        tel: "",
-        code: "",
-        telEmail: "",
-        passWord: ""
-    });
+    const [invalidInfo, setInvalidInfo] = useState(initVal);
 
     // 手机号码
-    const [phone, setPhone] = React.useState<string>("");
+    const [userName, setUserName] = React.useState<string>("");
     const [code, setCode] = React.useState<string>("");
-    const [telEmail, setEmail] = React.useState<string>("");
     const [password, setPasword] = React.useState<string>("");
+    const [disabled, setDisabled] = useState(false);
     // 校验手机号
     const validatePhon = (value: string) => value.match(/^1[3-9]\d{9}$/i);
     // 校验邮箱
     const validateEmail = (value: string) => value.match(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/i);
 
     const getInvalidInfo = (type?: string) => {
+        if (!userName) {
+            setInvalidInfo({ tel: "", code: "", telEmail: "请输入手机号或邮箱", passWord: "" });
+            return false;
+        }
+        if (!validatePhon(userName) && !validateEmail(userName)) {
+            setInvalidInfo({
+                tel: "",
+                code: "",
+                telEmail: "请输入正确的手机号或邮箱",
+                passWord: ""
+            });
+            return false;
+        }
         if (selected == "login-message") {
-            if (!phone) {
-                setInvalidInfo({ tel: "请输入手机号", code: "", telEmail: "", passWord: "" });
-                return false;
-            }
-            if (!validatePhon(phone)) {
-                setInvalidInfo({ tel: "请输入正确的手机号", code: "", telEmail: "", passWord: "" });
-                return false;
-            }
             if (type == "hasPhone") {
                 // 验证码校验手机号是否正确
                 return true;
@@ -55,19 +65,7 @@ function Login() {
             }
             return true;
         }
-        if (!telEmail) {
-            setInvalidInfo({ tel: "", code: "", telEmail: "请输入手机号或邮箱", passWord: "" });
-            return false;
-        }
-        if (!validatePhon(telEmail) && !validateEmail(telEmail)) {
-            setInvalidInfo({
-                tel: "",
-                code: "",
-                telEmail: "请输入正确的手机号或邮箱",
-                passWord: ""
-            });
-            return false;
-        }
+
         if (!password) {
             setInvalidInfo({ tel: "", code: "", telEmail: "", passWord: "请输入密码" });
             return false;
@@ -77,7 +75,7 @@ function Login() {
 
     const getPhone = (type?: string) => {
         if (getInvalidInfo("hasPhone")) {
-            return phone;
+            return userName;
         }
 
         return "";
@@ -85,11 +83,6 @@ function Login() {
 
     const inputChange = (type: string, value: string) => {
         switch (type) {
-            case "phone":
-                invalidInfo.tel &&
-                    setInvalidInfo({ tel: "", code: "", telEmail: "", passWord: "" });
-                setPhone(value);
-                break;
             case "code":
                 invalidInfo.code &&
                     setInvalidInfo({ tel: "", code: "", telEmail: "", passWord: "" });
@@ -99,7 +92,7 @@ function Login() {
             case "telEmail":
                 invalidInfo.telEmail &&
                     setInvalidInfo({ tel: "", code: "", telEmail: "", passWord: "" });
-                setEmail(value);
+                setUserName(value);
                 break;
             case "passWord":
                 invalidInfo.passWord &&
@@ -111,14 +104,91 @@ function Login() {
         }
     };
 
-    const onLogin = (type: string) => {
-        if (getInvalidInfo()) {
-            console.log("校验成功");
-        }
-        if ((type = "login-message")) {
-            // 验证码登录
+    const openOtherLogin = async (type: number) => {
+        setToLocal("loginType", type);
+
+        const res = await autnLoginPage({ loginType: type });
+        const div = document.createElement("div");
+        div.innerHTML = res.data;
+        document.body.appendChild(div);
+        let fromEl = div.querySelector("form");
+        fromEl && fromEl.submit();
+    };
+
+    const showErrorMes = (errorCode: number, msg: string) => {
+        switch (errorCode) {
+            case 1002:
+                setInvalidInfo({ ...initVal, code: "验证码错误" });
+                break;
+            case 1004:
+                setInvalidInfo({ ...initVal, telEmail: "账号或密码错误" });
+                break;
+            default:
+                setInvalidInfo({ ...initVal, telEmail: msg });
+                break;
         }
     };
+
+    const onLogin = async (type?: 1 | 2) => {
+        console.log("onLogin");
+        // 第三方平台登录不需要校验
+        if (!getTolocal("loginType") && !getInvalidInfo()) {
+            return;
+        }
+        setDisabled(true);
+        setInvalidInfo(initVal);
+        let param: loginProp = {
+            userName: userName,
+            loginType: selected == "login-message" ? 11 : 0
+        };
+        const userKey = randomString(32);
+        const timeDate = new Date().getTime();
+        if (type) {
+            const routerQuery = Router.query;
+            param.pwd = RASEncrypt().encrypt(`${routerQuery.code},<<<,${timeDate},<<<,${userKey}`);
+            param.state = routerQuery.state as string;
+            param.loginType = type;
+        } else {
+            if (selected == "login-message") {
+                param.pwd = RASEncrypt().encrypt(`${code},<<<,${timeDate},<<<,${userKey}`);
+            } else {
+                console.log(`${password},<<<,${timeDate},<<<,${userKey}`);
+                param.pwd = RASEncrypt().encrypt(`${password},<<<,${timeDate},<<<,${userKey}`);
+            }
+        }
+
+        const res: {
+            code: number;
+            data: { accessToken: string; refreshToken: string; expiresTime: string };
+            msg: string;
+        } = await login(param);
+
+        // 登录完成后删除 loginType
+        localStorage.removeItem("loginType");
+        setDisabled(true);
+        if (res.code == 200) {
+            const { accessToken, refreshToken, expiresTime } = res.data;
+            setToLocal("accessToken", accessToken);
+            setToLocal("refreshToken", refreshToken);
+            setToLocal("expiresTime", expiresTime);
+            setToLocal("userTime", timeDate);
+            setToLocal("userKey", userKey);
+            Router.push({
+                pathname: "/",
+                query: { code: "Zeit", state: "success" }
+            });
+            return;
+        }
+        showErrorMes(res.errorCode, res.msg);
+    };
+
+    useEffect(() => {
+        const routerQuery = Router.query;
+        const loginType = getTolocal("loginType");
+        if (loginType && routerQuery.code) {
+            onLogin(Number(loginType) as 1 | 2);
+        }
+    }, []);
 
     return (
         <div className="w-full h-full bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">
@@ -151,15 +221,16 @@ function Login() {
                                 <form className="flex flex-col">
                                     <Input
                                         isRequired
-                                        placeholder="请输入手机号"
+                                        placeholder="请输入手机号或邮箱"
                                         size="sm"
-                                        type="number"
-                                        isInvalid={!!invalidInfo.tel}
-                                        color={invalidInfo.tel ? "danger" : "default"}
-                                        errorMessage={invalidInfo.tel}
+                                        isInvalid={!!invalidInfo.telEmail}
+                                        color={invalidInfo.telEmail ? "danger" : "default"}
+                                        errorMessage={invalidInfo.telEmail}
                                         onValueChange={(value) => {
-                                            inputChange("phone", value);
+                                            inputChange("telEmail", value);
+                                            setUserName(value);
                                         }}
+                                        value={userName}
                                         classNames={{
                                             description: "text-f602",
                                             errorMessage: "h-0"
@@ -196,8 +267,9 @@ function Login() {
                                             fullWidth
                                             color="primary"
                                             className="h-[50px]"
-                                            onClick={() => {
-                                                onLogin("login-message");
+                                            disabled={disabled}
+                                            onPress={() => {
+                                                onLogin();
                                             }}
                                         >
                                             登录
@@ -211,14 +283,14 @@ function Login() {
                                         isRequired
                                         placeholder="请输入手机号或邮箱"
                                         size="sm"
-                                        type="email"
                                         isInvalid={!!invalidInfo.telEmail}
                                         color={invalidInfo.telEmail ? "danger" : "default"}
                                         errorMessage={invalidInfo.telEmail}
                                         onValueChange={(value) => {
                                             inputChange("telEmail", value);
+                                            setUserName(value);
                                         }}
-                                        value={code}
+                                        value={userName}
                                         classNames={{
                                             description: "text-f602",
                                             errorMessage: "h-0"
@@ -246,9 +318,10 @@ function Login() {
                                             fullWidth
                                             color="primary"
                                             className="h-[50px]"
-                                            onClick={() => {
-                                                onLogin("login-passWord");
+                                            onPress={() => {
+                                                onLogin();
                                             }}
+                                            disabled={disabled}
                                         >
                                             登录
                                         </Button>
@@ -273,18 +346,24 @@ function Login() {
                             <Link
                                 className={"w-[53px] h-[53px] bg-no-repeat bg-cover bg-wx"}
                                 href="#"
+                                onClick={() => {
+                                    openOtherLogin(1);
+                                }}
                             ></Link>
-                            <Link
+                            {/* <Link
                                 className={"w-[53px] h-[53px] bg-no-repeat bg-cover bg-wb"}
                                 href="#"
                             ></Link>
                             <Link
                                 className={"w-[53px] h-[53px] bg-no-repeat bg-cover bg-qq"}
                                 href="#"
-                            ></Link>
+                            ></Link> */}
                             <Link
                                 className={"w-[53px] h-[53px] bg-no-repeat bg-cover bg-zfb"}
                                 href="#"
+                                onClick={() => {
+                                    openOtherLogin(2);
+                                }}
                             ></Link>
                         </div>
                     </div>

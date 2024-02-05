@@ -1,5 +1,5 @@
 // import Layout from "@/components/layout";
-import { useRef, useState } from "react";
+import { useRef, useState, useImperativeHandle, forwardRef } from "react";
 import {
     CheckboxGroup,
     Checkbox,
@@ -96,26 +96,41 @@ const modalInfos = {
     }
 };
 
-export default function Index() {
+function PeopleFrom(props, ref) {
     const modalRef = useRef();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const modalCnt = useRef(modalInfos.role);
+    // 选择语言
+    const [lanuage, setLanuage] = useState(["china"]);
+    // 选择时效
+    const [zxSpeed, setAgeing] = useState("normal");
+    // 流畅度
+    const [zxFlow, setFlow] = useState("noSrgent");
+    // 标记
+    const [zxRemarks, setZxRemarks] = useState(["buenos-aires", "sydney"]);
 
     const language = [
         { label: "英语", value: "english", description: "" },
         { label: "中文", value: "china", description: "" },
         { label: "法语", value: "fy", description: "" }
     ];
-    const area = [
-        { label: "通用", value: "english", description: "" },
-        { label: "医药", value: "china", description: "" },
-        { label: "计算机", value: "fy", description: "" }
-    ];
+
     const openModal = (type: "demo" | "time" | "role") => {
         modalCnt.current = modalInfos[type];
         onOpen();
     };
+
+    useImperativeHandle(ref, () => ({
+        getSelectedData: () => {
+            return {
+                lanFrom: [...lanuage].join(","),
+                zxRemarks: zxRemarks.join(","),
+                zxFlow,
+                zxSpeed
+            };
+        }
+    }));
 
     return (
         <div className="">
@@ -123,7 +138,12 @@ export default function Index() {
                 <span className="text-f602">*</span>
                 <span>标记</span>
             </div>
-            <CheckboxGroup defaultValue={["buenos-aires", "london"]}>
+            {/* zxRemarks */}
+            <CheckboxGroup
+                defaultValue={["buenos-aires", "sydney"]}
+                value={zxRemarks}
+                onValueChange={setZxRemarks}
+            >
                 <Checkbox
                     value="buenos-aires"
                     radius="full"
@@ -181,7 +201,9 @@ export default function Index() {
                 classNames={{
                     trigger: "h-[38px] min-h-[38px] bg-white border border-[#E3E9F0]"
                 }}
-                defaultSelectedKeys={["china"]}
+                selectedKeys={lanuage}
+                disallowEmptySelection
+                onSelectionChange={setLanuage}
             >
                 {(animal) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
             </Select>
@@ -189,11 +211,12 @@ export default function Index() {
                 <span className="text-f602">*</span>
                 <span>时效</span>
             </div>
-            <RadioGroup orientation="horizontal">
-                <CustomRadio description="1h音频2小时出稿" value="free">
+
+            <RadioGroup orientation="horizontal" value={zxSpeed} onValueChange={setAgeing}>
+                <CustomRadio description="1h音频2小时出稿" value="normal">
                     正常出稿
                 </CustomRadio>
-                <CustomRadio description="1h音频1小时出稿" value="pro">
+                <CustomRadio description="1h音频1小时出稿" value="urgent">
                     加急出稿
                 </CustomRadio>
             </RadioGroup>
@@ -213,9 +236,10 @@ export default function Index() {
                     样稿
                 </Button>
             </div>
-            <RadioGroup orientation="horizontal">
-                <CustomRadio value="free">过滤语气词,流程出稿</CustomRadio>
-                <CustomRadio value="pro">内容不做修改,逐字逐句</CustomRadio>
+
+            <RadioGroup orientation="horizontal" value={zxFlow} onValueChange={setFlow}>
+                <CustomRadio value="noSrgent">过滤语气词,流程出稿</CustomRadio>
+                <CustomRadio value="NoChange">内容不做修改,逐字逐句</CustomRadio>
             </RadioGroup>
 
             <Modal isOpen={isOpen} onOpenChange={onOpenChange} size={"5xl"}>
@@ -245,3 +269,5 @@ export default function Index() {
         </div>
     );
 }
+
+export default forwardRef(PeopleFrom);

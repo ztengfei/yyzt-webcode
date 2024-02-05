@@ -11,6 +11,10 @@ import {
     DropdownMenu,
     Avatar
 } from "@nextui-org/react";
+import Router, { useRouter } from "next/router";
+
+import { logout } from "@/api/api";
+import { removeLocal } from "@/components/tool";
 
 interface NavbarUserType {
     isLogin: boolean;
@@ -22,6 +26,24 @@ function NavbarUser(props: NavbarUserType) {
         // 如果当前没有登录则只有返回首页按钮
         return <></>;
     }
+
+    // 退出登录
+    const loginOut = async () => {
+        try {
+            const res = await logout();
+            // 退出成功直接跳转到登录界面
+            if (res.errorCode == 0) {
+                // 清空缓存
+                removeLocal("accessToken");
+                removeLocal("refreshToken");
+                removeLocal("expiresTime");
+                removeLocal("userKey");
+                // 跳转至登录界面
+                Router.push("/login");
+            }
+        } catch (error) {}
+    };
+
     const textColor =
         props.navStyle == "white" ? "text-black transition-all" : "text-f9 transition-all";
     return (
@@ -61,7 +83,7 @@ function NavbarUser(props: NavbarUserType) {
                         <DropdownItem key="analytics">翻译文件</DropdownItem>
                         <DropdownItem key="system">充值记录</DropdownItem>
                         <DropdownItem key="configurations">关于我们</DropdownItem>
-                        <DropdownItem key="logout" color="danger">
+                        <DropdownItem key="logout" color="danger" onPress={loginOut}>
                             退出账号
                         </DropdownItem>
                     </DropdownMenu>
