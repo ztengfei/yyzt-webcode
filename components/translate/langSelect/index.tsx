@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { forwardRef, useState, useImperativeHandle } from "react";
 import ReactDOM from "react-dom";
 import { Button, CircularProgress, Image, Select, SelectItem } from "@nextui-org/react";
 
@@ -6,25 +6,28 @@ import DisplaceIcon from "@/components/icon/displace";
 
 interface uploadProps {
     modalType: string;
+    languages: { value: string; label: string }[];
 }
 
-const languages = [
-    { value: "中文", id: "cn" },
-    { value: "英文", id: "en" },
-    { value: "法语", id: "pll" },
-    { value: "俄语", id: "pe" },
-    { value: "格鲁吉亚", id: "1cn" },
-    { value: "塞尔维亚", id: "e1n" },
-    { value: "安保部你家二", id: "1pll" },
-    { value: "俄语", id: "p3e" }
-];
-
 // Our app
-function languageSelect(props: uploadProps) {
+const LanguageSelect = (props: uploadProps, ref) => {
     const boxName =
         props.modalType == "text"
             ? "flex flex-row w-full justify-between items-center"
             : "flex flex-row w-full mt-4 justify-between items-center";
+    const { languages = [] } = props;
+    const [lanFrom, setLanFrom] = useState([]);
+    const [lanTo, setLanTo] = useState([]);
+
+    useImperativeHandle(ref, () => ({
+        getSelectedLan: () => {
+            return {
+                lanFrom: [...lanFrom].join(","),
+                zxRemarks: [...lanTo].join(",")
+            };
+        }
+    }));
+
     return (
         <div className={boxName}>
             <Select
@@ -35,10 +38,13 @@ function languageSelect(props: uploadProps) {
                     base: "w-[120px] h-[34px]",
                     trigger: "h-[34px] min-h-[34px]"
                 }}
+                selectedKeys={lanFrom}
+                disallowEmptySelection
+                onSelectionChange={setLanFrom}
             >
                 {languages.map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                        {item.value}
+                    <SelectItem key={item.value} value={item.value}>
+                        {item.label}
                     </SelectItem>
                 ))}
             </Select>
@@ -51,15 +57,18 @@ function languageSelect(props: uploadProps) {
                     base: "w-[120px] h-[34px]",
                     trigger: "h-[34px] min-h-[34px]"
                 }}
+                selectedKeys={lanTo}
+                disallowEmptySelection
+                onSelectionChange={setLanTo}
             >
                 {languages.map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                        {item.value}
+                    <SelectItem key={item.value} value={item.value}>
+                        {item.label}
                     </SelectItem>
                 ))}
             </Select>
         </div>
     );
-}
+};
 
-export default languageSelect;
+export default forwardRef(LanguageSelect);

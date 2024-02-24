@@ -156,3 +156,49 @@ export const userDurationList = () => {
 export const cardList = () => {
     return post(`${serverIp}/client/zx/card/list`, {});
 };
+
+// 转写语言列表
+export const langZx = () => {
+    return get(`${serverIp}/client/lan/conf/zx`);
+};
+
+// 翻译语言列表
+export const langFy = () => {
+    return get(`${serverIp}/client/lan/conf/fy`);
+};
+
+// 用户可用时长卡的数量和时长
+export const cardCount = () => {
+    return post(`${serverIp}/client/us/card/count`, {});
+};
+
+//  时长卡支付机器转写订单 /client/zx/order/jq/pay
+export const orderJpPay = (data: { id: string; cardIds: string[] }) => {
+    return post(`${serverIp}/client/zx/order/jq/pay`, data);
+};
+
+//  支付人工转写订单 /client/zx/order/jq/pay
+export const orderRgPay = (data: { id: string; payType: number }) => {
+    return post(`${serverIp}/client/zx/order/rg/pay`, data);
+};
+
+// 购买时长卡
+export const buyCard = (data: { cardId: string; payType: number }) => {
+    return post(`${serverIp}/client/us/card/buy/time`, data);
+};
+
+// 转写结果下载
+export const zxFIleDown = (data: { id: string }) => {
+    return post(`${serverIp}/client/zx/result/file/down`, data);
+};
+
+// 提交翻译
+
+export const fyCommit = (data: { upFileId: string; lanFrom: string; lanTo: string }) => {
+    return post(`${serverIp}/client/fy/order/commit`, data);
+};
+
+// 翻译订单查询
+export const fyOrderInfo = (data: { orderNum: string }) => {
+    return post(`${serverIp}/client/fy/order/list`, data);
+};

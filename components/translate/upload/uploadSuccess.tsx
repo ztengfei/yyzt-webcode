@@ -1,19 +1,22 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
 import { Button, CircularProgress, Image, Select, SelectItem } from "@nextui-org/react";
 
 import ActiveIcon from "@/components/icon/active";
 import DeleteIcon from "@/components/icon/delete";
 import LanguageSelect from "./../langSelect";
-import { fyFileList, fyFiledel } from "@/api/api";
+import { fyCommit, fyFileList, fyFiledel, fyOrderInfo } from "@/api/api";
 
 interface uploadSuccessType {
     setUploadState: React.Dispatch<React.SetStateAction<string>>;
+    languages: { value: string; label: string }[];
+    uploadSuccessCB: (id: string) => void;
 }
 
 // 文件上传成功
 export default function UploadSuccess(props: uploadSuccessType) {
     const [file, setFile] = useState({});
+    const languageRef = useRef();
     // 获取上传文件列表
     useEffect(() => {
         fyFileList().then((res) => {
@@ -29,12 +32,32 @@ export default function UploadSuccess(props: uploadSuccessType) {
         fyFiledel({ id: file.id }).then(() => {
             props.setUploadState("");
         });
+        //
     };
 
     // 去翻译
     const goTranslate = () => {
+        if (!languageRef.current) {
+            return;
+        }
+        const langs = languageRef.current.getSelectedLan();
+        if (!langs.lanFrom || !langs.zxRemarks) {
+            // 提示请选择语言
+            return;
+        }
+        console.log("langs+++", langs);
+
+        fyCommit({ upFileId: file.id, lanFrom: langs.lanFrom, lanTo: langs.zxRemarks }).then(
+            (res) => {
+                console.log("res+++", res.data);
+                fyOrderInfo({ orderNum: res.data }).then((res) => {
+                    console.log("12323");
+                });
+            }
+        );
+
         // 去翻译
-        props.setUploadState("");
+        // props.setUploadState("");
     };
 
     const fileType = useMemo(() => {
@@ -83,7 +106,11 @@ export default function UploadSuccess(props: uploadSuccessType) {
                         <DeleteIcon size={19}></DeleteIcon>
                     </Button>
                 </div>
-                <LanguageSelect modalType="doc"></LanguageSelect>
+                <LanguageSelect
+                    modalType="doc"
+                    languages={props.languages}
+                    ref={languageRef}
+                ></LanguageSelect>
 
                 <Button className="w-[274px] h-[44px] mt-10" color="primary" onClick={goTranslate}>
                     立即翻译

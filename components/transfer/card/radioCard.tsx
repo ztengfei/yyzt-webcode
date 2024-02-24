@@ -16,7 +16,7 @@ import {
 import styles from "./index.module.css";
 
 const CustomRadio = (props: any) => {
-    const { bgType } = props;
+    const { bgType, origPrice, cardPrice } = props;
     const {
         Component,
         children,
@@ -41,7 +41,7 @@ const CustomRadio = (props: any) => {
                 base: cn(
                     " group inline-flex items-center hover:opacity-70 active:opacity-50 justify-between flex-row-reverse tap-highlight-transparent",
                     "max-w-[272px] w-[272px] h-[127px] cursor-pointer border-2 border-default rounded-lg gap-4 p-0 ",
-                    "data-[selected=true]:border-primary relative mb-4"
+                    "data-[selected=true]:border-primary relative mb-5"
                 )
                 // description: cn(" absolute left-0 right-0")
             }}
@@ -57,8 +57,12 @@ const CustomRadio = (props: any) => {
                     className={styles[bgClass] + " h-[127px] w-[272px] rounded-2xl  relative mb-4"}
                 >
                     <CardHeader className="flex p-2 pl-4 pb-0">
+                        {/* cardPrice={item.cardPrice}
+                                        hours={item.hours}
+                                        usableTime={item.usableTime}
+                                        cardName={item.cardName} */}
                         <Image
-                            alt="市场卡"
+                            alt="时长卡"
                             height={17}
                             radius="sm"
                             src="/images/transfer/diamond.png"
@@ -66,17 +70,18 @@ const CustomRadio = (props: any) => {
                         />
                         <div className={`flex flex-col  text-base font-semibold`}>
                             <p className="text-md">
-                                {bgType == "moon" && "连续包月"}
-                                {bgType == "year" && "5小时.全年"}
+                                {bgType == "moon" && props.cardName}
+                                {bgType == "year" && `${props.hours}小时·全年`}
                             </p>
                         </div>
                     </CardHeader>
+                    <div className="w-[121px] h-[80px] absolute right-0 bottom-10 bg-card-img bg-cover bg-no-repeat z-0"></div>
                     <CardBody
                         className={`${textColor} flex-row items-end p-0 pl-4 overflow-hidden`}
                     >
-                        <span className="text-2xl font-semibold text-[42px]">￥88</span>
+                        <span className="text-2xl font-semibold text-[42px]">￥{cardPrice}</span>
                         <span className="text-xs pl-1">/月</span>
-                        <span className="text-xs pl-1 opacity-60 line-through">￥100</span>
+                        <span className="text-xs pl-1 opacity-80 line-through">￥{origPrice}</span>
                     </CardBody>
                     <CardFooter className="flex justify-between pl-4 pb-2 pt-2">
                         <span className={`${textColor} text-xs opacity-55`}>
@@ -90,7 +95,6 @@ const CustomRadio = (props: any) => {
                             }
                         ></div>
                     </CardFooter>
-                    <div className="w-[121px] h-[80px] absolute right-0 bottom-10 bg-card-img bg-cover bg-no-repeat z-0"></div>
                 </Card>
             </div>
         </Component>

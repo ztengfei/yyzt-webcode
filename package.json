@@ -19,6 +19,7 @@
     "framer-motion": "^10.16.5",
     "jsencrypt": "^3.3.2",
     "next": "14.0.3",
+    "qrcode": "^1.5.3",
     "react": "^18",
     "react-dom": "^18",
     "react-filepond": "^7.1.2",

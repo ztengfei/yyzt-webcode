@@ -13,7 +13,9 @@ import Upload from "./upload";
 import Loding from "./loding";
 
 import styles from "./index.module.css";
-interface uploadProps {}
+interface uploadProps {
+    languages: { value: string; label: string }[];
+}
 
 // Our app
 const FyUpload = (props: uploadProps) => {
@@ -21,11 +23,20 @@ const FyUpload = (props: uploadProps) => {
     const [uploadState, setUploadState] = useState<string>("");
     // 文件的上传进度
     const [rogress, setProgress] = useState<number>(0);
+    // 上传成功后的回调
+    const uploadSuccessCB = (orderId: string) => {
+        console.log(orderId);
+    };
+    const { languages } = props;
     return (
         <div className={styles["translate"]}>
             {!uploadState && <Upload setUploadState={setUploadState}></Upload>}
             {uploadState == "uploadSuccess" && (
-                <UploadSuccess setUploadState={setUploadState}></UploadSuccess>
+                <UploadSuccess
+                    setUploadState={setUploadState}
+                    languages={languages}
+                    uploadSuccessCB={uploadSuccessCB}
+                ></UploadSuccess>
             )}
             {uploadState == "translateSuccess" && <TranslateSuccess></TranslateSuccess>}
             {uploadState == "translateSuccess" && <Loding rogress={rogress}></Loding>}

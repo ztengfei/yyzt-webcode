@@ -5,11 +5,14 @@ import { Button, CircularProgress, Image, Select, SelectItem, Textarea } from "@
 import LanguageSelect from "./../langSelect";
 
 import styles from "./index.module.css";
-interface uploadProps {}
+interface uploadProps {
+    language: { value: string; label: string }[];
+}
 
 // Our app
 function TabContent(props: uploadProps) {
     const [Inputvalue, setValue] = useState("");
+    const { language } = props;
     const onChange = (event: any) => {
         // console.log("event.nativeEvent+++", event.nativeEvent);
         // if (event.nativeEvent.isComposing) {
@@ -19,7 +22,7 @@ function TabContent(props: uploadProps) {
     };
     return (
         <div className={styles["translate"]}>
-            <LanguageSelect modalType="text"></LanguageSelect>
+            <LanguageSelect modalType="text" languages={language}></LanguageSelect>
             <div className=" relative flex-1 mb-4 overflow-hidden">
                 <Textarea
                     placeholder="请输入要翻译的文字"

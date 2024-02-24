@@ -28,7 +28,9 @@ const config: Config = {
                 "radio-active": "url('/images/transfer/radio-active.png')",
                 linearOrange: "linear-gradient(180deg, #FFF2EA 0%, #FFFFFF 100%)",
                 linearBlue: "linear-gradient(180deg, #EAF2FF 0%, #FFFFFF 100%)",
-                shoppingBn: "url('/images/shopping/shoping_bg.png')"
+                shoppingBn: "url('/images/shopping/shoping_bg.png')",
+                weixin: "url('/images/pay/pc_icon_phone-bg.png')",
+                payPc: "url('/images/pay/pc_icon_icon-red.png')"
             },
             colors: {
                 f9: "#f9f9f9",
@@ -45,7 +47,8 @@ const config: Config = {
             },
             boxShadow: {
                 topxl: "0px -1px 0px 0px rgba(225,225,225,0.5)",
-                topx2: "0px 10px 20px 0px rgba(204,204,204,0.5)"
+                topx2: "0px 10px 20px 0px rgba(204,204,204,0.5)",
+                topx3: "0 6px 32px rgba(0,0,0,0.13)"
             }
         }
     },

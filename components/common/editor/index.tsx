@@ -35,6 +35,14 @@ export interface editorType {
     // speakerClickCallback: (el: MentionElement) => void;
 }
 
+// [
+//     {
+//         name: "",
+//         startTime: "",
+//         value: [{ text: "", startTime: "1222", endTime: "32322" }]
+//     }
+// ];
+
 const initialValue: any = [
     {
         type: "paragraph",
@@ -49,6 +57,9 @@ const initialValue: any = [
                 iconBg: "rgb(255, 88, 90)",
                 children: [{ text: "" }]
             },
+
+            { text: "这类型结果。你不说他给我反正谁是按我要求返，不是什么，你看这3%怎么讲?" },
+            { text: "这类型结果。你不说他给我反正谁是按我要求返，不是什么，你看这3%怎么讲?" },
             { text: "这类型结果。你不说他给我反正谁是按我要求返，不是什么，你看这3%怎么讲?" }
         ]
     },

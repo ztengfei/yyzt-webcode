@@ -4,7 +4,7 @@ import {
     NavbarBrand,
     NavbarContent,
     NavbarItem,
-    Link,
+    // Link,
     DropdownItem,
     DropdownTrigger,
     Dropdown,
@@ -12,6 +12,7 @@ import {
     Badge,
     Button
 } from "@nextui-org/react";
+import { Link } from "@nextui-org/react";
 import { useRouter } from "next/router";
 
 interface NavbarType {
@@ -20,19 +21,19 @@ interface NavbarType {
 }
 // 头部导航，和头部相关功能
 function NavbarBox(props: NavbarType) {
-    console.log("props.isLogin+++", props.isLogin);
+    // console.log("props.isLogin+++", props.isLogin);
     const router = useRouter();
     const path = router.pathname;
-
-    const textColor =
-        props.navStyle == "white" ? "text-black transition-all" : "text-f9 transition-all";
+    const queryPage = router.query.page;
+    console.log("path+++++", path);
+    const textColor = props.navStyle == "white" ? "transition-all " : "transition-all ";
     if (!props.isLogin) {
         if (path.indexOf("login") > -1) {
             // 如果当前没有登录则只有返回首页按钮
             return (
                 <NavbarContent justify="end">
                     <NavbarItem>
-                        <Link className={textColor + " text-xs"} href="/">
+                        <Link className={textColor + " text-sm"} href="/">
                             返回首页
                         </Link>
                     </NavbarItem>
@@ -58,17 +59,29 @@ function NavbarBox(props: NavbarType) {
         <>
             <NavbarContent className="hidden sm:flex gap-4 text-xs">
                 <NavbarItem>
-                    <Link className={textColor + " text-f602 text-xs"} href="/transfer">
+                    <Link
+                        className={textColor + "  text-sm"}
+                        color={path.indexOf("/transfer") > -1 ? "primary" : "foreground"}
+                        href="/transfer"
+                    >
                         转文字
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link className={textColor + " text-xs"} href="/translate">
+                    <Link
+                        className={textColor + " text-sm"}
+                        href="/translate"
+                        color={path.indexOf("/translate") > -1 ? "primary" : "foreground"}
+                    >
                         翻译
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link className={textColor + " text-xs"} href="/shopping">
+                    <Link
+                        className={textColor + " text-sm"}
+                        href="/shopping"
+                        color={path.indexOf("/shopping") > -1 ? "primary" : "foreground"}
+                    >
                         充值商城
                     </Link>
                 </NavbarItem>
@@ -76,18 +89,36 @@ function NavbarBox(props: NavbarType) {
 
             <NavbarContent className="hidden sm:flex gap-4" justify="end">
                 <NavbarItem>
-                    <Link className={textColor + " text-xs"} href="/user">
+                    <Link
+                        className={textColor + " text-sm"}
+                        href="/user?page=transferFile"
+                        color={
+                            path == "/user" && queryPage == "transferFile"
+                                ? "primary"
+                                : "foreground"
+                        }
+                    >
                         最近文件
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link className={textColor + " text-xs"} href="/user/userCenter">
+                    <Link
+                        className={textColor + " text-sm"}
+                        href="user/userCenter"
+                        color={path.indexOf("/user/userCenter") > -1 ? "primary" : "foreground"}
+                    >
                         我的时长卡
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
                     <Badge content="5" color="primary">
-                        <Link className={textColor + " text-xs"} href="/user/userCenter">
+                        <Link
+                            className={textColor + " text-sm"}
+                            href="/user?page=message"
+                            color={
+                                path == "/user" && queryPage == "message" ? "primary" : "foreground"
+                            }
+                        >
                             消息
                         </Link>
                     </Badge>

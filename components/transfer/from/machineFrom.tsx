@@ -16,13 +16,9 @@ import {
 } from "@nextui-org/react";
 
 function MachineFrom(props, ref) {
-    const [lanuage, setLanuage] = useState(["china"]);
+    const [lanuage, setLanuage] = useState(["cn"]);
     const [major, setMajor] = useState(["common"]);
-    const language = [
-        { label: "英语", value: "english", description: "" },
-        { label: "中文", value: "china", description: "" },
-        { label: "法语", value: "fy", description: "" }
-    ];
+    const { language = [] } = props;
     const area = [
         { label: "通用", value: "common", description: "" },
         { label: "医药", value: "medicine", description: "" },
@@ -31,7 +27,7 @@ function MachineFrom(props, ref) {
 
     useImperativeHandle(ref, () => ({
         getSelectedData: () => {
-            return { lanFrom: lanuage.join(","), zxMajor: major.join(",") };
+            return { lanFrom: [...lanuage].join(","), zxMajor: [...major].join(",") };
         }
     }));
 

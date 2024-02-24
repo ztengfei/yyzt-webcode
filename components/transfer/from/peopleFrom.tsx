@@ -102,7 +102,7 @@ function PeopleFrom(props, ref) {
 
     const modalCnt = useRef(modalInfos.role);
     // 选择语言
-    const [lanuage, setLanuage] = useState(["china"]);
+    const [lanuage, setLanuage] = useState<React.Key[]>(["cn"]);
     // 选择时效
     const [zxSpeed, setAgeing] = useState("normal");
     // 流畅度
@@ -110,11 +110,7 @@ function PeopleFrom(props, ref) {
     // 标记
     const [zxRemarks, setZxRemarks] = useState(["buenos-aires", "sydney"]);
 
-    const language = [
-        { label: "英语", value: "english", description: "" },
-        { label: "中文", value: "china", description: "" },
-        { label: "法语", value: "fy", description: "" }
-    ];
+    const { language = [] } = props;
 
     const openModal = (type: "demo" | "time" | "role") => {
         modalCnt.current = modalInfos[type];
@@ -125,7 +121,7 @@ function PeopleFrom(props, ref) {
         getSelectedData: () => {
             return {
                 lanFrom: [...lanuage].join(","),
-                zxRemarks: zxRemarks.join(","),
+                zxRemarks: [...zxRemarks].join(","),
                 zxFlow,
                 zxSpeed
             };

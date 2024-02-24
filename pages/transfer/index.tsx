@@ -25,7 +25,7 @@ import PeopleFrom from "@/components/transfer/from/peopleFrom";
 import Keyword from "@/components/transfer/from/keyWord";
 import FileList from "@/components/transfer/from/fileList";
 import Footer from "@/components/transfer/footer";
-import { zxFileList, zxFiledel, orderCommit } from "@/api/api";
+import { zxFileList, zxFiledel, orderCommit, langZx, cardCount } from "@/api/api";
 
 import styles from "./index.module.css";
 
@@ -50,11 +50,21 @@ export default function Index() {
 
     // 右侧选中的文件
     const [selectedFile, setSelectedFile] = useState<string[]>([]);
+
+    // 可以转写的语言
+    const [language, setLanuage] = useState();
+
+    // 用户可用时长卡的数量和时间
+    const [userCardInfo, setUserCardInfo] = useState({});
+
     // 选中内容的总时长
     // const [allTime ,setAllTime] = useState<number>(0);
 
     const allTime = useMemo(() => {
         let time = 0;
+        if (!fileList) {
+            return 0;
+        }
         fileList.forEach((item) => {
             if (selectedFile.includes(item.id)) {
                 time += item.fileTime;
@@ -76,6 +86,26 @@ export default function Index() {
         zxFileList().then((res) => {
             // console.log(res);
             setFileList(res.data);
+        });
+
+        // 获取可以转写的语言
+        langZx().then((res) => {
+            if (!res.data) {
+                setLanuage([]);
+            }
+            const lanusgeList = res.data.map((item) => {
+                return {
+                    label: item.dicName,
+                    value: item.dicId
+                };
+            });
+            setLanuage(lanusgeList);
+        });
+        cardCount().then((res) => {
+            if (!res.data) {
+                return;
+            }
+            setUserCardInfo(res.data);
         });
     }, []);
 
@@ -110,7 +140,7 @@ export default function Index() {
             param = { ...param, ...fromData };
         } else {
             let fromData = machineFromRef.current.getSelectedData();
-            param.zxRemarks = 1;
+            param.zxType = 1;
             param = { ...param, ...fromData };
         }
         // 上传文件id
@@ -132,10 +162,19 @@ export default function Index() {
         orderCommit(param).then((res) => {
             if (res.errorCode == 0) {
                 console.log("订单提交成功+++", res);
-                Router.push({
-                    pathname: "/transfer/settlement",
-                    query: { order: res.data }
-                });
+                if (selected == "machine") {
+                    // 跳转到机器转写详情界面
+                    Router.push({
+                        pathname: "/transfer/settlement",
+                        query: { order: res.data }
+                    });
+                } else {
+                    // 跳转到人工精转界面
+                    Router.push({
+                        pathname: "/transfer/order",
+                        query: { order: res.data }
+                    });
+                }
             }
         });
     };
@@ -191,7 +230,7 @@ export default function Index() {
                                 {/* 文件上传组件 */}
                                 <Upload modelType={"machine"} setFileList={pushFile}></Upload>
                                 {/* 选择的类型 */}
-                                <MachineFrom ref={machineFromRef}></MachineFrom>
+                                <MachineFrom ref={machineFromRef} language={language}></MachineFrom>
                             </form>
                         </Tab>
                         <Tab key="people" title="人工精转">
@@ -199,7 +238,7 @@ export default function Index() {
                                 {/* 文件上传组件 */}
                                 <Upload modelType="people" setFileList={pushFile}></Upload>
                                 {/* 转写相关的参数 */}
-                                <PeopleFrom ref={peopleFromRef}></PeopleFrom>
+                                <PeopleFrom ref={peopleFromRef} language={language}></PeopleFrom>
                             </form>
                         </Tab>
                     </Tabs>
@@ -217,7 +256,12 @@ export default function Index() {
                     ></FileList>
                 </div>
             </div>
-            <Footer submit={submit} selectedFile={selectedFile} allTime={allTime}></Footer>
+            <Footer
+                submit={submit}
+                selectedFile={selectedFile}
+                allTime={allTime}
+                userCardInfo={userCardInfo}
+            ></Footer>
         </div>
     );
 }

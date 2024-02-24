@@ -103,3 +103,24 @@ export function secondsToHMS(seconds: number) {
 
     return hours1 + ":" + minutes1 + ":" + secs1;
 }
+
+export function formatDate(timestamp: number) {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return year + "/" + (month < 10 ? "0" + month : month) + "/" + (day < 10 ? "0" + day : day);
+}
+
+export function timestampToDateTime(timestamp: number) {
+    var date = new Date(timestamp); // 创建一个新的Date对象并传入时间戳作为参数
+
+    var year = date.getFullYear(); // 获取年份
+    var month = (date.getMonth() + 1).toString().padStart(2, "0"); // 获取月份（注意要+1）
+    var day = date.getDate().toString().padStart(2, "0"); // 获取天数
+    var hours = date.getHours().toString().padStart(2, "0"); // 获取小时
+    var minutes = date.getMinutes().toString().padStart(2, "0"); // 获取分钟
+    var seconds = date.getSeconds().toString().padStart(2, "0"); // 获取秒数
+
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`; // 返回格式化后的字符串
+}

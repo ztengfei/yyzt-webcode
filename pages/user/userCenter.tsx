@@ -28,7 +28,7 @@ export default function Index() {
     const [isFollowed, setIsFollowed] = useState(false);
 
     return (
-        <div className="w-full absolute left-0 top-0 flex flex-col h-full bg-[#F7F8FA]">
+        <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-row justify-around w-full flex-1 mb-8">
                 <div className="flex-1">
                     <Card className="w-full px-2 py-1 bg-white rounded-xl mb-3">

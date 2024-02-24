@@ -61,8 +61,8 @@ function NavbarUser(props: NavbarUserType) {
                                 " flex flex-row text-xs items-center min-w-[160px] justify-end"
                             }
                         >
-                            <span className={textColor + " mr-2"}>你好，周腾飞</span>
-                            <Avatar
+                            <span className={textColor + " mr-2 text-xs"}>你好，周腾飞</span>
+                            {/* <Avatar
                                 isBordered
                                 as="button"
                                 className="transition-transform w-6 h-6 text-tiny"
@@ -70,14 +70,14 @@ function NavbarUser(props: NavbarUserType) {
                                 name="周腾飞"
                                 size="sm"
                                 src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                            />
+                            /> */}
                         </span>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Profile Actions" variant="flat">
-                        <DropdownItem key="profile" className="h-14 gap-2">
+                        {/* <DropdownItem key="profile" className="h-14 gap-2">
                             <p className="font-semibold">用户昵称</p>
                             <p className="font-semibold">ID:J4834P</p>
-                        </DropdownItem>
+                        </DropdownItem> */}
                         <DropdownItem key="settings">个人主页</DropdownItem>
                         <DropdownItem key="team_settings">转文字文件</DropdownItem>
                         <DropdownItem key="analytics">翻译文件</DropdownItem>

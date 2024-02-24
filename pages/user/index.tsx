@@ -46,13 +46,10 @@ const rabList = [
 
 export default function Index() {
     const modalRef = useRef();
-    const [selectedKeys, setSelectedKeys] = useState(new Set(["text"]));
-    const pathname = usePathname();
     const router = useRouter();
 
     // 当前选中的界面，如果没有默认个人信息
     const queryPage = router.query.page || "useInfo";
-    console.log("pathname+++", pathname, useParams(), queryPage);
 
     const tabClick = (key: string) => {
         const href = `/user?page=${key}`;

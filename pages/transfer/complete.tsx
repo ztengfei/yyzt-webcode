@@ -1,5 +1,5 @@
 // 转写完成界面
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
     CheckboxGroup,
     Button,
@@ -20,6 +20,8 @@ import OrderState from "@/components/transfer/orderList/orderState";
 import OrderEndInfo from "@/components/transfer/orderList/orderEndInfo";
 import RadioVideoList from "@/components/transfer/orderList/radioVideoList";
 import TransferDownload from "@/components/modal/transferDownload";
+import Router, { useRouter } from "next/router";
+import { orderDetail, zxFIleDown } from "@/api/api";
 
 export default function Order() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -29,27 +31,63 @@ export default function Order() {
     const openModal = (type: string, id: string) => {
         setDownLoadInfo({ type, id });
         onOpen();
+        if ((type = "one")) {
+            zxFIleDown({ id }).then((res) => {});
+        }
     };
+
+    const [fileInfo, setDileInfo] = useState({});
+
+    // 支付类型
+    const [payType, changePayType] = useState(0);
+
+    const router = useRouter();
+    const orderId = router.query.order;
+
+    const submit = () => {
+        Router.push({
+            pathname: "/transfer/complete",
+            query: { name: "Zeit" }
+        });
+    };
+
+    useEffect(() => {
+        if (!orderId) {
+            return;
+        }
+        // cha
+        orderDetail({ orderId: orderId }).then((res) => {
+            res.data && setDileInfo(res.data);
+        });
+    }, [orderId]);
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1">
                 <div className="mt-5 mb-4 text-base">订单信息</div>
-                <OrderEndInfo></OrderEndInfo>
+                <OrderEndInfo {...fileInfo}></OrderEndInfo>
 
                 <div className="mt-5 mb-4 text-base">音视频列表</div>
                 <div>
                     <CheckboxGroup className="flex flex-col gap-1 w-full">
-                        <RadioVideoList
+                        {fileInfo.zxFiles &&
+                            fileInfo.zxFiles.length &&
+                            fileInfo.zxFiles.map((item, index) => {
+                                return (
+                                    <RadioVideoList
+                                        key={item.id}
+                                        value={item.id}
+                                        state="success"
+                                        openModal={openModal}
+                                        {...item}
+                                    ></RadioVideoList>
+                                );
+                            })}
+                        {/* <RadioVideoList
                             value="1"
                             state="success"
                             openModal={openModal}
-                        ></RadioVideoList>
-                        <RadioVideoList
-                            value="2"
-                            state="error"
-                            openModal={openModal}
-                        ></RadioVideoList>
+                        ></RadioVideoList> */}
                     </CheckboxGroup>
                 </div>
             </div>
