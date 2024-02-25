@@ -16,7 +16,7 @@ interface uploadProps {
 
 // Our app
 function Upload(props: uploadProps) {
-    const uploadServerRef = useRef();
+    const uploadServerRef = useRef<{ response: any; cancel: any }>();
     // 文件上传的百分比
     const [circular, setCircular] = useState(0);
     // 当前是否正在上传文件
@@ -32,15 +32,6 @@ function Upload(props: uploadProps) {
     // 分片上传的进度
     const progressRef = useRef<number[]>([]);
 
-    // 文件加载的进展
-    const onaddfileprogress = (file, progress) => {
-        console.log("文件加载速度+++++", progress);
-    };
-
-    // 文件处理的进展
-    const onprocessfileprogress = (file, progress) => {
-        console.log("文件处理速度+++++", progress);
-    };
     // 拖拽内容至当前盒子
     const onDragOver: React.DragEventHandler<HTMLDivElement> = (e) => {
         e.stopPropagation();
@@ -71,7 +62,10 @@ function Upload(props: uploadProps) {
     };
 
     // 小文件整体上传
-    const smallFileUpload = async (file) => {
+    const smallFileUpload = async (file: any) => {
+        if (!uploadServerRef.current) {
+            return;
+        }
         // 如果大小不需要分片上传则直接调用上传接口
         uploadServerRef.current = await upLoadOne(file, (progress: number) => {
             setCircular(progress);
@@ -80,12 +74,12 @@ function Upload(props: uploadProps) {
         setCircular(0);
         setIsupload(true);
         // 开始上传
-        const res = await uploadServerRef.current.response();
+        const res: any = await uploadServerRef.current.response();
         console.log("结束文件上传");
         if (res.errorCode == 0) {
             // 上传
             file.states = "success"; // 上传成功
-            props.setFileList();
+            props.setFileList(file);
         } else {
             file.state = "error"; // 文件上传失败
         }
@@ -94,7 +88,7 @@ function Upload(props: uploadProps) {
     };
 
     // 分片上传_一步一步等待
-    const uploadNextChunk_back = async (currentChunk, chunks, file) => {
+    const uploadNextChunk_back = async (currentChunk: number, chunks: number, file: any) => {
         if (isCancelRef.current) {
             // 如果当前已经被取消上传则直接返回
             file.state = "cancel";
@@ -112,7 +106,7 @@ function Upload(props: uploadProps) {
                     fileName: file.name,
                     total: chunks,
                     index: currentChunk
-                },
+                } as any,
                 (progress: number) => {
                     console.log("文件上传进度", progress);
                     // 当前切片（已经上传的百分比 + 已经上传的切片大小）/ 总文件大小
@@ -124,11 +118,11 @@ function Upload(props: uploadProps) {
                 }
             );
             // 开始上传
-            const res = await uploadServerRef.current.response();
+            const res: any = await uploadServerRef.current.response();
             console.log("结束文件上传");
             if (res.errorCode == 0) {
                 currentChunk++; // 成功上传一个分片，增加当前分片的索引
-                await uploadNextChunk(currentChunk, chunks, file); // 继续上传下一个分片
+                await uploadNextChunk(chunks, file); // 继续上传下一个分片
             } else {
                 // 切片上传失败
                 file.state = "error"; // 文件上传失败
@@ -136,7 +130,7 @@ function Upload(props: uploadProps) {
         } else {
             console.log("文件上传完成");
             // 全部上传完成合并文件
-            const res = await fileMerge({ fileMd5: file.md5 });
+            const res: any = await fileMerge({ fileMd5: file.md5 });
             if (res.errorCode == 0) {
                 file.state = "success"; // 文件上传成功，切片合并成功
             } else {
@@ -147,7 +141,7 @@ function Upload(props: uploadProps) {
     };
 
     // 上传函数
-    const upLoadPartFn = (chunk, file, chunks, currentChunk) => {
+    const upLoadPartFn = (chunk: any, file: any, chunks: any, currentChunk: any) => {
         return upLoadPart(
             {
                 file: chunk,
@@ -168,7 +162,7 @@ function Upload(props: uploadProps) {
     };
 
     // 多路同时上传
-    const uploadNextChunk = async (chunks: number, file: FileList) => {
+    const uploadNextChunk = async (chunks: number, file: any) => {
         if (isCancelRef.current) {
             // 如果当前已经被取消上传则直接返回
             file.state = "cancel";
@@ -185,9 +179,9 @@ function Upload(props: uploadProps) {
             chunkServerRef.current.push(uploadItem);
             servers.push(uploadItemRes);
         }
-        const res = await Promise.all(servers);
+        const res: any = await Promise.all(servers);
         console.log("promiseAll+++++", res);
-        const mage = await fileMerge({ fileMd5: file.md5 }); // 继续上传下一个分片
+        const mage: any = await fileMerge({ fileMd5: file.md5 }); // 继续上传下一个分片
         console.log(mage);
         if (mage.errorCode == 0) {
             file.state = "success"; // 文件上传成功，切片合并成功
@@ -201,7 +195,7 @@ function Upload(props: uploadProps) {
         for (let i = 0; i < files.length; i++) {
             isCancelRef.current = false;
             chunkServerRef.current = [];
-            const file = files[i];
+            const file: any = files[i];
             const fileMd5 = md5(file);
             file.md5 = fileMd5 + new Date().getTime();
             file.id = fileMd5 + new Date().getTime();
@@ -230,7 +224,7 @@ function Upload(props: uploadProps) {
     };
 
     const inputChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
-        await fileUpload(e.target.files);
+        e.target.files && (await fileUpload(e.target.files));
         e.target.value = "";
         console.log(e);
     };

@@ -3,7 +3,7 @@ import { Input, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/reac
 import { useFocused, useSelected } from "slate-react";
 
 // 发言人节点渲染
-const Speaker = ({ roleInfo, editor, setIsOpen }) => {
+const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
     const [inputVal, setInputVal] = useState("");
 
     const roleList = useMemo(() => {
@@ -47,7 +47,7 @@ const Speaker = ({ roleInfo, editor, setIsOpen }) => {
         setInputVal(value);
     };
     // 发言人点击选择
-    const selectedRole = (item) => {
+    const selectedRole = (item: any) => {
         console.log("item", item);
         setIsOpen(false);
     };

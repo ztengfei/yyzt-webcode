@@ -6,11 +6,13 @@ import ActiveIcon from "@/components/icon/active";
 import DeleteIcon from "@/components/icon/delete";
 import LanguageSelect from "./../langSelect";
 
-interface footerType {}
+interface footerType {
+    rogress: number;
+}
 
 // 文件上传成功
 export default function Loding(props: footerType) {
-    const { selectedFile, allTime } = props;
+    // const { selectedFile, allTime } = props;
 
     return (
         <>

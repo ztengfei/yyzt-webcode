@@ -11,7 +11,7 @@ import Router from "next/router";
 // import styles from "./index.module.css";
 
 export default function Index() {
-    const modalRef = useRef();
+    const modalRef = useRef<any>();
 
     const openModal = (type: "video" | "translate") => {
         console.log("123132132");

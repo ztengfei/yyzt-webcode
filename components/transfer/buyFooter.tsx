@@ -4,7 +4,7 @@ import { Button } from "@nextui-org/react";
 
 interface footerType {
     submit: () => void;
-    zxPrice: number;
+    zxPrice: string;
 }
 
 export default function BuyFooter(props: footerType) {

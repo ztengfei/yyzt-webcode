@@ -19,6 +19,9 @@ export default function OrderState(props: any) {
 
     const getMarkText = () => {
         let text = []; //
+        if (!zxRemarks) {
+            return "";
+        }
         if (zxRemarks.indexOf("buenos-aires") > -1) {
             text.push("标记发音人角色");
         }
@@ -33,14 +36,14 @@ export default function OrderState(props: any) {
             return 0;
         }
         let time = 0;
-        zxFiles.forEach((item) => {
+        zxFiles.forEach((item: any) => {
             time += item.fileTime;
         });
         return secondsToHMS(time);
     }, [zxFiles]);
 
-    const getState = () => {
-        const stateMap = {
+    const getState = (): any => {
+        const stateMap: any = {
             0: "取消",
             1: "审核中",
             2: "待支付",

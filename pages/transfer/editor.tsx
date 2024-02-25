@@ -1,16 +1,35 @@
 // import Layout from "@/components/layout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, useDisclosure, Image, Popover, PopoverContent } from "@nextui-org/react";
+import Router, { useRouter } from "next/router";
 
 import TransferDownload from "@/components/modal/transferDownload";
 import EditorHeader from "@/components/transfer/editor/header";
 import Editor, { MentionElement } from "@/components/common/editor";
 import AudioControl from "@/components/transfer/audioControl";
 import Link from "next/link";
+import { getZXResultDetail } from "@/api/api";
 
 export default function Index() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: "all" });
+
+    const router = useRouter();
+    // 订单id
+    const audioId = router.query.id;
+
+    const getTransferResult = () => {
+        if (!audioId) {
+            return;
+        }
+        // audioId
+        getZXResultDetail({ id: audioId as string });
+    };
+
+    useEffect(() => {
+        // 获取当前界面的内容详情
+        getTransferResult();
+    }, [audioId]);
 
     // 打开下载弹框
     const openModal = (type: string, id: string) => {

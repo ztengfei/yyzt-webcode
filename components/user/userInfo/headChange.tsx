@@ -23,7 +23,7 @@ function HeaderChange() {
     return (
         <FilePond
             files={files}
-            onupdatefiles={setFiles}
+            onupdatefiles={setFiles as any}
             allowMultiple={true}
             maxFiles={3}
             // server="/api"

@@ -24,7 +24,14 @@ import BuyFooter from "@/components/transfer/buyFooter";
 import CardItem from "@/components/transfer/card/card";
 import RadioCard from "@/components/transfer/card/radioCard";
 import PaymentRadio from "@/components/common/paymentRadio";
-import { orderDetail, userDurationList, cardList, orderJpPay, buyCard } from "@/api/api";
+import {
+    orderDetail,
+    userDurationList,
+    cardList,
+    orderJpPay,
+    buyCard,
+    orderRgPay
+} from "@/api/api";
 import { secondsToHMS } from "@/components/tool";
 
 import styles from "./index.module.css";
@@ -34,11 +41,13 @@ export default function Index() {
     // 时长卡类型
     const [cardType, setCardType] = useState({ id: "", type: "" });
     const router = useRouter();
-    const [userCard, setUserCard] = useState([]);
-    const [fileInfo, setDileInfo] = useState({});
-    const [moonCardList, setmoonCardList] = useState([]);
-    const [yearCardList, setYearCardList] = useState([]);
+    const [userCard, setUserCard] = useState<any[]>([]);
+    const [fileInfo, setDileInfo] = useState<any>({});
+    const [moonCardList, setmoonCardList] = useState<any[]>([]);
+    const [yearCardList, setYearCardList] = useState<any[]>([]);
     const [payType, changePayType] = useState(0);
+    // 支付金额
+    const [payPrice, setPayPrice] = useState("0.00");
     const orderId = router.query.order;
     console.log(" router.query.order++++", router.query.order);
     const splitCard = (allList: any) => {
@@ -58,9 +67,10 @@ export default function Index() {
         if (!orderId) {
             return;
         }
-        // cha
-        orderDetail({ orderId: orderId }).then((res) => {
+        // cha fileInfo.zxPrice
+        orderDetail({ orderId: orderId }).then((res: any) => {
             res.data && setDileInfo(res.data);
+            res.data && setPayPrice(res.data.zxPrice);
         });
     }, [orderId]);
 
@@ -84,8 +94,8 @@ export default function Index() {
         });
     }, []);
 
-    const getCardItem = (id) => {
-        return allCardList.current.find((item) => {
+    const getCardItem = (id: string): any => {
+        return allCardList.current.find((item: any) => {
             return item.id == id;
         });
     };
@@ -107,7 +117,7 @@ export default function Index() {
             return;
         }
         // 购买时长卡， 支付宝支付返回表单
-        buyCard({ cardId: cardType.id, payType: payType }).then((res) => {
+        buyCard({ cardId: cardType.id, payType: payType }).then((res: any) => {
             // 使用市场卡支付
             // 跳转到支付列表
             const div = document.createElement("div");
@@ -120,10 +130,6 @@ export default function Index() {
 
     // 使用现金支付订单
     const payOrder = () => {
-        // 购买时长卡
-        if (!payType) {
-            return;
-        }
         if (payType == 1) {
             // 跳转到使用微信支付界面
             Router.push({
@@ -133,11 +139,11 @@ export default function Index() {
             return;
         }
         // 直接使用支付宝支付
-        buyCard({ cardId: cardType.id, payType: 2 }).then((res) => {
+        orderRgPay({ id: orderId as string, payType: 2 }).then((res: any) => {
             // 使用市场卡支付
             // 跳转到支付列表
             const div = document.createElement("div");
-            div.innerHTML = res.data;
+            div.innerHTML = res.data.formUrl;
             document.body.appendChild(div);
             let fromEl = div.querySelector("form");
             fromEl && fromEl.submit();
@@ -145,22 +151,19 @@ export default function Index() {
     };
 
     const submit = () => {
-        // 直接使用现金支付
-        if (!cardType.type) {
+        // 支付方式都没有选择
+        if (!cardType.type && !payType) {
             return;
-            // if (!payType) {
-            //     return;
-            // }
-            // // 跳转到微信支付
-            // let cardInfo = getCardItem(cardType.id);
-            // Router.push({
-            //     pathname: "/pay/weixinPage",
-            //     query: { cardId: cardType.id, cardPrice: cardInfo ? cardInfo.cardPrice : 0 }
-            // });
+        }
+        // 没有选择时长卡支付或者购买时长卡支付
+        if (!cardType.type && payType) {
+            payOrder();
+
+            return;
         }
         // 当前是机器转写，并且使用市场卡支付
         if (cardType.type == "user") {
-            orderJpPay({ id: fileInfo.id, cardIds: [cardType.id] }).then((res) => {
+            orderJpPay({ id: fileInfo.id, cardIds: [cardType.id] }).then((res: any) => {
                 // 使用市场卡支付
                 // 跳转到详情列表
                 Router.push({
@@ -190,8 +193,17 @@ export default function Index() {
     const changeCardType = (key: string, type?: string) => {
         if (!key) {
             setCardType({ id: "", type: "" });
+            setPayPrice(fileInfo.zxPrice);
             return;
         }
+        if (type == "user") {
+            setPayPrice("0.00");
+        } else {
+            // 购买时长卡使用微信支付，需要跳转到微信支付界面，微信支付返回链接
+            const cardInfo1 = getCardItem(cardType.id) || { cardPrice: "0.00" };
+            setPayPrice(cardInfo1.cardPrice);
+        }
+
         setCardType({ id: key, type: type || "newCard" });
     };
 
@@ -200,7 +212,7 @@ export default function Index() {
             return 0;
         }
         let time = 0;
-        fileInfo.zxFiles.forEach((item) => {
+        fileInfo.zxFiles.forEach((item: any) => {
             time += item.fileTime;
         });
         return secondsToHMS(time);
@@ -275,7 +287,7 @@ export default function Index() {
                     >
                         <div className=" bg-white rounded-xl p-2 flex-1">
                             <div className=" text-lg font-semibold  p-2 mb-1">包月畅想</div>
-                            {moonCardList.map((item) => {
+                            {moonCardList.map((item: any) => {
                                 return (
                                     <RadioCard
                                         key={item.id}
@@ -298,7 +310,7 @@ export default function Index() {
                         <div className=" bg-white rounded-xl p-2 flex-1">
                             <div className=" text-lg font-semibold  p-2 mb-1">年度时长</div>
 
-                            {yearCardList.map((item) => {
+                            {yearCardList.map((item: any) => {
                                 return (
                                     <RadioCard
                                         key={item.id}
@@ -336,8 +348,8 @@ export default function Index() {
                 <div className=" py-3 text-base mb-3 w-full">
                     <RadioGroup
                         orientation="horizontal"
-                        value={payType}
-                        onValueChange={changePayType}
+                        value={payType as any}
+                        onValueChange={changePayType as any}
                     >
                         <PaymentRadio value={1} type="weixin" text="微信支付">
                             微信支付
@@ -351,7 +363,7 @@ export default function Index() {
                     </RadioGroup>
                 </div>
             </div>
-            <BuyFooter submit={submit} zxPrice={fileInfo.zxPrice}></BuyFooter>
+            <BuyFooter submit={submit} zxPrice={payPrice}></BuyFooter>
         </div>
     );
 }

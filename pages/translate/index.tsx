@@ -39,14 +39,16 @@ export default function Index() {
     const [selected, setSelected] = useState("text");
     const [language, setLanuage] = useState();
     const [payType, changePayType] = useState(0);
+    // 文本翻译的翻译结果
+    const [translateText, setTranslateText] = useState("");
 
     useEffect(() => {
         // 获取可以转写的语言
-        langFy().then((res) => {
+        langFy().then((res: any) => {
             if (!res.data) {
-                setLanuage([]);
+                setLanuage([] as any);
             }
-            const lanusgeList = res.data.map((item) => {
+            const lanusgeList = res.data.map((item: any) => {
                 return {
                     label: item.dicName,
                     value: item.dicId
@@ -59,7 +61,7 @@ export default function Index() {
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col h-full min-h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-row justify-around w-full flex-1 mb-8">
-                <div className="w-[348px] relative rounded-2xl h-full flex flex-col overflow-hidden rounded-[20px] flex-1">
+                <div className="w-[348px] relative h-full flex flex-col overflow-hidden rounded-[20px]">
                     <Tabs
                         fullWidth
                         size="md"
@@ -83,17 +85,22 @@ export default function Index() {
                         <Tab key="doc" title="文档翻译">
                             <form className="flex flex-col h-full">
                                 {/* 文件上传组件 */}
-                                <Upload modelType="translate" languages={language}></Upload>
+                                <Upload languages={language as any}></Upload>
                             </form>
                         </Tab>
                         <Tab key="text" title="文本翻译">
-                            <TextTab language={language}></TextTab>
+                            <TextTab
+                                language={language as any}
+                                setTranslateText={setTranslateText}
+                            ></TextTab>
                         </Tab>
                     </Tabs>
                 </div>
                 <div className="flex flex-1 flex-col pl-3.5">
                     {selected == "doc" && <DocContent></DocContent>}
-                    {selected == "text" && <TextContent></TextContent>}
+                    {selected == "text" && (
+                        <TextContent translateText={translateText}></TextContent>
+                    )}
                 </div>
             </div>
             <div className="h-[76px] bg-white w-full">
@@ -101,8 +108,8 @@ export default function Index() {
                     <div>
                         <RadioGroup
                             orientation="horizontal"
-                            value={payType}
-                            onValueChange={changePayType}
+                            value={payType as any}
+                            onValueChange={changePayType as any}
                         >
                             <PaymentRadio value={1} type="weixin" text="微信支付">
                                 微信支付

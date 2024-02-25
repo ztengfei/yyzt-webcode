@@ -109,7 +109,7 @@ function Login() {
     const openOtherLogin = async (type: number) => {
         setToLocal("loginType", type);
 
-        const res = await autnLoginPage({ loginType: type });
+        const res: any = await autnLoginPage({ loginType: type });
         const div = document.createElement("div");
         div.innerHTML = res.data;
         document.body.appendChild(div);
@@ -159,11 +159,12 @@ function Login() {
             }
         }
 
-        const res: {
-            code: number;
-            data: { accessToken: string; refreshToken: string; expiresTime: string };
-            msg: string;
-        } = await login(param);
+        // {
+        //     code: number;
+        //     data: { accessToken: string; refreshToken: string; expiresTime: string };
+        //     msg: string;
+        // }
+        const res: any = await login(param);
 
         // 登录完成后删除 loginType
         localStorage.removeItem("loginType");

@@ -131,7 +131,7 @@ function FindPassword() {
         const userKey = randomString(32);
         // password RASEncrypt().encrypt(`${password},<<<,${timeDate},<<<,${userKey}`)
         try {
-            const res = await forgotPwd({
+            const res: any = await forgotPwd({
                 userName: telEmail,
                 pwd: RASEncrypt().encrypt(`${password}`),
                 smsCode: code,

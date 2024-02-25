@@ -45,13 +45,13 @@ function Encrypt(str: string) {
 // 添加请求头
 axios.defaults.headers["x-requested-with"] = "XMLHttpRequest";
 // axios.defaults.timeout = 30000;
-const pending = {};
+const pending: { [propsName: string]: string } = {};
 // 声明一个字典用于存储每个ajax请求的取消函数和ajax标识
 const CancelToken = axios.CancelToken;
 const cancelMessage = (messageCnt = "主动取消") => {
     return { type: "cancel", messageCnt };
 };
-const getRequestKey = (config) => {
+const getRequestKey = (config: any) => {
     if (!config) {
         return md5(new Date().getTime().toString());
     }
@@ -62,9 +62,9 @@ const getRequestKey = (config) => {
 let sessionInvalid = false;
 
 // 检查是否有相同请求正在请求
-const checkPending = (key) => !!pending[key];
+const checkPending = (key: string) => !!pending[key];
 // 从字典删除对应请求状态
-const removePending = (key) => {
+const removePending = (key: string) => {
     delete pending[key];
 };
 
@@ -112,7 +112,7 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.response.use(
-    function (response, res) {
+    function (response: any) {
         // 请求完成，删除请求中状态
         const key = getRequestKey(response.config);
         removePending(key);
@@ -166,7 +166,7 @@ export default axios;
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-export function get(url, params = {}, config = {}) {
+export function get(url: string, params = {}, config = {}) {
     return new Promise((resolve, reject) => {
         axios
             .get(url, {
@@ -187,7 +187,7 @@ export function get(url, params = {}, config = {}) {
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-export function post(url, params, config = {}) {
+export function post(url: string, params: any, config = {}) {
     return new Promise((resolve, reject) => {
         axios({
             ...config,
@@ -209,7 +209,7 @@ export function post(url, params, config = {}) {
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-export function put(url, params, config = {}) {
+export function put(url: string, params: any, config = {}) {
     return new Promise((resolve, reject) => {
         axios({
             ...config,
@@ -231,7 +231,7 @@ export function put(url, params, config = {}) {
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-export function patch(url, params, config = {}) {
+export function patch(url: string, params: any, config = {}) {
     return new Promise((resolve, reject) => {
         axios({
             ...config,
@@ -254,7 +254,7 @@ export function patch(url, params, config = {}) {
  * @param {Object} params [请求时携带的参数]
  * @description  取名ajaxDelete 是因为单独的delete会报错
  */
-export function ajaxDelete(url, params, config = {}) {
+export function ajaxDelete(url: string, params: any, config = {}) {
     return new Promise((resolve, reject) => {
         axios
             .delete(url, {
@@ -274,8 +274,13 @@ export function ajaxDelete(url, params, config = {}) {
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-export function uploadFile(url, params, progressCallback, config = {}) {
-    let ret = {};
+export function uploadFile(
+    url: string,
+    params: any,
+    progressCallback: (t: number) => void,
+    config = {}
+) {
+    let ret: { response: any; cancel: any } = { response: null, cancel: null };
     const source = CancelToken.source();
     ret.response = () => {
         return new Promise((resolve, reject) => {
@@ -307,7 +312,7 @@ export function uploadFile(url, params, progressCallback, config = {}) {
         });
     };
     ret.cancel = () => {
-        source.cancel(cancelMessage());
+        source.cancel(cancelMessage() as any);
     };
     return ret;
 }
@@ -317,8 +322,8 @@ export function uploadFile(url, params, progressCallback, config = {}) {
  * @param {String} url [请求的url地址]
  * @param {Object} params [请求时携带的参数]
  */
-export function postCanCancel(url, params, config = {}) {
-    let ret = {};
+export function postCanCancel(url: string, params: any, config = {}) {
+    let ret: { response: any; cancel: any } = { response: null, cancel: null };
     const source = CancelToken.source();
     const randomTime = (url.includes("?") ? "&" : "?") + "_time=" + +new Date();
     ret.response = () => {
@@ -340,7 +345,7 @@ export function postCanCancel(url, params, config = {}) {
         });
     };
     ret.cancel = () => {
-        source.cancel(cancelMessage());
+        source.cancel(cancelMessage() as any);
     };
     return ret;
 }

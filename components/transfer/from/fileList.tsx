@@ -26,7 +26,7 @@ interface keyWordListProp {
     setSelectedFile: (fileids: string[]) => void;
 }
 
-function KeyWordAndList(props: keyWordListProp, ref) {
+function KeyWordAndList(props: keyWordListProp, ref: any) {
     const { fileLists, selectedFile, setSelectedFile } = props;
 
     console.log("fileLists*****", fileLists);
@@ -38,7 +38,7 @@ function KeyWordAndList(props: keyWordListProp, ref) {
         }
     }));
 
-    const deleteFile = (id) => {
+    const deleteFile = (id: string) => {
         zxFiledel({ id });
     };
 
@@ -64,7 +64,7 @@ function KeyWordAndList(props: keyWordListProp, ref) {
                         setSelectedFile(item);
                     }}
                 >
-                    {fileLists.map((item) => {
+                    {fileLists.map((item: any) => {
                         if (!item) {
                             return "";
                         }

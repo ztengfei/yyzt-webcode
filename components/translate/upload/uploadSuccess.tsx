@@ -15,11 +15,11 @@ interface uploadSuccessType {
 
 // 文件上传成功
 export default function UploadSuccess(props: uploadSuccessType) {
-    const [file, setFile] = useState({});
-    const languageRef = useRef();
+    const [file, setFile] = useState<any>({});
+    const languageRef = useRef<any>();
     // 获取上传文件列表
     useEffect(() => {
-        fyFileList().then((res) => {
+        fyFileList().then((res: any) => {
             if (res.errorCode == 0) {
                 setFile(res.data[0]);
             }
@@ -48,9 +48,9 @@ export default function UploadSuccess(props: uploadSuccessType) {
         console.log("langs+++", langs);
 
         fyCommit({ upFileId: file.id, lanFrom: langs.lanFrom, lanTo: langs.zxRemarks }).then(
-            (res) => {
+            (res: any) => {
                 console.log("res+++", res.data);
-                fyOrderInfo({ orderNum: res.data }).then((res) => {
+                fyOrderInfo({ orderNum: res.data }).then((res: any) => {
                     console.log("12323");
                 });
             }
@@ -110,6 +110,7 @@ export default function UploadSuccess(props: uploadSuccessType) {
                     modalType="doc"
                     languages={props.languages}
                     ref={languageRef}
+                    languageChange={() => {}}
                 ></LanguageSelect>
 
                 <Button className="w-[274px] h-[44px] mt-10" color="primary" onClick={goTranslate}>

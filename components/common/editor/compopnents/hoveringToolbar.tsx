@@ -45,7 +45,7 @@ const HoveringToolbar = () => {
     return (
         <div>
             <div
-                ref={ref as unknown as HTMLDivElement}
+                ref={ref as any}
                 //
                 className="absolute bg-transparent flex flex-row z-10 top-[-100000px] left-[-10000px]"
                 onMouseDown={(e) => {

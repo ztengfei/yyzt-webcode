@@ -46,13 +46,13 @@ export default function Index() {
     };
 
     // 上传文件
-    const [fileList, setFileList] = useState<FileList[]>([]);
+    const [fileList, setFileList] = useState<any[]>([]);
 
     // 右侧选中的文件
     const [selectedFile, setSelectedFile] = useState<string[]>([]);
 
     // 可以转写的语言
-    const [language, setLanuage] = useState();
+    const [language, setLanuage] = useState<any>();
 
     // 用户可用时长卡的数量和时间
     const [userCardInfo, setUserCardInfo] = useState({});
@@ -65,7 +65,7 @@ export default function Index() {
         if (!fileList) {
             return 0;
         }
-        fileList.forEach((item) => {
+        fileList.forEach((item: any) => {
             if (selectedFile.includes(item.id)) {
                 time += item.fileTime;
             }
@@ -76,24 +76,24 @@ export default function Index() {
     console.log("allTime++++", allTime);
 
     // 机器快转
-    const machineFromRef = useRef();
+    const machineFromRef = useRef<any>();
     // 人工精转
-    const peopleFromRef = useRef();
+    const peopleFromRef = useRef<any>();
 
-    const fileListRef = useRef();
+    const fileListRef = useRef<any>();
 
     useEffect(() => {
-        zxFileList().then((res) => {
+        zxFileList().then((res: any) => {
             // console.log(res);
             setFileList(res.data);
         });
 
         // 获取可以转写的语言
-        langZx().then((res) => {
+        langZx().then((res: any) => {
             if (!res.data) {
                 setLanuage([]);
             }
-            const lanusgeList = res.data.map((item) => {
+            const lanusgeList = res.data.map((item: any) => {
                 return {
                     label: item.dicName,
                     value: item.dicId
@@ -101,7 +101,7 @@ export default function Index() {
             });
             setLanuage(lanusgeList);
         });
-        cardCount().then((res) => {
+        cardCount().then((res: any) => {
             if (!res.data) {
                 return;
             }
@@ -110,9 +110,9 @@ export default function Index() {
     }, []);
 
     //
-    const pushFile = async (file) => {
+    const pushFile = async () => {
         try {
-            const res = await zxFileList();
+            const res: any = await zxFileList();
             if (res.errorCode == 0) {
                 setFileList(res.data);
             }
@@ -150,7 +150,7 @@ export default function Index() {
         }
 
         // 获取选中的转写文件
-        const selectedFiles = fileList.filter((item) => {
+        const selectedFiles = fileList.filter((item: any) => {
             return selectedFile.includes(item.id);
         });
 
@@ -159,7 +159,7 @@ export default function Index() {
         console.log("param+++++", param);
 
         // 提交转写接口
-        orderCommit(param).then((res) => {
+        orderCommit(param).then((res: any) => {
             if (res.errorCode == 0) {
                 console.log("订单提交成功+++", res);
                 if (selected == "machine") {
@@ -182,7 +182,7 @@ export default function Index() {
     // 删除上传文件
     const deleteFile = async (fileId: string) => {
         try {
-            const res = await zxFiledel({ id: fileId });
+            const res: any = await zxFiledel({ id: fileId });
             if (res.errorCode == 0) {
                 // 文件删除成功
                 let files = fileList;
@@ -260,7 +260,7 @@ export default function Index() {
                 submit={submit}
                 selectedFile={selectedFile}
                 allTime={allTime}
-                userCardInfo={userCardInfo}
+                userCardInfo={userCardInfo as any}
             ></Footer>
         </div>
     );

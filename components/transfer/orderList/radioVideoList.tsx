@@ -69,7 +69,7 @@ const RadioVideo = (props: any) => {
                             onClick={() => {
                                 Router.replace({
                                     pathname: "/transfer/editor",
-                                    query: { name: "Zeit" }
+                                    query: { id: value }
                                 });
                             }}
                         >

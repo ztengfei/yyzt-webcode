@@ -21,13 +21,32 @@ import {
 import Router, { useRouter } from "next/router";
 import QRCode from "qrcode";
 
-import { orderDetail, userDurationList, cardList, orderJpPay, buyCard } from "@/api/api";
+import {
+    orderDetail,
+    userDurationList,
+    cardList,
+    orderJpPay,
+    buyCard,
+    orderRgPay,
+    payStateQuery
+} from "@/api/api";
 
 export default function Order() {
     const timerRef = useRef<number>();
+    const payTimerRef = useRef<number>();
+    // 二维码过期时间
     const countNum = useRef(60);
-    const [fileInfo, setDileInfo] = useState({});
+
+    // 支付成功等待跳转的时间
+    const jumpNumRef = useRef(3);
+    const [jumpNum, setJumpMum] = useState(3);
+    const jumpTime = useRef<number>();
+
+    // const [fileInfo, setDileInfo] = useState({});
+    const [payOrderNum, setPayOrderNum] = useState("");
     const canvasRef = useRef();
+
+    const [payState, setPayState] = useState(0);
 
     const [GQTime, setGQTime] = useState(60);
 
@@ -39,8 +58,37 @@ export default function Order() {
     // 市场卡价格
     const cardPrice = router.query.cardPrice;
 
-    // 距离二维码过期还剩56秒，过期后请刷新页面重新获取二维码。
+    // 跳转到支付订单信息界面
+    const jumpToTargetPage = () => {
+        if (orderId) {
+            // 如果是转写订单则跳转到订单详情
+            // 当前页面类型
+            Router.push({
+                pathname: "/transfer/complete",
+                query: { order: orderId }
+            });
+        }
+    };
 
+    // 剩余多长时间跳转页面
+    const changeJumpTime = () => {
+        setJumpMum(jumpNumRef.current);
+        jumpTime.current = window.setTimeout(() => {
+            jumpNumRef.current--;
+            if (jumpNumRef.current <= 0) {
+                setJumpMum(0);
+                clearTimeout(jumpNumRef.current);
+                // router.back();
+                jumpToTargetPage();
+
+                // 直接跳转页面
+                return;
+            }
+            changeJumpTime();
+        }, 1000);
+    };
+
+    // 距离二维码过期还剩56秒，过期后请刷新页面重新获取二维码。
     const setGQText = () => {
         setGQTime(countNum.current);
         timerRef.current = window.setTimeout(() => {
@@ -55,18 +103,42 @@ export default function Order() {
         }, 1000);
     };
 
+    // 定时请求订单支付状态  payOrderNum  0未支付 1支付中 2成功 3失败
+    const getPayState = (payOrderNum: string) => {
+        clearTimeout(payTimerRef.current);
+        payTimerRef.current = window.setTimeout(() => {
+            payStateQuery({ payOrderNum }).then((res: any) => {
+                const { payStatus } = res.data || {};
+                if (payStatus == 2) {
+                    // 支付成功
+                    setPayState(payStatus);
+                } else {
+                    getPayState(payOrderNum);
+                }
+            });
+        }, 1000);
+    };
+
     const buyCardUrl = () => {
         // 获取微信支付链接
         if (!cardId) {
             return;
         }
         // 购买时长卡， 支付宝支付返回表单
-        buyCard({ cardId: cardId, payType: 1 }).then((res) => {
-            console.log(res);
-            createQrCode(res.data);
+        buyCard({ cardId: cardId as string, payType: 1 }).then((res: any) => {
+            createQrCode(res.data.formUrl);
+            setPayOrderNum(res.data.payOrderNum);
+            getPayState(res.data.payOrderNum);
             setGQText();
         });
     };
+    useEffect(() => {
+        return () => {
+            clearTimeout(payTimerRef.current);
+            clearTimeout(timerRef.current);
+            clearTimeout(jumpNumRef.current);
+        };
+    }, []);
 
     useEffect(() => {
         buyCardUrl();
@@ -79,15 +151,34 @@ export default function Order() {
         });
     };
 
-    const createQrCode = (url) => {
+    const createQrCode = (url: string) => {
         //
         if (!canvasRef.current) {
             return;
         }
         // 'weixin://wxpay/bizpayurl?pr=Cb0rSoIzz'
-        QRCode.toDataURL(canvasRef.current, url, { width: 300 }, function (error, url) {
-            if (error) console.error(error);
-            console.log("success!", url);
+        QRCode.toDataURL(
+            canvasRef.current,
+            url,
+            { width: 300 },
+            function (error: any, url: string) {
+                if (error) console.error(error);
+                console.log("success!", url);
+            }
+        );
+    };
+
+    const buyTransfereUrl = () => {
+        // 获取微信支付链接
+        if (!orderId) {
+            return;
+        }
+        // 购买时长卡， 支付宝支付返回表单
+        orderRgPay({ id: orderId as string, payType: 1 }).then((res: any) => {
+            createQrCode(res.data.formUrl);
+            setPayOrderNum(res.data.payOrderNum);
+            getPayState(res.data.payOrderNum);
+            setGQText();
         });
     };
 
@@ -95,10 +186,11 @@ export default function Order() {
         if (!orderId) {
             return;
         }
+        buyTransfereUrl();
         // cha
-        orderDetail({ orderId: orderId }).then((res) => {
-            res.data && setDileInfo(res.data);
-        });
+        // orderDetail({ orderId: orderId }).then((res) => {
+        //     res.data && setDileInfo(res.data);
+        // });
     }, [orderId]);
 
     // 刷新url
@@ -107,12 +199,25 @@ export default function Order() {
         countNum.current = 60;
         buyCardUrl();
     };
+    if (payState == 2) {
+        return (
+            <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
+                <div className=" mx-auto max-w-[900px] flex flex-col w-full flex-1 justify-center items-center">
+                    <Image src="/images/pay/par_success.png" width={127} height={127}></Image>
+                    <span className=" text-xl">恭喜您,订单支付成功!</span>
+                    <span className=" text-base text-[#9d9d9d]">
+                        页面将在<span className=" text-f602">{jumpNum}秒</span>后跳转
+                    </span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[900px] flex flex-col w-full flex-1">
                 <div className=" text-sm text-[#333] flex flex-row justify-between mb-9">
-                    {orderId && <div>订单提交成功，请尽快付款！订单号：290206258670</div>}
+                    {orderId && <div>订单提交成功，请尽快付款！订单号：{payOrderNum}</div>}
                     {Number(cardPrice) && (
                         <div>
                             应付金额<span className="text-[#e31613] text-lg">{cardPrice}</span>元
@@ -144,9 +249,14 @@ export default function Order() {
                                     页面重新获取二维码。
                                 </div>
                             )}
-
+                            {payState == 1 && (
+                                <span className="text-xs mt-2 ml-2">订单支付中...</span>
+                            )}
+                            {payState == 3 && (
+                                <span className="text-xs mt-2 ml-2">订单支付失败</span>
+                            )}
                             <div className="w-[300px] h-[300px] relative">
-                                <canvas width={300} height={300} ref={canvasRef}></canvas>
+                                <canvas width={300} height={300} ref={canvasRef as any}></canvas>
                                 {!GQTime && (
                                     <div className=" absolute left-0 top-0 w-full h-full bg-black4 text-xs flex justify-center items-center">
                                         <span

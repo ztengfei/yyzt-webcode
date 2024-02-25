@@ -16,13 +16,13 @@ export const RASEncrypt = () => {
     if (ISSERVER) {
         return;
     }
-    if (window.jsencrypt) {
-        return window.jsencrypt;
+    if ((window as any).jsencrypt) {
+        return (window as any).jsencrypt;
     } else {
         const { JSEncrypt } = require("jsencrypt");
         const instance = new JSEncrypt();
         instance.setPublicKey(PublicKey);
-        window.jsencrypt = instance;
+        (window as any).jsencrypt = instance;
         return instance;
     }
 };

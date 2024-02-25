@@ -79,7 +79,7 @@ function Header() {
             let nowTime = new Date().getTime();
             // 如果现在时间小于过期时间的3倍则取更新本地token
             if (oldTime && oldTime > nowTime && oldTime - nowTime < updataTokenTime * 3) {
-                refreshToken({}).then((res) => {
+                refreshToken({}).then((res: any) => {
                     if (res.code == 200) {
                         const { accessToken, refreshToken, expiresTime } = res.data;
                         setToLocal("accessToken", accessToken);

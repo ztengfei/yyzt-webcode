@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     Tabs,
     Tab,
@@ -156,7 +156,7 @@ function Register() {
         let a = RASEncrypt;
         console.log("RASEncrypt.encrypt(password)+++", RASEncrypt().encrypt(password));
         try {
-            const res = await registerAccount({
+            const res: any = await registerAccount({
                 userName: phone || telEmail,
                 smsCode: code,
                 // pwd: password
@@ -176,6 +176,25 @@ function Register() {
             console.log(error);
         }
     };
+
+    // // 增加登录监听
+    // const handleKeyPress = useCallback(
+    //     (event: any) => {
+    //         if (event.code === "Enter") {
+    //             event.preventDefault(); // 阻止默认行为，比如提交表单等
+    //             console.log("enter");
+    //             onLogin();
+    //         }
+    //     },
+    //     [phone, code, telEmail, password, againPassWord]
+    // );
+
+    // useEffect(() => {
+    //     document.addEventListener("keydown", handleKeyPress);
+    //     return () => {
+    //         document.removeEventListener("keydown", handleKeyPress);
+    //     };
+    // }, []);
 
     return (
         <div className="w-full h-full bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">

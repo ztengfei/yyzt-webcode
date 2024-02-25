@@ -35,7 +35,7 @@ import styles from "./index.module.css";
 
 export default function Order() {
     const modalRef = useRef();
-    const [fileInfo, setDileInfo] = useState({});
+    const [fileInfo, setDileInfo] = useState<any>({});
 
     // 支付类型
     const [payType, changePayType] = useState(0);
@@ -55,7 +55,7 @@ export default function Order() {
             return;
         }
         // cha
-        orderDetail({ orderId: orderId }).then((res) => {
+        orderDetail({ orderId: orderId }).then((res: any) => {
             res.data && setDileInfo(res.data);
         });
     }, [orderId]);
@@ -73,7 +73,7 @@ export default function Order() {
                 <div>
                     {fileInfo.zxFiles &&
                         fileInfo.zxFiles.length &&
-                        fileInfo.zxFiles.map((item, index) => {
+                        fileInfo.zxFiles.map((item: any, index: number) => {
                             return <VideoList key={item.id} {...item}></VideoList>;
                         })}
                 </div>
@@ -86,8 +86,8 @@ export default function Order() {
                     <div className=" py-3 text-base mb-3 w-full">
                         <RadioGroup
                             orientation="horizontal"
-                            value={payType}
-                            onValueChange={changePayType}
+                            value={payType as unknown as string}
+                            onValueChange={changePayType as any}
                         >
                             <PaymentRadio value={1} type="weixin" text="微信支付">
                                 微信支付
@@ -102,7 +102,7 @@ export default function Order() {
                     </div>
                 )}
             </div>
-            {fileInfo.zxStatus == 2 && <BuyFooter submit={submit}></BuyFooter>}
+            {fileInfo.zxStatus == 2 && <BuyFooter submit={submit} zxPrice={"0.00"}></BuyFooter>}
         </div>
     );
 }

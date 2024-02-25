@@ -27,6 +27,16 @@ interface registerProp {
     pwd: string; // 密码，密码非对称加密后传输
 }
 
+// 文件上传
+interface fileUploadProp {
+    file: any;
+    fileMd5: string;
+    fileName: string;
+    total: number;
+    index: number;
+    id: string;
+}
+
 // 获取验证码
 export const sendCode = (data: { userName: string }) => {
     return post(`${serverIp}/client/login/send/code`, data);
@@ -63,20 +73,23 @@ export const logout = () => {
 };
 
 // 小文件上传
-export const upLoadOne = (file, progressCallback) => {
+export const upLoadOne = (file: any, progressCallback: any) => {
     const formData = new FormData();
     formData.append("file", file);
     return uploadFile(`${serverIp}/upload/zx/up/one?id=${file.id}`, formData, progressCallback);
 };
 
 // 大文件分片上传
-export const upLoadPart = ({ file, fileMd5, fileName, total, index, id }, progressCallback) => {
+export const upLoadPart = (
+    { file, fileMd5, fileName, total, index, id }: fileUploadProp,
+    progressCallback: (pr: number) => void
+) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileMd5", fileMd5);
     formData.append("fileName", fileName);
-    formData.append("total", total);
-    formData.append("index", index);
+    formData.append("total", total.toString());
+    formData.append("index", index.toString());
     return uploadFile(
         `${serverIp}/upload/zx/up/part?id=${id}&index=${index}`,
         formData,
@@ -100,20 +113,23 @@ export const zxFiledel = (data: { id: string }) => {
 };
 
 // 翻译小文件上传
-export const fyUpLoadOne = (file, progressCallback) => {
+export const fyUpLoadOne = (file: any, progressCallback: (pr: number) => void) => {
     const formData = new FormData();
     formData.append("file", file);
     return uploadFile(`${serverIp}/upload/fy/up/one?id=${file.id}`, formData, progressCallback);
 };
 
 // 翻译大文件分片上传
-export const fyUpLoadPart = ({ file, fileMd5, fileName, total, index, id }, progressCallback) => {
+export const fyUpLoadPart = (
+    { file, fileMd5, fileName, total, index, id }: fileUploadProp,
+    progressCallback: (pr: number) => void
+) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileMd5", fileMd5);
     formData.append("fileName", fileName);
-    formData.append("total", total);
-    formData.append("index", index);
+    formData.append("total", total.toString());
+    formData.append("index", index.toString());
     return uploadFile(
         `${serverIp}/upload/fy/up/part?id=${id}&index=${index}`,
         formData,
@@ -152,7 +168,7 @@ export const userDurationList = () => {
     return post(`${serverIp}/client/us/card/can/use/list`, {});
 };
 
-// 用户可用时长卡列表
+// 商城时长卡列表
 export const cardList = () => {
     return post(`${serverIp}/client/zx/card/list`, {});
 };
@@ -201,4 +217,19 @@ export const fyCommit = (data: { upFileId: string; lanFrom: string; lanTo: strin
 // 翻译订单查询
 export const fyOrderInfo = (data: { orderNum: string }) => {
     return post(`${serverIp}/client/fy/order/list`, data);
+};
+
+// 文本翻译查询
+export const txtTranslate = (data: { from: string; to: string; src_text: string }) => {
+    return post(`${serverIp}/zx/xn/txt/trans`, data);
+};
+
+// 支付订单查询  0未支付 1支付中 2成功 3失败
+export const payStateQuery = (data: { payOrderNum: string }) => {
+    return get(`${serverIp}/pay/info/res/query`, data);
+};
+
+// 订单结果查看 /client/zx/result/play/data
+export const getZXResultDetail = (data: { id: string }) => {
+    return post(`${serverIp}/client/zx/result/play/data`, data);
 };

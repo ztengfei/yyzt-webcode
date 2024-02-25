@@ -30,7 +30,7 @@ function NavbarUser(props: NavbarUserType) {
     // 退出登录
     const loginOut = async () => {
         try {
-            const res = await logout();
+            const res: any = await logout();
             // 退出成功直接跳转到登录界面
             if (res.errorCode == 0) {
                 // 清空缓存

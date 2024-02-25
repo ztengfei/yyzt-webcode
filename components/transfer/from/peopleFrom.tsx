@@ -96,7 +96,7 @@ const modalInfos = {
     }
 };
 
-function PeopleFrom(props, ref) {
+function PeopleFrom(props: any, ref: any) {
     const modalRef = useRef();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -197,11 +197,11 @@ function PeopleFrom(props, ref) {
                 classNames={{
                     trigger: "h-[38px] min-h-[38px] bg-white border border-[#E3E9F0]"
                 }}
-                selectedKeys={lanuage}
+                selectedKeys={lanuage as any}
                 disallowEmptySelection
-                onSelectionChange={setLanuage}
+                onSelectionChange={setLanuage as any}
             >
-                {(animal) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
+                {(animal: any) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
             </Select>
             <div className="text-sm mt-2 mb-[4px]">
                 <span className="text-f602">*</span>

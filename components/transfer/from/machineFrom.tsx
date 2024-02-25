@@ -15,7 +15,7 @@ import {
     Image
 } from "@nextui-org/react";
 
-function MachineFrom(props, ref) {
+function MachineFrom(props: any, ref: any) {
     const [lanuage, setLanuage] = useState(["cn"]);
     const [major, setMajor] = useState(["common"]);
     const { language = [] } = props;
@@ -48,9 +48,9 @@ function MachineFrom(props, ref) {
                 }}
                 disallowEmptySelection
                 selectedKeys={lanuage}
-                onSelectionChange={setLanuage}
+                onSelectionChange={setLanuage as any}
             >
-                {(animal) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
+                {(animal: any) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
             </Select>
             <div className="text-sm  mt-4 mb-[4px]">
                 <span className="text-f602">*</span>
@@ -68,7 +68,7 @@ function MachineFrom(props, ref) {
                 defaultSelectedKeys={["english"]}
                 disallowEmptySelection
                 selectedKeys={major}
-                onSelectionChange={setMajor}
+                onSelectionChange={setMajor as any}
             >
                 {(animal) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
             </Select>

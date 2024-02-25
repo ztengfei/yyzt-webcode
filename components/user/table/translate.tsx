@@ -13,18 +13,18 @@ import DeleteIcon from "@/components/icon/delete";
 import { Button, Chip, Link } from "@nextui-org/react";
 
 // 状态对应的颜色map
-const statusColorMap = {
+const statusColorMap: any = {
     success: "success",
     error: "danger",
     vacation: "warning"
 };
-const statusTextMap = {
+const statusTextMap: any = {
     success: "翻译成功",
     error: "翻译失败",
     vacation: "warning"
 };
 
-const rows = [
+const rows: any = [
     {
         key: "1",
         type: "中文转英文",
@@ -41,7 +41,7 @@ const rows = [
     }
 ];
 
-const columns = [
+const columns: any = [
     {
         key: "type",
         label: "类型"
@@ -108,10 +108,10 @@ export default function TeansferTable(props: any) {
                 }}
             >
                 <TableHeader columns={columns}>
-                    {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
+                    {(column: any) => <TableColumn key={column.key}>{column.label}</TableColumn>}
                 </TableHeader>
                 <TableBody items={rows} emptyContent={"暂无历史数据"}>
-                    {(item) => (
+                    {(item: any) => (
                         <TableRow key={item.key}>
                             {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
                         </TableRow>

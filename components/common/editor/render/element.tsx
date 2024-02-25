@@ -1,7 +1,7 @@
 import Speaker from "./renderSpeaker";
 
 // 段落节点渲染
-const Paragraph = ({ attributes, children, element }) => {
+const Paragraph = ({ attributes, children, element }: any) => {
     const style: React.CSSProperties = {
         padding: "0 10px 20px 50px",
         position: "relative"

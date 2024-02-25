@@ -10,7 +10,7 @@ interface footerType {}
 
 // 文件转写成功
 export default function TranslateSuccess(props: footerType) {
-    const { selectedFile, allTime } = props;
+    // const { selectedFile, allTime } = props;
 
     return (
         <>

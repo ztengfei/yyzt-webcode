@@ -32,11 +32,11 @@ export default function Order() {
         setDownLoadInfo({ type, id });
         onOpen();
         if ((type = "one")) {
-            zxFIleDown({ id }).then((res) => {});
+            zxFIleDown({ id }).then((res: any) => {});
         }
     };
 
-    const [fileInfo, setDileInfo] = useState({});
+    const [fileInfo, setDileInfo] = useState<any>({});
 
     // 支付类型
     const [payType, changePayType] = useState(0);
@@ -56,7 +56,7 @@ export default function Order() {
             return;
         }
         // cha
-        orderDetail({ orderId: orderId }).then((res) => {
+        orderDetail({ orderId: orderId }).then((res: any) => {
             res.data && setDileInfo(res.data);
         });
     }, [orderId]);
@@ -72,7 +72,7 @@ export default function Order() {
                     <CheckboxGroup className="flex flex-col gap-1 w-full">
                         {fileInfo.zxFiles &&
                             fileInfo.zxFiles.length &&
-                            fileInfo.zxFiles.map((item, index) => {
+                            fileInfo.zxFiles.map((item: any, index: number) => {
                                 return (
                                     <RadioVideoList
                                         key={item.id}

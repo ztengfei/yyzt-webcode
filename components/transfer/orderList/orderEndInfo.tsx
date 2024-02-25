@@ -4,7 +4,7 @@ import { Image } from "@nextui-org/react";
 import { secondsToHMS, timestampToDateTime } from "@/components/tool";
 import { langZx } from "@/api/api";
 
-const pyMap = {
+const pyMap: any = {
     0: "时长卡抵扣",
     1: "微信支付",
     2: "支付宝支付"
@@ -40,9 +40,9 @@ export default function OrderState(props: any) {
 
     useEffect(() => {
         // 获取可以转写的语言
-        langZx().then((res) => {
+        langZx().then((res: any) => {
             if (!res.data) {
-                setLanuage([]);
+                setLanuage([] as any);
             }
             for (let i = 0; i < res.data.length; i++) {
                 const item = res.data[i];
@@ -59,14 +59,14 @@ export default function OrderState(props: any) {
             return 0;
         }
         let time = 0;
-        zxFiles.forEach((item) => {
+        zxFiles.forEach((item: any) => {
             time += item.fileTime;
         });
         return secondsToHMS(time);
     }, [zxFiles]);
 
     const getState = () => {
-        const stateMap = {
+        const stateMap: { [propsName: number]: string } = {
             0: "取消",
             1: "审核中",
             2: "待支付",

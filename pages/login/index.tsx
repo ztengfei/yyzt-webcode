@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
     Tabs,
     Tab,
@@ -107,7 +107,7 @@ function Login() {
     const openOtherLogin = async (type: number) => {
         setToLocal("loginType", type);
 
-        const res = await autnLoginPage({ loginType: type });
+        const res: any = await autnLoginPage({ loginType: type });
         const div = document.createElement("div");
         div.innerHTML = res.data;
         document.body.appendChild(div);
@@ -156,12 +156,13 @@ function Login() {
                 param.pwd = RASEncrypt().encrypt(`${password},<<<,${timeDate},<<<,${userKey}`);
             }
         }
-
-        const res: {
-            code: number;
-            data: { accessToken: string; refreshToken: string; expiresTime: string };
-            msg: string;
-        } = await login(param);
+        // {
+        //     code: number;
+        //     data: { accessToken: string; refreshToken: string; expiresTime: string };
+        //     msg: string;
+        //     errorCode:string;
+        // }
+        const res: any = await login(param);
 
         // 登录完成后删除 loginType
         localStorage.removeItem("loginType");
@@ -188,6 +189,24 @@ function Login() {
         if (loginType && routerQuery.code) {
             onLogin(Number(loginType) as 1 | 2);
         }
+    }, []);
+
+    // 增加登录监听
+    const handleKeyPress = useCallback(
+        (event: any) => {
+            if (event.code === "Enter") {
+                event.preventDefault(); // 阻止默认行为，比如提交表单等
+                onLogin();
+            }
+        },
+        [userName, code, password, disabled]
+    );
+
+    useEffect(() => {
+        // document.addEventListener("keydown", handleKeyPress);
+        // return () => {
+        //     document.removeEventListener("keydown", handleKeyPress);
+        // };
     }, []);
 
     return (
