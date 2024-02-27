@@ -1,5 +1,13 @@
 // 导入 React 依赖。
-import React, { useCallback, useState } from "react";
+import React, {
+    useCallback,
+    useState,
+    useMemo,
+    useEffect,
+    forwardRef,
+    useImperativeHandle,
+    useRef
+} from "react";
 // 导入 Slate 编辑器工厂。
 import { createEditor, BaseEditor, Descendant } from "slate";
 
@@ -11,6 +19,8 @@ import HoverIngToobar from "./compopnents/hoveringToolbar";
 import { EditorDescendant } from "./editor.type";
 import EditorElement from "./render/element";
 import withPlugin from "./plugin";
+import { initData, editorToServerData } from "./tool";
+import { resultUpd } from "@/api/api";
 
 type CustomText = { text: string };
 type CustomElement = { type: "paragraph"; children: CustomText[] };
@@ -32,83 +42,74 @@ export type MentionElement = {
 };
 
 export interface editorType {
+    editorData: any;
+    audioId: string;
+    key: string;
     // speakerClickCallback: (el: MentionElement) => void;
 }
 
-// [
-//     {
-//         name: "",
-//         startTime: "",
-//         value: [{ text: "", startTime: "1222", endTime: "32322" }]
-//     }
-// ];
-
-const initialValue: any = [
-    {
-        type: "paragraph",
-        children: [
-            { text: "" },
-            {
-                type: "mention",
-                roleName: "发言人1",
-                startTime: "00:00:13",
-                character: "发言人",
-                iconText: "1",
-                iconBg: "rgb(255, 88, 90)",
-                children: [{ text: "" }]
-            },
-
-            { text: "这类型结果。你不说他给我反正谁是按我要求返，不是什么，你看这3%怎么讲?" },
-            { text: "这类型结果。你不说他给我反正谁是按我要求返，不是什么，你看这3%怎么讲?" },
-            { text: "这类型结果。你不说他给我反正谁是按我要求返，不是什么，你看这3%怎么讲?" }
-        ]
-    },
-    {
-        type: "paragraph",
-        children: [
-            { text: "" },
-            {
-                type: "mention",
-                roleName: "发言人2",
-                startTime: "00:00:13",
-                character: "发言人",
-                iconText: "2",
-                iconBg: "rgb(191, 142, 238)",
-                children: [{ text: "" }]
-            },
-            { text: "坐。孩子们，这节课让我们一起走进神话故事，一社九日齐读课题" }
-        ]
-    },
-    {
-        type: "paragraph",
-        children: [
-            { text: "" },
-            {
-                type: "mention",
-                roleName: "发言人1",
-                startTime: "00:00:13",
-                character: "发言人",
-                iconText: "1",
-                iconBg: "rgb(0, 169, 152)",
-                children: [{ text: "" }]
-            },
-            { text: "坐。孩子们，这节课让我们一起走进神话故事，一社九日齐读课题" }
-        ]
-    }
-];
-
 // 定义 Editor 对象
-const Editor = (props: editorType) => {
+const Editor = (props: editorType, ref) => {
+    const { audioId, editorData } = props;
+    const timer = useRef();
+
+    const editorChange = (value, ops) => {
+        if (ops.type == "set_selection") {
+            return;
+        }
+
+        // console.log("serverData+++", data1);
+        // console.log("editorChange+++", value);
+    };
+
+    // 保存编辑器数据
+    const saveEditorData = () => {
+        clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => {
+            let data1 = editorToServerData(editor.children);
+            resultUpd({ zxFileId: audioId, zxResult: data1 })
+                .then((res) => {
+                    saveEditorData();
+                    // 文件自动保存
+                })
+                .catch(() => {
+                    saveEditorData();
+                });
+        }, 60 * 1000);
+    };
+    useEffect(() => {
+        saveEditorData();
+        return () => {
+            clearTimeout(timer.current);
+        };
+    }, []);
+
     // 创建一个不会在渲染中变化的 Slate 编辑器对象。
-    const [editor] = useState(() => withPlugin(withReact(createEditor())));
+    const [editor] = useState(() => withPlugin(withReact(createEditor()), { editorChange }));
+
+    useImperativeHandle(ref, () => ({
+        getEdiotrData: () => {
+            return editor.children;
+        }
+    }));
 
     const renderElement = useCallback(
         (elementProps: any) => <EditorElement editor={editor} {...elementProps} />,
         []
     );
+
+    useEffect(() => {
+        editorData && editor.updata(editorData);
+    }, [editorData]);
+
+    // onChange={editorChange}
+    // const editorData = useMemo(() => {
+    //     return initData;
+    // }, [audioId, initData]);
+
     // 渲染 Slate 上下文。
     return (
-        <Slate editor={editor} initialValue={initialValue}>
+        <Slate editor={editor} initialValue={initData}>
             <HoverIngToobar></HoverIngToobar>
             <Editable
                 className="border-0 w-full h-full focus:outline-none focus-visible:border-0 p-[20px] overflow-auto"
@@ -118,4 +119,4 @@ const Editor = (props: editorType) => {
     );
 };
 
-export default Editor;
+export default forwardRef(Editor);

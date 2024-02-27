@@ -16,7 +16,7 @@ interface radioVideo {
 }
 
 const RadioVideo = (props: any) => {
-    const { fileName, fileTime = 0, auditStatus, zxStatus, value, openModal } = props;
+    const { fileName, fileTime = 0, orderId, zxStatus, value, openModal } = props;
 
     const getStateChip = () => {
         if (zxStatus == "0") {
@@ -69,7 +69,7 @@ const RadioVideo = (props: any) => {
                             onClick={() => {
                                 Router.replace({
                                     pathname: "/transfer/editor",
-                                    query: { id: value }
+                                    query: { id: value, order: orderId }
                                 });
                             }}
                         >
@@ -82,7 +82,7 @@ const RadioVideo = (props: any) => {
                             size={"md"}
                             className="mr-3"
                             onClick={() => {
-                                openModal && openModal("one", value);
+                                openModal && openModal("one", [value], fileName);
                             }}
                         >
                             下载结果

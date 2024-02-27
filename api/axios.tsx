@@ -90,9 +90,17 @@ axios.interceptors.request.use(
         // 对称加密时间戳 encodeURIComponent(encodeKey)
         config.headers["Pl-ReqTimestamp"] = encodeKey;
         // client/login/refresh/token
-        if (config.url && /\/client\/login\/refresh\/token\//.test(config.url)) {
+        if (config.url && /\/client\/login\/refresh\/token/.test(config.url)) {
             // 登陆时返回的 refreshToken
             config.headers["Pl-RefreshToken"] = getTolocal("refreshToken");
+        }
+
+        // upload/zx/result/down
+        if (config.url && /\/upload\/zx\/result\/down/.test(config.url)) {
+            console.log("文件下载接口");
+            // 登陆时返回的 refreshToken
+            // config.headers["Content-type"] = "application/octet-stream";
+            config.responseType = "blob";
         }
 
         // 音频获取需要添加单独的请求头
@@ -130,8 +138,6 @@ axios.interceptors.response.use(
             // 请重新登录
             Router.push("/login");
         }
-
-        console.log("response", response);
         return response;
     },
     function (error) {

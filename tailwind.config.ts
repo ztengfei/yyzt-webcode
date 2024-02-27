@@ -30,7 +30,9 @@ const config: Config = {
                 linearBlue: "linear-gradient(180deg, #EAF2FF 0%, #FFFFFF 100%)",
                 shoppingBn: "url('/images/shopping/shoping_bg.png')",
                 weixin: "url('/images/pay/pc_icon_phone-bg.png')",
-                payPc: "url('/images/pay/pc_icon_icon-red.png')"
+                payPc: "url('/images/pay/pc_icon_icon-red.png')",
+                loginTableLeft: "url('/images/login/tab-active-left.png')",
+                loginTableRight: "url('/images/login/tab-active-right.png')"
             },
             colors: {
                 f9: "#f9f9f9",

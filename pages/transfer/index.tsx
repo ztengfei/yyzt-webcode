@@ -90,7 +90,7 @@ export default function Index() {
 
         // 获取可以转写的语言
         langZx().then((res: any) => {
-            if (!res.data) {
+            if (!res.data || !res.data.length) {
                 setLanuage([]);
             }
             const lanusgeList = res.data.map((item: any) => {

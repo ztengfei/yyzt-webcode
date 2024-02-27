@@ -1,3 +1,4 @@
+"use client";
 import "../styles/globals.css";
 // nextUI 样式组件
 import { Providers } from "@/components/providers";

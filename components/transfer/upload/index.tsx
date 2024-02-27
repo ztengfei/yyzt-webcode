@@ -7,7 +7,6 @@ import { fileSlicSize } from "@/components/config";
 import { upLoadOne, upLoadPart, fileMerge } from "@/api/api";
 
 import styles from "./index.module.css";
-import { resolve } from "styled-jsx/macro";
 
 interface uploadProps {
     modelType: "people" | "machine" | "translate";
@@ -16,7 +15,10 @@ interface uploadProps {
 
 // Our app
 function Upload(props: uploadProps) {
-    const uploadServerRef = useRef<{ response: any; cancel: any }>();
+    const uploadServerRef = useRef<{ response: any; cancel: any }>({
+        response: null,
+        cancel: null
+    });
     // 文件上传的百分比
     const [circular, setCircular] = useState(0);
     // 当前是否正在上传文件

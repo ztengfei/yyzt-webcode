@@ -1,5 +1,5 @@
 // import Layout from "@/components/layout";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import {
     Button,
     Popover,
@@ -43,7 +43,7 @@ interface AudioControlTypes {
 }
 
 const time = 1800000;
-export default function AudioControl(props: AudioControlTypes) {
+const AudioControl = (props: AudioControlTypes) => {
     const { audioTime } = props;
     // 音频条的时间
     const [targetTime, setTargetTime] = useState("00:00:00");
@@ -80,6 +80,10 @@ export default function AudioControl(props: AudioControlTypes) {
         setTargetTime(hms);
     };
 
+    const showTime = useMemo(() => {
+        return convertSecondsToHMS(audioTime);
+    }, [audioTime]);
+    console.log("showTime++++", showTime);
     return (
         <div className="h-[112px] mx-auto max-w-[1200px] flex flex-col">
             <div className="flex flex-row w-full my-3">
@@ -93,7 +97,7 @@ export default function AudioControl(props: AudioControlTypes) {
                     onChange={onChange}
                     className="flex-1"
                 />
-                <span className="ml-3 text-sm text-93">{convertSecondsToHMS(audioTime)}</span>
+                <span className="ml-3 text-sm text-93">{showTime}</span>
             </div>
             <div className="flex w-full justify-between items-center">
                 <div>
@@ -212,4 +216,6 @@ export default function AudioControl(props: AudioControlTypes) {
             </div>
         </div>
     );
-}
+};
+
+export default AudioControl;

@@ -20,7 +20,7 @@ import {
     Listbox,
     ListboxItem
 } from "@nextui-org/react";
-import { usePathname, useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Router, { useRouter } from "next/router";
 
 import UserInfoIcon from "@/components/icon/userInfo";

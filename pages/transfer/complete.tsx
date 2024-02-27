@@ -1,5 +1,5 @@
 // 转写完成界面
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import {
     CheckboxGroup,
     Button,
@@ -25,15 +25,12 @@ import { orderDetail, zxFIleDown } from "@/api/api";
 
 export default function Order() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: "all" });
+    const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: "all", fileName: "" });
 
     // 打开下载弹框
-    const openModal = (type: string, id: string) => {
-        setDownLoadInfo({ type, id });
+    const openModal = (type: string, id: string, fileName: string) => {
+        setDownLoadInfo({ type, id, fileName });
         onOpen();
-        if ((type = "one")) {
-            zxFIleDown({ id }).then((res: any) => {});
-        }
     };
 
     const [fileInfo, setDileInfo] = useState<any>({});
@@ -44,13 +41,6 @@ export default function Order() {
     const router = useRouter();
     const orderId = router.query.order;
 
-    const submit = () => {
-        Router.push({
-            pathname: "/transfer/complete",
-            query: { name: "Zeit" }
-        });
-    };
-
     useEffect(() => {
         if (!orderId) {
             return;
@@ -60,6 +50,16 @@ export default function Order() {
             res.data && setDileInfo(res.data);
         });
     }, [orderId]);
+
+    const allFileId = useMemo(() => {
+        if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
+            return [];
+        }
+        const fileIds = fileInfo.zxFiles.map((item) => {
+            return item.id;
+        });
+        return fileIds;
+    }, [fileInfo]);
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col h-full bg-[#F7F8FA]">
@@ -79,6 +79,7 @@ export default function Order() {
                                         value={item.id}
                                         state="success"
                                         openModal={openModal}
+                                        orderId={orderId}
                                         {...item}
                                     ></RadioVideoList>
                                 );
@@ -104,7 +105,7 @@ export default function Order() {
                         color="primary"
                         className="w-[150px] h-[46px] min-h-[46px]"
                         onClick={() => {
-                            openModal("all", "all");
+                            openModal("all", allFileId, fileInfo.orderNum);
                         }}
                     >
                         下载全部结果
@@ -116,6 +117,7 @@ export default function Order() {
                 <TransferDownload
                     downloadType={downloadInfo.type}
                     downliadId={downloadInfo.id}
+                    fileName={downloadInfo.fileName}
                 ></TransferDownload>
             </Modal>
         </div>

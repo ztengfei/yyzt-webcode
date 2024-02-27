@@ -233,3 +233,18 @@ export const payStateQuery = (data: { payOrderNum: string }) => {
 export const getZXResultDetail = (data: { id: string }) => {
     return post(`${serverIp}/client/zx/result/play/data`, data);
 };
+
+// 转写结果下载
+export const resultDown = (data: {
+    zxFileIds: string[];
+    hideRole: number; // 0默认不隐藏 1隐
+    hideTime: number;
+    extName: string; // 文件类型 docx doc txt
+}) => {
+    return post(`${serverIp}/upload/zx/result/down`, data);
+};
+
+// 转写结果保存
+export const resultUpd = (data: any) => {
+    return post(`${serverIp}/client/zx/result/play/upd`, data);
+};

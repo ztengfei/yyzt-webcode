@@ -1,3 +1,4 @@
+"use client";
 // import Layout from "@/components/layout";
 import { useRef } from "react";
 import { Button } from "@nextui-org/button";

@@ -12,8 +12,10 @@ import {
     Switch
 } from "@nextui-org/react";
 
+import { resultDown } from "@/api/api";
+
 function VideoTransfrom(props: any) {
-    const { downloadType, downliadId } = props;
+    const { downloadType, downliadId, fileName } = props;
     const [fileType, setFileType] = useState(["doc"]);
     const [showRole, setShowRole] = useState(true);
     const [showTime, setShowTime] = useState(true);
@@ -26,6 +28,44 @@ function VideoTransfrom(props: any) {
             [...fileType],
             downliadId
         );
+        const type = [...fileType][0];
+        resultDown({
+            zxFileIds: downliadId,
+            hideRole: showRole ? 1 : 0,
+            hideTime: showRole ? 1 : 0,
+            extName: type
+        })
+            .then((res) => {
+                var elink = document.createElement("a");
+                elink.download = `${fileName}.${type}`;
+                let blob = null;
+                if (downliadId.length > 1) {
+                    elink.download = `${fileName}-${downliadId[0]}.zip`;
+                    blob = new Blob([res], { type: "application/octet-stream" });
+                } else {
+                    blob = new Blob([res], { type: "application/octet-stream" });
+                }
+                elink.style.display = "none";
+                elink.href = URL.createObjectURL(blob);
+                document.body.appendChild(elink);
+                elink.click();
+                document.body.removeChild(elink);
+            })
+            .catch((error) => console.error("Error downloading file:", error));
+
+        // let blob = new Blob([res], { type: `.zip` });
+        //     //兼容ie
+        //     if (window.navigator && window.navigator.msSaveBlob) {
+        //         window.navigator.msSaveBlob(blob, filename);
+        //     } else {
+        //         var downloadElement = document.createElement("a"); //模拟一个a标签与asp.net试图操作类似
+        //         var href = window.URL.createObjectURL(blob); //转成链接让其能供人下载
+        //         downloadElement.href = href; //a标签的href
+        //         downloadElement.download = "123123"; //a标签的下载名字
+        //         document.body.appendChild(downloadElement); //注册这个控件将这个组件加到body尾部
+        //         downloadElement.click(); //注销掉
+        //         window.URL.revokeObjectURL(href); //清除生成的链接，会占用一些东西，不知道啥，反正运行慢点
+        //     }
     };
     return (
         <>
@@ -88,6 +128,9 @@ function VideoTransfrom(props: any) {
                                             </SelectItem>
                                             <SelectItem key={"doc"} value={"doc"}>
                                                 doc
+                                            </SelectItem>
+                                            <SelectItem key={"txt"} value={"txt"}>
+                                                txt
                                             </SelectItem>
                                         </Select>
                                         <div className="mt-5">

@@ -227,8 +227,8 @@ function Login() {
                                 tabList: [
                                     "gap-6 w-full relative rounded-none p-0 border-b border-divider justify-around  h-[94px] absolute left-0 top-0 bg-no-repeat bg-cover bg-tab-left border-0",
                                     selected == "login-message"
-                                        ? styles.activeLeft
-                                        : styles.activeRight
+                                        ? " bg-loginTableLeft"
+                                        : " bg-loginTableRight"
                                 ],
                                 cursor: "hidden",
                                 tab: "text-66 px-0 h-12 text-[20px]",
