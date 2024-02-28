@@ -4,7 +4,8 @@ const nextConfig = {
         dirs: [],
         /** Do not run ESLint during production builds (`next build`). */
         ignoreDuringBuilds: true
-    }
+    },
+    output: "export"
 };
 
 module.exports = nextConfig;
