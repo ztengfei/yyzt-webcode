@@ -80,10 +80,10 @@ export default function Order() {
                 clearTimeout(jumpNumRef.current);
                 // router.back();
                 jumpToTargetPage();
-
                 // 直接跳转页面
                 return;
             }
+            setJumpMum(jumpNumRef.current);
             changeJumpTime();
         }, 1000);
     };
@@ -112,6 +112,7 @@ export default function Order() {
                 if (payStatus == 2) {
                     // 支付成功
                     setPayState(payStatus);
+                    changeJumpTime();
                 } else {
                     getPayState(payOrderNum);
                 }
@@ -144,13 +145,6 @@ export default function Order() {
         buyCardUrl();
     }, [cardId]);
 
-    const submit = () => {
-        Router.push({
-            pathname: "/transfer/complete",
-            query: { name: "Zeit" }
-        });
-    };
-
     const createQrCode = (url: string) => {
         //
         if (!canvasRef.current) {
@@ -163,7 +157,7 @@ export default function Order() {
             { width: 300 },
             function (error: any, url: string) {
                 if (error) console.error(error);
-                console.log("success!", url);
+                // console.log("success!", url);
             }
         );
     };
@@ -175,6 +169,12 @@ export default function Order() {
         }
         // 购买时长卡， 支付宝支付返回表单
         orderRgPay({ id: orderId as string, payType: 1 }).then((res: any) => {
+            console.log("res.code+++", res.code);
+            if (res.code == 201) {
+                setPayState(201); // 订单已经支付完成
+                changeJumpTime();
+                return;
+            }
             createQrCode(res.data.formUrl);
             setPayOrderNum(res.data.payOrderNum);
             getPayState(res.data.payOrderNum);
@@ -199,6 +199,21 @@ export default function Order() {
         countNum.current = 60;
         buyCardUrl();
     };
+
+    if (payState == 201) {
+        return (
+            <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
+                <div className=" mx-auto max-w-[900px] flex flex-col w-full flex-1 justify-center items-center">
+                    <Image src="/images/pay/par_success.png" width={127} height={127}></Image>
+                    <span className=" text-xl">订单不可支付!</span>
+                    <span className=" text-base text-[#9d9d9d]">
+                        页面将在<span className=" text-f602">{jumpNum}秒</span>后跳转
+                    </span>
+                </div>
+            </div>
+        );
+    }
+
     if (payState == 2) {
         return (
             <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
