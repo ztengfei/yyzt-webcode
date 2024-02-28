@@ -14,7 +14,7 @@ import { toEditorData } from "@/components/common/editor/tool";
 
 export default function Index() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: "all" });
+    const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: [], fileName: "" });
     // 编辑器初始化的数据
     const [initEditorData, setEditorData] = useState();
     // 当前转写订单中对应的详情
@@ -33,7 +33,7 @@ export default function Index() {
         // audioId
         getZXResultDetail({ id: audioId as string }).then((res: any) => {
             if (res.data) {
-                const data = toEditorData(res.data);
+                const data: any = toEditorData(res.data);
                 setEditorData(data);
             }
         });

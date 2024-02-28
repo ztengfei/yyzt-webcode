@@ -25,10 +25,10 @@ import { orderDetail, zxFIleDown } from "@/api/api";
 
 export default function Order() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: "all", fileName: "" });
+    const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: [], fileName: "" });
 
     // 打开下载弹框
-    const openModal = (type: string, id: string, fileName: string) => {
+    const openModal = (type: string, id: string[], fileName: string) => {
         setDownLoadInfo({ type, id, fileName });
         onOpen();
     };

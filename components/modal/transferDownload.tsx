@@ -35,7 +35,7 @@ function VideoTransfrom(props: any) {
             hideTime: showRole ? 1 : 0,
             extName: type
         })
-            .then((res) => {
+            .then((res: any) => {
                 var elink = document.createElement("a");
                 elink.download = `${fileName}.${type}`;
                 let blob = null;

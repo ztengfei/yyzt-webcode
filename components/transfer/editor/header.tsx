@@ -71,7 +71,7 @@ export default function OrderState({ openModal, fileInfo, orderId, audioId }: he
                             // labelPlacement="outside"
                             // placeholder="Select a user"
                             selectedKeys={[audioId]}
-                            onSelectionChange={(val) => {
+                            onSelectionChange={(val: any) => {
                                 // console.log(val);
                                 tabClick([...val][0]);
                                 // setFileType(val as unknown as string[]);

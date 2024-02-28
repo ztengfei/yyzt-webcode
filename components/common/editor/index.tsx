@@ -51,7 +51,7 @@ export interface editorType {
 // 定义 Editor 对象
 const Editor = (props: editorType, ref) => {
     const { audioId, editorData } = props;
-    const timer = useRef();
+    const timer = useRef<number>(0);
 
     const editorChange = (value, ops) => {
         if (ops.type == "set_selection") {
@@ -109,7 +109,7 @@ const Editor = (props: editorType, ref) => {
 
     // 渲染 Slate 上下文。
     return (
-        <Slate editor={editor} initialValue={initData}>
+        <Slate editor={editor} initialValue={initData as any}>
             <HoverIngToobar></HoverIngToobar>
             <Editable
                 className="border-0 w-full h-full focus:outline-none focus-visible:border-0 p-[20px] overflow-auto"
