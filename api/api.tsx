@@ -248,3 +248,8 @@ export const resultDown = (data: {
 export const resultUpd = (data: any) => {
     return post(`${serverIp}/client/zx/result/play/upd`, data);
 };
+
+// 转写结果保存
+export const zxOrderList = (data: any) => {
+    return post(`${serverIp}/client/zx/order/list`, data);
+};
