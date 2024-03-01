@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Input, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
-import { useFocused, useSelected } from "slate-react";
+import { ReactEditor, useFocused, useSelected } from "slate-react";
 
 import RoleSelect from "./roleSelect";
+import { Transforms } from "slate";
+import { getRoleBg } from "../tool";
 
 
 // 发言人节点渲染
 const Speaker = ({ attributes, children, element, editor }: any) => {
     const [isOpen, setIsOpen] = useState(false);
+    const roleSelectRef = useRef<any>();
 
     const selected = useSelected();
     const focused = useFocused();
@@ -25,6 +28,57 @@ const Speaker = ({ attributes, children, element, editor }: any) => {
     if (element.children[0].italic) {
         style.fontStyle = "italic";
     }
+
+    const replaceRole = (role, inputVal) => {
+        const point = ReactEditor.findPath(editor, role);
+        const newProps:any = {roleName:inputVal, character:inputVal, iconText:inputVal[0], iconBg:getRoleBg(inputVal)};
+        const newVal = {...role, ...newProps}
+        Transforms.setNodes(editor, newVal, { at:  point});
+    }
+    const getAllRole = (name) => {
+        let roles = []
+        for (let i = 0; i < editor.children.length; i++) {
+            const block = editor.children[i];
+            const leafs = block.children || [];
+            if (!leafs.length) {
+                continue;
+            }
+            for(let j = 0; j < Math.min(3, leafs.length); j++) {
+                if (leafs[j].roleName == name) {
+                    roles.push(leafs[j]);
+                }
+            }
+        }
+        return roles;
+    }
+
+    const roleSelectChange = (newRoleName, isChecked, oldRoleName) => {
+        setIsOpen(false);
+        if (!newRoleName) {
+            return;
+        }
+        if (isChecked) { // 如果全部替换
+            // 找到所有含有相同节点的发言人节点
+            const roles = getAllRole(oldRoleName);
+            roles.forEach((item)=>{
+                replaceRole(item, newRoleName);
+            });
+            
+        } else {
+            replaceRole(element, newRoleName);
+        }
+    }
+
+    const onOpenChange = (state) => {
+        if (state || !roleSelectRef.current) {
+            return;
+        }
+        setIsOpen(false);
+        // 获取子级 
+        const data = roleSelectRef.current.getSelectedData();
+        roleSelectChange(data.name, data.isSelected, element.roleName)
+    }
+
     return (
         <div {...attributes} contentEditable={false} style={style}>
             <Popover
@@ -32,7 +86,7 @@ const Speaker = ({ attributes, children, element, editor }: any) => {
                 placement="bottom"
                 isOpen={isOpen}
                 onOpenChange={(state) => {
-                    !state && setIsOpen(state);
+                    onOpenChange(state);
                 }}
                 classNames={{
                     trigger:'z-0'
@@ -62,7 +116,8 @@ const Speaker = ({ attributes, children, element, editor }: any) => {
                     <RoleSelect
                         roleInfo={element}
                         editor={editor}
-                        setIsOpen={setIsOpen}
+                        roleSelectChange={roleSelectChange}
+                        ref={roleSelectRef}
                     ></RoleSelect>
                 </PopoverContent>
             </Popover>

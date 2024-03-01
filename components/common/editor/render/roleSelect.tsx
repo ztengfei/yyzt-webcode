@@ -1,12 +1,9 @@
-import React, { useMemo, useState } from "react";
-import { Checkbox, Input, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
-import { useFocused, useSelected,  } from "slate-react";
-import { Transforms } from 'slate';
+import React, { useMemo, useState, useImperativeHandle, forwardRef  } from "react";
+import { Checkbox, Input, } from "@nextui-org/react";
 
-import {getRoleBg} from './../tool';
 
 // 发言人节点渲染
-const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
+const Speaker = ({ roleInfo, editor, roleSelectChange }: any, ref) => {
     const [inputVal, setInputVal] = useState("");
     const [isSelected, setIsSelected] = useState(false);
 
@@ -30,8 +27,6 @@ const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
         return roles;
     }, [editor]);
 
-    const selected = useSelected();
-    const focused = useFocused();
     const style: React.CSSProperties = {
         display: "inline-flex",
         width: "100%",
@@ -53,27 +48,28 @@ const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
     // 发言人点击选择
     const selectedRole = (item: any) => {
         console.log("item", item);
-        setIsOpen(false);
+        // setIsOpen(false);
+        roleSelectChange(item.roleName, isSelected, roleInfo.roleName);
     };
 
-    // 监听键盘的回车事件
-    const handleKeydown = (e) => {
-        if (e.keyCode != 13) {
-            return;
+    useImperativeHandle(ref, () => ({
+        getSelectedData: () => {
+            return { name:inputVal, isSelected };
         }
-        const point = editor.getPoint({ anchorKey: roleInfo.key });
-        const newProps:any = {roleName:inputVal, character:inputVal, iconText:inputVal[0], iconBg:getRoleBg(inputVal)};
-        const newVal = {...roleInfo, newProps}
-        Transforms.setNodes(editor, newVal, { at:  point});
-
+    }));
+    const onKeyDown = (e) => {
+        if (e.keyCode == 13) {
+            roleSelectChange(inputVal, isSelected, roleInfo.roleName);
+        }
     }
+    
 
     return (
         <div className="px-1 py-2 w-full">
-            <p className="text-sm text-[#838383] mb-1 whitespace-nowrap overflow-ellipsis overflow-hidden w-full">
+            <div className="text-sm text-[#838383] mb-1 whitespace-nowrap overflow-ellipsis overflow-hidden w-full">
                 
                 <Checkbox isSelected={isSelected} onValueChange={setIsSelected}>{`修改全部"${roleInfo.roleName}"为：`}</Checkbox>
-            </p>
+            </div>
             <Input
                 type="text"
                 // label={`修改"${roleInfo.roleName}"为`}
@@ -86,7 +82,7 @@ const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
                 }}
                 onValueChange={onChange}
                 value={inputVal}
-                onKeyDown={handleKeydown}
+                onKeyDown={onKeyDown}
             />
             <div className="mt-2 flex flex-col gap-2 w-full">
                 {roleList.map((item, index) => {
@@ -128,4 +124,4 @@ const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
     );
 };
 
-export default Speaker;
+export default forwardRef(Speaker);
