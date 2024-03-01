@@ -57,16 +57,21 @@ export default function Order() {
     const cardId = router.query.cardId;
     // 市场卡价格
     const cardPrice = router.query.cardPrice;
+    // 需要调回的界面
+    const back = router.query.back; // comp // tlem
 
     // 跳转到支付订单信息界面
     const jumpToTargetPage = () => {
-        if (orderId) {
+        if (router.query.back == 'comp') {
             // 如果是转写订单则跳转到订单详情
             // 当前页面类型
             Router.push({
                 pathname: "/transfer/complete",
                 query: { order: orderId }
             });
+        }
+        if (router.query.back == 'tlem') { // 从订单列表购买时长卡跳转过来的页面
+            Router.back();
         }
     };
 

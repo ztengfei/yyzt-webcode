@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useEffect } from "react";
-import { Slate, Editable, withReact, useSlate, useFocused } from "slate-react";
+import { Slate, Editable, withReact, useSlate, useFocused  } from "slate-react";
 import { Editor, Transforms, Text, createEditor, Descendant, Range } from "slate";
 
 import CopyIcon from "@/components/icon/copy";
@@ -42,6 +42,28 @@ const HoveringToolbar = () => {
         el.style.left = `${rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2}px`;
     });
 
+    const goCopy = () => {
+        const text = editor.selection ? Editor.string(editor, editor.selection) : ''; // 返回选中的文本或空字符串（当未选中任何内容时）
+        // 获取选中的文本内容
+        // const text = this.state.list.map((item)=>{return item.content;}).join('\n');
+        let textarea = document.createElement('textarea'); // 创建临时的textarea元素
+        textarea.value = text; // 将要复制的内容赋值给textarea
+        document.body.appendChild(textarea); // 将textarea添加到页面上
+        textarea.select(); // 选中textarea中的内容
+        try {
+            let successful = document.execCommand('copy'); // 执行复制命令
+            if (successful) {
+                console.log('复制成功');
+            } else {
+                console.log('无法复制');
+            }
+        } catch (err) {
+            console.log('无法复制');
+        } finally {
+            document.body.removeChild(textarea); // 移除临时的textarea元素
+        }
+    }
+
     return (
         <div>
             <div
@@ -53,7 +75,7 @@ const HoveringToolbar = () => {
                     e.preventDefault();
                 }}
             >
-                <div className="flex flex-row justify-center items-center border border-[#f3f3f3] rounded-[22px] w-[80px] h-[37px] cursor-pointer bg-white  active:opacity-80 mr-3">
+                <div className="flex flex-row justify-center items-center border border-[#f3f3f3] rounded-[22px] w-[80px] h-[37px] cursor-pointer bg-white  active:opacity-80 mr-3" onClick={goCopy}>
                     <CopyIcon size={18}></CopyIcon> <span className="pl-[3px]">复制</span>
                 </div>
                 <div className="flex flex-row justify-center items-center border border-[#f3f3f3] rounded-[22px] w-[80px] h-[37px] cursor-pointer  bg-white active:opacity-80">

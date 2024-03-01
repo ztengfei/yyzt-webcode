@@ -4,6 +4,7 @@ import { useFocused, useSelected } from "slate-react";
 
 import RoleSelect from "./roleSelect";
 
+
 // 发言人节点渲染
 const Speaker = ({ attributes, children, element, editor }: any) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -32,6 +33,9 @@ const Speaker = ({ attributes, children, element, editor }: any) => {
                 isOpen={isOpen}
                 onOpenChange={(state) => {
                     !state && setIsOpen(state);
+                }}
+                classNames={{
+                    trigger:'z-0'
                 }}
             >
                 <PopoverTrigger>

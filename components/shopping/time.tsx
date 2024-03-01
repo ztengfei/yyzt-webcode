@@ -55,7 +55,7 @@ export default function Index(props: any) {
                 })}
             </RadioGroup>
             <div className="flex flex-row justify-end items-center mt-5">
-                <div
+                {/* <div
                     className="flex flex-row items-center cursor-pointer"
                     onClick={() => {
                         setAutopay(!autoPay);
@@ -66,7 +66,7 @@ export default function Index(props: any) {
                     <span className="text-93 mr-8 text-sm ml-1">
                         同意 自动续费服务协议 可随时关闭
                     </span>
-                </div>
+                </div> */}
                 <div>
                     <span className="mr-1 font-normal">应付金额：</span>
                     <span className=" text-f602 mr-8">￥{cardInfo.cardPrice || "0.00"}</span>

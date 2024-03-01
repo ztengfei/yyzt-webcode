@@ -31,8 +31,8 @@ function VideoTransfrom(props: any) {
         const type = [...fileType][0];
         resultDown({
             zxFileIds: downliadId,
-            hideRole: showRole ? 1 : 0,
-            hideTime: showRole ? 1 : 0,
+            hideRole: showRole ? 0 : 1,
+            hideTime: showRole ? 0 : 1,
             extName: type
         })
             .then((res: any) => {

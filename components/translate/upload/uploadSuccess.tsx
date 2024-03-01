@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
 import { Button, CircularProgress, Image, Select, SelectItem } from "@nextui-org/react";
+import toast from "react-hot-toast";
 
 import ActiveIcon from "@/components/icon/active";
 import DeleteIcon from "@/components/icon/delete";
@@ -42,6 +43,8 @@ export default function UploadSuccess(props: uploadSuccessType) {
         }
         const langs = languageRef.current.getSelectedLan();
         if (!langs.lanFrom || !langs.zxRemarks) {
+            toast.error('请选择语言');
+            
             // 提示请选择语言
             return;
         }

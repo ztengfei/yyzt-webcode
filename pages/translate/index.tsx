@@ -60,7 +60,7 @@ export default function Index() {
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col h-full min-h-full bg-[#F7F8FA]">
-            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-row justify-around w-full flex-1 mb-8">
+            <div className="mt-[80px]  mx-auto max-w-[1200px] min-h-[500px] flex flex-row justify-around w-full flex-1 mb-8">
                 <div className="w-[348px] relative h-full flex flex-col overflow-hidden rounded-[20px]">
                     <Tabs
                         fullWidth

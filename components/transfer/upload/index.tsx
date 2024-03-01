@@ -7,6 +7,7 @@ import { fileSlicSize } from "@/components/config";
 import { upLoadOne, upLoadPart, fileMerge } from "@/api/api";
 
 import styles from "./index.module.css";
+import toast from "react-hot-toast";
 
 interface uploadProps {
     modelType: "people" | "machine" | "translate";
@@ -33,6 +34,8 @@ function Upload(props: uploadProps) {
     const chunkServerRef = useRef<any[]>([]);
     // 分片上传的进度
     const progressRef = useRef<number[]>([]);
+    // 分片上传错误列表
+    const uploadErrorList = useRef<any>({})
 
     // 拖拽内容至当前盒子
     const onDragOver: React.DragEventHandler<HTMLDivElement> = (e) => {
@@ -164,7 +167,7 @@ function Upload(props: uploadProps) {
     };
 
     // 多路同时上传
-    const uploadNextChunk = async (chunks: number, file: any) => {
+    const uploadNextChunk = async (chunks: number, file: any, upList?:number[]) => {
         if (isCancelRef.current) {
             // 如果当前已经被取消上传则直接返回
             file.state = "cancel";
@@ -172,6 +175,10 @@ function Upload(props: uploadProps) {
         }
         let servers = [];
         for (let i = 0; i < chunks; i++) {
+            // 如果不是上传错误的分片不需要继续上传
+            if (upList && !upList.includes((i+1))){
+                continue;
+            }
             var start = i * fileSlicSize;
             var end = Math.min(file.size, start + fileSlicSize);
             var chunk = file.slice(start, end); // 将文件切割成分片
@@ -182,31 +189,80 @@ function Upload(props: uploadProps) {
             servers.push(uploadItemRes);
         }
         const res: any = await Promise.all(servers);
-        console.log("promiseAll+++++", res);
         const mage: any = await fileMerge({ fileMd5: file.md5 }); // 继续上传下一个分片
         console.log(mage);
         if (mage.errorCode == 0) {
             file.state = "success"; // 文件上传成功，切片合并成功
+            uploadErrorList.current[file.md5] = null;
         } else {
+            // let errorData = [];
+            // let errorChan = uploadErrorList.current[file.md5];
+            // if (!errorChan) {
+            //     errorData = mage.data;
+            //     uploadErrorList.current[file.md5] = mage.data;
+            // } else {
+            //     toast.error('上传失败，正在重新上传');
+            //     mage.data.forEach((item)=>{
+            //         if (!errorChan.includes(item)) {
+            //             errorData.push(item);
+            //             errorChan.push(item);
+            //         }
+            //     });
+            //     uploadErrorList.current[file.md5] = errorChan;
+            // }
+            toast.error('文件上传失败，正在重新上传');
+            // 上传失败后重新上传失败的分片
+            if (mage.data.length) {
+                await uploadNextChunk(chunks, file, mage.data);
+            }
             // 切片合并失败
             file.state = "error"; // 文件上传失败
         }
     };
+
+    const calculateMd5 = (file) => {
+        return new Promise((resolve:(value: string) => void, reject) => {
+            const reader = new FileReader();
+            
+            // 当文件加载完成时调用onload事件处理函数
+            reader.onload = function (event) {
+                const arrayBufferView = event.target.result;
+                
+                // 创建ArrayBuffer对象
+                const buffer:any = ArrayBuffer.isView(arrayBufferView) ?
+                    arrayBufferView.buffer :
+                    arrayBufferView;
+                        
+                // 将ArrayBuffer转换为Uint8Array类型
+                const uint8Array:any = new Uint8Array(buffer);
+                // 初始化CryptoJS库
+                // CryptoJS.util.bin.words[0] = 123456789;
+                // CryptoJS.util.bin.words[1] = 987654321;
+                // 计算MD5值
+                const md5Hash:string = md5(uint8Array).toString();
+                resolve(md5Hash);
+            };
+            
+            // 开始读取文件内容
+            reader.readAsArrayBuffer(file);
+        });
+    }
 
     const fileUpload = async (files: FileList) => {
         for (let i = 0; i < files.length; i++) {
             isCancelRef.current = false;
             chunkServerRef.current = [];
             const file: any = files[i];
-            const fileMd5 = md5(file);
-            file.md5 = fileMd5 + new Date().getTime();
-            file.id = fileMd5 + new Date().getTime();
+            const fileMd5:string = await calculateMd5(file);
+            file.md5 = fileMd5;
+            file.id = fileMd5;
             if (file.size <= fileSlicSize) {
                 await smallFileUpload(file);
             } else {
                 const chunks = Math.ceil(file.size / fileSlicSize); // 计算分片的数量
                 setCircular(0);
                 setIsupload(true);
+                
                 await uploadNextChunk(chunks, file);
                 setIsupload(false);
                 // 将上传文件同步至服务器

@@ -92,6 +92,7 @@ export default function Index() {
         langZx().then((res: any) => {
             if (!res.data || !res.data.length) {
                 setLanuage([]);
+                return;
             }
             const lanusgeList = res.data.map((item: any) => {
                 return {

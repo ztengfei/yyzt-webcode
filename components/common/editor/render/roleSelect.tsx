@@ -1,10 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { Input, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
-import { useFocused, useSelected } from "slate-react";
+import { Checkbox, Input, Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
+import { useFocused, useSelected,  } from "slate-react";
+import { Transforms } from 'slate';
+
+import {getRoleBg} from './../tool';
 
 // 发言人节点渲染
 const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
     const [inputVal, setInputVal] = useState("");
+    const [isSelected, setIsSelected] = useState(false);
 
     const roleList = useMemo(() => {
         console.log("editor++++", editor);
@@ -51,9 +55,25 @@ const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
         console.log("item", item);
         setIsOpen(false);
     };
+
+    // 监听键盘的回车事件
+    const handleKeydown = (e) => {
+        if (e.keyCode != 13) {
+            return;
+        }
+        const point = editor.getPoint({ anchorKey: roleInfo.key });
+        const newProps:any = {roleName:inputVal, character:inputVal, iconText:inputVal[0], iconBg:getRoleBg(inputVal)};
+        const newVal = {...roleInfo, newProps}
+        Transforms.setNodes(editor, newVal, { at:  point});
+
+    }
+
     return (
         <div className="px-1 py-2 w-full">
-            <p className="text-sm text-[#838383] mb-1 whitespace-nowrap overflow-ellipsis overflow-hidden w-full">{`修改"${roleInfo.roleName}"为`}</p>
+            <p className="text-sm text-[#838383] mb-1 whitespace-nowrap overflow-ellipsis overflow-hidden w-full">
+                
+                <Checkbox isSelected={isSelected} onValueChange={setIsSelected}>{`修改全部"${roleInfo.roleName}"为：`}</Checkbox>
+            </p>
             <Input
                 type="text"
                 // label={`修改"${roleInfo.roleName}"为`}
@@ -66,6 +86,7 @@ const Speaker = ({ roleInfo, editor, setIsOpen }: any) => {
                 }}
                 onValueChange={onChange}
                 value={inputVal}
+                onKeyDown={handleKeydown}
             />
             <div className="mt-2 flex flex-col gap-2 w-full">
                 {roleList.map((item, index) => {

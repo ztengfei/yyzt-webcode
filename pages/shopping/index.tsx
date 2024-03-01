@@ -44,7 +44,7 @@ export default function Index() {
     const goByCard = (cardInfo: any) => {
         console.log("cardInfo+++", cardInfo);
         Router.push({
-            pathname: "/transfer/complete",
+            pathname: "/shopping/balance",
             query: {
                 cardId: cardInfo.id,
                 cardName: cardInfo.cardName,

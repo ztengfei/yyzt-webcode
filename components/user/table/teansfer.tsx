@@ -29,8 +29,8 @@ const statusColorMap: any = {
 };
 const statusTextMap: any = {
     // 0取消 1新建 2待支付 3待转写 4完成 5转写失败
-    0: "取消",
-    1: "新建",
+    // 0: "取消",
+    // 1: "新建",
     2: '待支付',
     3: '待转写',
     4: '转写已完成',
@@ -92,7 +92,7 @@ export default function TeansferTable(props: any) {
                 return (
                     <Chip
                         className="capitalize rounded"
-                        color={statusColorMap[user.state]}
+                        color={statusColorMap[user.zxStatus]}
                         size="sm"
                         variant="flat"
                     >
@@ -103,27 +103,28 @@ export default function TeansferTable(props: any) {
                 if (user.zxStatus == 4) { // 转写完成
                     return (
                         <div className="relative flex items-center gap-3 w-[140px]">
-                            <Link href="#" underline="none" className="text-sm">
+                            <Link href={`/transfer/editor?id=${user.id}&order=${user.zxOrderId}`} underline="none" className="text-sm" >
                                 查看结果
                             </Link>
-                            <Link href="#" underline="none" className="text-sm">
+                            <Link href={`/transfer/complete?order=${user.zxOrderId}`} underline="none" className="text-sm">
                                 详情
                             </Link>
-                            <div className="text-sm cursor-pointer">删除</div>
+                            {/* <div className="text-sm cursor-pointer">删除</div> */}
                         </div>
                     );
                 }
                 if (user.zxStatus == 2) { // 转写完成
                     return (
                         <div className="relative flex items-center gap-3 w-[140px]">
-                            <Link href="#" underline="none" className="text-sm">
+                            <Link href={`/transfer/settlement?order=${user.zxOrderId}`} underline="none" className="text-sm">
                                 去支付
                             </Link>
-                            <div className="text-sm cursor-pointer">删除</div>
+                            {/* <div className="text-sm cursor-pointer">删除</div> */}
                         </div>
                     );
                 }
-                return (<div className="text-sm cursor-pointer">删除</div>)
+                // return (<div className="text-sm cursor-pointer">删除</div>)
+                return cellValue;
             case "zxType":
                 return <div className="w-[58px]">{cellValue == 1 ? '机器快转' : '人工精转'}</div>;
             case "fileTime":

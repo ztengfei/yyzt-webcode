@@ -20,18 +20,19 @@ import {
 } from "@nextui-org/react";
 import Router, { useRouter } from "next/router";
 
-import BuyFooter from "@/components/transfer/buyFooter";
-import CardItem from "@/components/transfer/card/card";
-import RadioCard from "@/components/transfer/card/radioCard";
+
 import PaymentRadio from "@/components/common/paymentRadio";
-import { buyCard } from "@/api/api";
+import { buyCard, getCardEndDate } from "@/api/api";
+import {formatDate1} from '@/components/tool';
 
 export default function Index() {
     // 时长卡类型
     const [cardType, setCardType] = useState({ id: "", type: "" });
     const router = useRouter();
-
+    // 支付类型
     const [payType, changePayType] = useState(0);
+    // 可用时长
+    const [endTime, setEndTime] = useState(0.00);
 
     const { cardId, cardName, cardPrice, origPrice } = router.query;
 
@@ -42,7 +43,14 @@ export default function Index() {
         //         setUserCard(res.data);
         //     }
         // });
-    }, []);
+        getCardEndDate({cardId: cardId}).then((res:any)=>{
+            if (res.data && res.data.endDate) {
+                setEndTime(res.data.endDate);
+            }
+            console.log(res)
+        })
+
+    }, [cardId]);
 
     const submit = () => {
         // 购买时长卡
@@ -75,16 +83,19 @@ export default function Index() {
                 <div className="text-base my-4">订单信息</div>
                 <div className=" bg-white rounded-xl leading-[52px] pl-4 text-base">
                     <div className="mr-10 text-sm mt-5 font-semibold">{cardName}</div>
-                    <span className="mr-10 text-bc text-xs">
+                    <span className="mr-20 text-bc text-xs">
                         购买数量: <span className="text-black">1</span>
                     </span>
-                    <span className="mr-10 text-bc text-xs">
-                        有效期至: <span className="text-black">2024年1月12日</span>
+                    <span className="mr-20 text-bc text-xs">
+                        可用时长: <span className="text-black">{cardPrice}</span>
                     </span>
-                    <span className="mr-10 text-bc text-xs">
+                    <span className="mr-20 text-bc text-xs">
+                        有效期至: <span className="text-black">{formatDate1(endTime)}</span>
+                    </span>
+                    <span className="mr-20 text-bc text-xs">
                         原价: <span className="text-black">￥{origPrice}</span>
                     </span>
-                    <span className="mr-10 text-bc text-xs">
+                    <span className="mr-20 text-bc text-xs">
                         现价: <span className="text-black">{cardPrice}</span>
                     </span>
                 </div>

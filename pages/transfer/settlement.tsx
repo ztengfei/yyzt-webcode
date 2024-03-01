@@ -111,7 +111,7 @@ export default function Index() {
             let cardInfo = getCardItem(cardType.id);
             Router.push({
                 pathname: "/pay/weixinPage",
-                query: { cardId: cardType.id, cardPrice: cardInfo ? cardInfo.cardPrice : 0 }
+                query: { cardId: cardType.id, cardPrice: cardInfo ? cardInfo.cardPrice : 0, order: orderId, back:'tlem' }
             });
 
             return;
@@ -134,7 +134,7 @@ export default function Index() {
             // 跳转到使用微信支付界面
             Router.push({
                 pathname: "/pay/weixinPage",
-                query: { order: orderId }
+                query: { order: orderId, back:'comp' }
             });
             return;
         }

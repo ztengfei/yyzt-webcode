@@ -112,6 +112,14 @@ export function formatDate(timestamp: number) {
     return year + "/" + (month < 10 ? "0" + month : month) + "/" + (day < 10 ? "0" + day : day);
 }
 
+export function formatDate1(timestamp: number) {
+    const date = new Date(timestamp);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return year + "年" + (month < 10 ? "0" + month : month) + "月" + (day < 10 ? "0" + day : day) + "日";
+}
+
 export function timestampToDateTime(timestamp: number) {
     var date = new Date(timestamp); // 创建一个新的Date对象并传入时间戳作为参数
 

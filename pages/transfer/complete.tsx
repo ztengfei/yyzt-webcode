@@ -13,6 +13,7 @@ import {
     SelectItem,
     Switch
 } from "@nextui-org/react";
+import toast from "react-hot-toast";
 
 import BuyFooter from "@/components/transfer/buyFooter";
 
@@ -34,6 +35,7 @@ export default function Order() {
     };
 
     const [fileInfo, setDileInfo] = useState<any>({});
+    const loopTimerRef = useRef<number>(0)
 
     // 支付类型
     const [payType, changePayType] = useState(0);
@@ -41,15 +43,47 @@ export default function Order() {
     const router = useRouter();
     const orderId = router.query.order;
 
+
+    const LoopGetFiles = (data) => {
+        clearTimeout(loopTimerRef.current);
+        if (!data.zxFiles || !data.zxFiles.length) {
+            return ;
+        }
+        // 存在没有转写的则循环请求数据
+        const isNoTrans = data.zxFiles.find((item) => {
+            return item.zxStatus == 3;
+        });
+        if (!isNoTrans) {
+            return;
+        }
+        loopTimerRef.current = window.setTimeout(() => {
+            getOrderData();
+        }, 2000);
+    }
+
+    const getOrderData = () => {
+        orderDetail({ orderId: orderId }).then((res: any) => {
+            if (!res.data) {
+                toast.error("订单详情获取失败，请刷新重试");
+                return;
+            }
+            setDileInfo(res.data);
+            LoopGetFiles(res.data)
+        });
+    }
+
     useEffect(() => {
         if (!orderId) {
             return;
         }
         // cha
-        orderDetail({ orderId: orderId }).then((res: any) => {
-            res.data && setDileInfo(res.data);
-        });
+        getOrderData();
+        return () => {
+            clearTimeout(loopTimerRef.current);
+        }
     }, [orderId]);
+
+    
 
     const allFileId = useMemo(() => {
         if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {

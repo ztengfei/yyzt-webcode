@@ -249,7 +249,14 @@ export const resultUpd = (data: any) => {
     return post(`${serverIp}/client/zx/result/play/upd`, data);
 };
 
-// 转写结果保存
+// 转写订单列表 /client/zx/order/file/list
 export const zxOrderList = (data: any) => {
-    return post(`${serverIp}/client/zx/order/list`, data);
+    return post(`${serverIp}/client/zx/order/file/list`, data);
 };
+
+
+// 获取时长卡有效期  /client/fy/order/commit
+export const getCardEndDate = (data: any) => {
+    return get(`${serverIp}/client/us/card/end/date`, data);
+};
+
