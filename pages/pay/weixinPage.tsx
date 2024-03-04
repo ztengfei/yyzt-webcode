@@ -73,6 +73,9 @@ export default function Order() {
         if (router.query.back == 'tlem') { // 从订单列表购买时长卡跳转过来的页面
             Router.back();
         }
+        if (router.query.back == 'bala') {
+            Router.back();
+        }
     };
 
     // 剩余多长时间跳转页面

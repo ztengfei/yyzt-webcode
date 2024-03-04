@@ -219,6 +219,11 @@ export const fyOrderInfo = (data: { orderNum: string }) => {
     return post(`${serverIp}/client/fy/order/list`, data);
 };
 
+// 转写列表查询 {pageNum:1, pageSize:10, }
+export const zxOrderInfo = (data: { pageNum: number, pageSize:number }) => {
+    return post(`${serverIp}/client/zx/order/list`, data);
+};
+
 // 文本翻译查询
 export const txtTranslate = (data: { from: string; to: string; src_text: string }) => {
     return post(`${serverIp}/zx/xn/txt/trans`, data);
@@ -258,5 +263,11 @@ export const zxOrderList = (data: any) => {
 // 获取时长卡有效期  /client/fy/order/commit
 export const getCardEndDate = (data: any) => {
     return get(`${serverIp}/client/us/card/end/date`, data);
+};
+
+
+// 获取时长卡有效期  /client/fy/order/commit
+export const zxOrderDelete = (data: {id:string}) => {
+    return post(`${serverIp}/client/zx/order/del`, data);
 };
 

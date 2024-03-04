@@ -88,7 +88,7 @@ export default function Index() {
                 )}
             </div>
             <div className="h-[112px] bg-white w-full shadow-topxl fixed left-0 bottom-0 ">
-                <AudioControl audioTime={audioInfo.fileTime}></AudioControl>
+                {audioInfo && <AudioControl audioTime={audioInfo.fileTime}></AudioControl>}
             </div>
 
             <div className="w-[166px] h-[54px] flex justify-center items-center fixed bottom-[160px] right-[25px] bg-white rounded-[27px] shadow-topx2">

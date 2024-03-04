@@ -30,7 +30,7 @@ export default function Index() {
     const [cardType, setCardType] = useState({ id: "", type: "" });
     const router = useRouter();
     // 支付类型
-    const [payType, changePayType] = useState(0);
+    const [payType, changePayType] = useState("0");
     // 可用时长
     const [endTime, setEndTime] = useState(0.00);
 
@@ -57,16 +57,16 @@ export default function Index() {
         if (!payType) {
             return;
         }
-        if (payType == 1) {
+        if (payType == '1') {
             Router.push({
                 pathname: "/pay/weixinPage",
-                query: { cardId: cardType.id, cardPrice: cardPrice }
+                query: { cardId: cardId, cardPrice: cardPrice, back:'bala' }
             });
 
             return;
         }
         // 购买时长卡， 支付宝支付返回表单
-        buyCard({ cardId: cardType.id, payType: payType }).then((res: any) => {
+        buyCard({ cardId: cardId, payType: Number(payType) }).then((res: any) => {
             // 使用市场卡支付
             // 跳转到支付列表
             const div = document.createElement("div");
@@ -104,7 +104,7 @@ export default function Index() {
                 <div className=" py-3 text-base mb-3 w-full">
                     <RadioGroup
                         orientation="horizontal"
-                        value={payType.toString()}
+                        value={payType}
                         onValueChange={changePayType as any}
                     >
                         <PaymentRadio value={1} type="weixin" text="微信支付">
@@ -113,13 +113,11 @@ export default function Index() {
                         <PaymentRadio value={2} type="zhifubao" text="支付宝">
                             支付宝
                         </PaymentRadio>
-                        {/* <PaymentRadio value="yinlian" type="yinlian" text="银联">
-                            银联
-                        </PaymentRadio> */}
+                        
                     </RadioGroup>
                 </div>
             </div>
-            {/* 也页脚 */}
+            {/* 页脚 */}
             <div className="h-[76px] bg-white w-full">
                 <div className="h-[76px] mx-auto max-w-[1200px] flex flex-row justify-end  items-center">
                     <span className="text-sm text-93 mr-9">
