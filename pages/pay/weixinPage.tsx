@@ -25,7 +25,7 @@ import {
     orderDetail,
     userDurationList,
     cardList,
-    orderJpPay,
+    buyCardToPay,
     buyCard,
     orderRgPay,
     payStateQuery
@@ -57,12 +57,12 @@ export default function Order() {
     const cardId = router.query.cardId;
     // 市场卡价格
     const cardPrice = router.query.cardPrice;
-    // 需要调回的界面
-    const back = router.query.back; // comp // tlem
+    // 购买产品的类型和需要支付的类型
+    const payType = router.query.p; // comp // tlem
 
     // 跳转到支付订单信息界面
     const jumpToTargetPage = () => {
-        if (router.query.back == 'comp') {
+        if (router.query.p == 'm' || router.query.p == 'DM') {
             // 如果是转写订单则跳转到订单详情
             // 当前页面类型
             Router.push({
@@ -70,11 +70,14 @@ export default function Order() {
                 query: { order: orderId }
             });
         }
-        if (router.query.back == 'tlem') { // 从订单列表购买时长卡跳转过来的页面
-            Router.back();
-        }
-        if (router.query.back == 'bala') {
-            Router.back();
+        // if (router.query.p == 'DM') { // 从订单列表购买时长卡跳转过来的页面
+        //     Router.back();
+        // }
+        if (router.query.p == 'bala') { // 从商城购买时长卡
+            Router.push({
+                pathname: "/shopping/payResulte",
+                query: { order: orderId }
+            });
         }
     };
 
@@ -129,12 +132,13 @@ export default function Order() {
     };
 
     const buyCardUrl = () => {
+        const {cardId:id} = router.query;
         // 获取微信支付链接
-        if (!cardId) {
+        if (!id) {
             return;
         }
         // 购买时长卡， 支付宝支付返回表单
-        buyCard({ cardId: cardId as string, payType: 1 }).then((res: any) => {
+        buyCard({ cardId: id as string, payType: 1 }).then((res: any) => {
             createQrCode(res.data.formUrl);
             setPayOrderNum(res.data.payOrderNum);
             getPayState(res.data.payOrderNum);
@@ -149,9 +153,7 @@ export default function Order() {
         };
     }, []);
 
-    useEffect(() => {
-        buyCardUrl();
-    }, [cardId]);
+
 
     const createQrCode = (url: string) => {
         //
@@ -172,11 +174,9 @@ export default function Order() {
 
     const buyTransfereUrl = () => {
         // 获取微信支付链接
-        if (!orderId) {
-            return;
-        }
+        const {order} = router.query;
         // 购买时长卡， 支付宝支付返回表单
-        orderRgPay({ id: orderId as string, payType: 1 }).then((res: any) => {
+        orderRgPay({ id: order as string, payType: 1 }).then((res: any) => {
             console.log("res.code+++", res.code);
             if (res.code == 201) {
                 setPayState(201); // 订单已经支付完成
@@ -190,22 +190,52 @@ export default function Order() {
         });
     };
 
-    useEffect(() => {
-        if (!orderId) {
-            return;
+    const byCardTOAudio = () => {
+        console.log('router.query++++', router.query);
+        const {cardId:cId, chooseCards, order} = router.query;
+        const userCards = chooseCards ? (chooseCards as string).split(',') : [];
+        
+
+        // 购买时长卡， 支付宝支付返回表单
+        buyCardToPay({ cardId: cId as string, payType: 1, zxOrderId:order as string, chooseCards: userCards }).then((res: any) => {
+            console.log("res.code+++", res.code);
+            if (res.code == 201) {
+                setPayState(201); // 订单已经支付完成
+                changeJumpTime();
+                return;
+            }
+            createQrCode(res.data.formUrl);
+            setPayOrderNum(res.data.payOrderNum);
+            getPayState(res.data.payOrderNum);
+            setGQText();
+        });
+    }
+
+    // 分配支付
+    const distPay = () => {
+        const {p} = router.query;
+        console.log('p+++', p);
+        if (p == 'bala') {
+            buyCardUrl();
+        } else if (p == 'm') {
+            buyTransfereUrl();
+        } else if (p == 'DM') {
+            console.log('router.query++++', router.query);
+            byCardTOAudio();
         }
-        buyTransfereUrl();
-        // cha
-        // orderDetail({ orderId: orderId }).then((res) => {
-        //     res.data && setDileInfo(res.data);
-        // });
-    }, [orderId]);
+    }
+
+
+    useEffect(() => {
+        distPay();
+    }, [payType]);
+
 
     // 刷新url
     const refreshUrl = () => {
         setGQTime(60);
         countNum.current = 60;
-        buyCardUrl();
+        distPay();
     };
 
     if (payState == 201) {

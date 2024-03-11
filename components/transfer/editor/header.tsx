@@ -18,6 +18,7 @@ interface headerProps {
 }
 
 export default function OrderState({ openModal, fileInfo, orderId, audioId }: headerProps) {
+    
     const audioInfo = useMemo(() => {
         if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
             return { createTime: 0, fileTime: 0 };
@@ -25,7 +26,7 @@ export default function OrderState({ openModal, fileInfo, orderId, audioId }: he
         const audioInfo = fileInfo.zxFiles.find((item) => {
             return item.id == audioId;
         });
-        return audioInfo;
+        return audioInfo || {};
     }, [audioId, fileInfo]);
 
     const allFileId = useMemo(() => {

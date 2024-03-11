@@ -28,6 +28,7 @@ import Footer from "@/components/transfer/footer";
 import { zxFileList, zxFiledel, orderCommit, langZx, cardCount } from "@/api/api";
 
 import styles from "./index.module.css";
+import toast from "react-hot-toast";
 
 export default function Index() {
     const modalRef = useRef();
@@ -161,7 +162,7 @@ export default function Index() {
 
         // 提交转写接口
         orderCommit(param).then((res: any) => {
-            if (res.errorCode == 0) {
+            if (res.code == 200) {
                 console.log("订单提交成功+++", res);
                 if (selected == "machine") {
                     // 跳转到机器转写详情界面
@@ -176,6 +177,9 @@ export default function Index() {
                         query: { order: res.data }
                     });
                 }
+            } else {
+                const text = res.msg || '提交失败';
+                toast.error(text)
             }
         });
     };

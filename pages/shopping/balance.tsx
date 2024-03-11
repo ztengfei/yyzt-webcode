@@ -60,13 +60,13 @@ export default function Index() {
         if (payType == '1') {
             Router.push({
                 pathname: "/pay/weixinPage",
-                query: { cardId: cardId, cardPrice: cardPrice, back:'bala' }
+                query: { cardId: cardId, cardPrice: cardPrice, p:'bala' }
             });
 
             return;
         }
         // 购买时长卡， 支付宝支付返回表单
-        buyCard({ cardId: cardId, payType: Number(payType) }).then((res: any) => {
+        buyCard({ cardId: cardId as string, payType: Number(payType) }).then((res: any) => {
             // 使用市场卡支付
             // 跳转到支付列表
             const div = document.createElement("div");

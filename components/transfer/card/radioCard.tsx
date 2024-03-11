@@ -56,7 +56,7 @@ const CustomRadio = (props: any) => {
                 <Card
                     className={styles[bgClass] + " h-[127px] w-[272px] rounded-2xl  relative mb-4"}
                 >
-                    <CardHeader className="flex p-2 pl-4 pb-0">
+                    <CardHeader className="flex p-2 pl-4 pb-0 z-0">
                         {/* cardPrice={item.cardPrice}
                                         hours={item.hours}
                                         usableTime={item.usableTime}
@@ -67,6 +67,7 @@ const CustomRadio = (props: any) => {
                             radius="sm"
                             src="/images/transfer/diamond.png"
                             width={22}
+                            className="z-0"
                         />
                         <div className={`flex flex-col  text-base font-semibold`}>
                             <p className="text-md">

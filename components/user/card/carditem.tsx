@@ -16,13 +16,14 @@ import styles from "./index.module.css";
 export default function CardList() {
     return (
         <Card className={styles["bg-purple"] + " h-[127px] w-[319px] rounded-2xl  relative mb-3"}>
-            <CardHeader className="flex p-2 pl-4">
+            <CardHeader className="flex p-2 pl-4 z-0">
                 <Image
                     alt="市场卡"
                     height={17}
                     radius="sm"
                     src="/images/transfer/diamond.png"
                     width={22}
+                    className="z-0"
                 />
                 <div className="flex flex-col text-[#173A83] text-sm">
                     <p className="text-md">2小时 机器快转时长卡</p>

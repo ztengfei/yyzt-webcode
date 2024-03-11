@@ -19,7 +19,7 @@ export default function TranslateSuccess(props: footerType) {
                     <ActiveIcon size={14} className="mr-1"></ActiveIcon>解析完成
                 </div>
                 <div className="w-[58px] h-[58px] relative mx-auto mt-[100px]">
-                    <Image width={58} alt="xsl" src="/images/translate/xsl.png" />
+                    <Image width={58} alt="xsl" className="z-0" src="/images/translate/xsl.png" />
                     <ActiveIcon
                         size={20}
                         className="absolute bottom-[-5px] right-[-7px]"

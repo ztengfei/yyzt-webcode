@@ -21,25 +21,28 @@ interface cardListType {
     bgType?: string; // 月卡或者年卡
     cardTime?: any;
     cardName?: string;
+    refundCard?: ()=>void, 
+    id?:string,
+    cardStatus?:number
 }
 
 export default function CardList(props: cardListType) {
-    const { changeState, isSelected, isShowCheck, bgType, cardTime, cardName } = props;
+    const { changeState, isSelected, isShowCheck, bgType, cardTime, cardName, refundCard, cardStatus } = props;
     // const [isSelected, setIsSelected] = useState(false);
 
     // 组件背景颜色
     const bgClass = "bg-" + bgType;
     const textColor = bgType == "purple" ? "text-[#173A83]" : "text-[#994712]";
-
+    
     return (
         <div
-            className="h-[127px] w-[272px] rounded-2xl mr-2"
+            className="h-[127px] w-[319px] rounded-2xl mb-4"
             onClick={() => {
                 console.log("12312312312332");
                 changeState && changeState();
             }}
         >
-            <Card className={styles[bgClass] + " h-[127px] w-[272px] rounded-2xl  relative"}>
+            <Card className={styles[bgClass] + " h-[127px] w-[319px]  rounded-2xl  relative"}>
                 <div className="w-[121px] h-[80px] absolute right-0 bottom-10 bg-card-img bg-cover bg-no-repeat z-0"></div>
                 <CardHeader className="flex p-2 pl-4 z-0">
                     <Image
@@ -67,17 +70,13 @@ export default function CardList(props: cardListType) {
                     <span className={`${textColor}  text-xs opacity-55`}>
                         有效期：{formatDate(cardTime.endDate)}
                     </span>
-                    {/* <Button className=" text-f602 bg-white rounded-2xl w-[78px] max-w-[78px] h-[32px]">
-                    兑换中心
-                </Button> */}
-                    {isShowCheck && (
-                        <div
-                            className={
-                                (isSelected ? "bg-radio-active" : "bg-radio") +
-                                " w-[22px] h-[22px] rounded-full cursor-pointer"
-                            }
-                        ></div>
-                    )}
+                    {cardStatus == 0 && <Button className="bg-white rounded-2xl w-[68px] max-w-[68px] h-[30px] min-h-[30px]" onClick={()=>{refundCard && refundCard()}}>
+                        退卡
+                    </Button>}
+                    <Button className="bg-white rounded-2xl w-[68px] max-w-[68px] h-[30px] min-h-[30px]" onClick={()=>{refundCard && refundCard()}}>
+                        退卡
+                    </Button>
+                    
                 </CardFooter>
             </Card>
         </div>

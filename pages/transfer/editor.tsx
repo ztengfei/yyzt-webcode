@@ -8,9 +8,11 @@ import EditorHeader from "@/components/transfer/editor/header";
 import Editor, { MentionElement } from "@/components/common/editor";
 import AudioControl from "@/components/transfer/audioControl";
 import Link from "next/link";
-import { getZXResultDetail, orderDetail } from "@/api/api";
+import { getZXResultDetail, orderDetail, getFileUrl } from "@/api/api";
+import Audio from '@/components/common/audio';
 
 import { toEditorData } from "@/components/common/editor/tool";
+import toast from "react-hot-toast";
 
 export default function Index() {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -19,7 +21,9 @@ export default function Index() {
     const [initEditorData, setEditorData] = useState();
     // 当前转写订单中对应的详情
     const [fileInfo, setDileInfo] = useState<any>({});
-
+    // 当前音频的url
+    const [audioUrl, setAudioUrl] = useState<string>('');
+    const [audioTime, setAudioTime] = useState<number>(0);
     const router = useRouter();
     // 当前音频对应的id
     const audioId = router.query.id;
@@ -52,7 +56,22 @@ export default function Index() {
     useEffect(() => {
         // 获取当前界面的内容详情
         getTransferResult();
+        audioId && getFileUrl({id: audioId as string}).then((res:any)=>{
+            console.log('res+++++', res);
+            if (res.code != 200) {
+                toast.error('播放音频获取失败')
+                return
+            }
+            setAudioUrl(res.data.downUrl);
+            setAudioTime(res.data.time);
+        })
+
+
     }, [audioId]);
+
+    useMemo(()=>{
+        
+    }, [])
 
     const audioInfo = useMemo(() => {
         if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
@@ -88,9 +107,9 @@ export default function Index() {
                 )}
             </div>
             <div className="h-[112px] bg-white w-full shadow-topxl fixed left-0 bottom-0 ">
-                {audioInfo && <AudioControl audioTime={audioInfo.fileTime}></AudioControl>}
+                <AudioControl audioTime={audioTime}></AudioControl>
             </div>
-
+            {/* <Audio audioUrl={audioUrl}></Audio> */}
             <div className="w-[166px] h-[54px] flex justify-center items-center fixed bottom-[160px] right-[25px] bg-white rounded-[27px] shadow-topx2">
                 <Image src="/images/transfer/people.png" alt="人工校对"></Image>
                 <Link href={"/transfer"} className="text-f602 text-sm ml-1">

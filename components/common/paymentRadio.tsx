@@ -36,7 +36,7 @@ const PaymentRadio = (props: any) => {
                     "flex justify-center items-center w-full h-full bg-white rounded-lg mr-3"
                 }
             >
-                <Image src={url}></Image>
+                <Image src={url} className="z-0"></Image>
                 <span className="ml-2">{props.text}</span>
             </div>
         </Component>

@@ -11,6 +11,7 @@ export default function OrderState() {
                     width={67}
                     height={65}
                     alt="审核"
+                    className="z-0"
                 ></Image>
                 <span className="text-base mt-1">
                     人工精转订单<span className="text-[#09C438]">审核成功</span>-待支付

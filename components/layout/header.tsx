@@ -94,7 +94,6 @@ function Header() {
 
     const onScrollPositionChange = useCallback(
         (position: number) => {
-            console.log("position++++", position, navStyle);
             if (path !== "/" && path.indexOf("login") == -1) {
                 // 部分页面导航底色为白色不需要重新替换导航颜色
                 return;

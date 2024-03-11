@@ -220,6 +220,41 @@ function Upload(props: uploadProps) {
         }
     };
 
+    const calculateFileMd5 = (file:any, chunkSize:number, callback:any) => {  
+        const chunks = Math.ceil(file.size / chunkSize);  
+        let spark = new Array(chunks);  
+        let currentChunk = 0;  
+        let loaded = 0;  
+        let hash = 0;  
+      
+        function loadNext() {  
+            const start = currentChunk * chunkSize;  
+            const end = Math.min(file.size, start + chunkSize);  
+            const chunk = file.slice(start, end);  
+      
+            const reader = new FileReader();  
+            reader.onload = function(e) {  
+                loaded += e.total;  
+                const chunkHash = md5.arrayBuffer(e.target.result);  
+                hash = md5.hmacUpdate(hash, chunkHash);  
+      
+                currentChunk++;  
+                if (currentChunk < chunks) {  
+                    loadNext();  
+                } else {  
+                    const finalHash = md5.hmacFinal(hash);  
+                    callback(null, finalHash);  
+                }  
+            };  
+            reader.onerror = function() {  
+                callback(new Error('Error reading file chunk'));  
+            };  
+            reader.readAsArrayBuffer(chunk);  
+        }  
+      
+        loadNext();  
+    } 
+
     const calculateMd5 = (file) => {
         return new Promise((resolve:(value: string) => void, reject) => {
             const reader = new FileReader();
@@ -235,6 +270,7 @@ function Upload(props: uploadProps) {
                         
                 // 将ArrayBuffer转换为Uint8Array类型
                 const uint8Array:any = new Uint8Array(buffer);
+                console.log('uint8Array++++', uint8Array);
                 // 初始化CryptoJS库
                 // CryptoJS.util.bin.words[0] = 123456789;
                 // CryptoJS.util.bin.words[1] = 987654321;
