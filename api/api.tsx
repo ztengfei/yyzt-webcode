@@ -193,8 +193,12 @@ export const orderJpPay = (data: { id: string; cardIds: string[] }) => {
     return post(`${serverIp}/client/zx/order/jq/pay`, data);
 };
 
-
-export const buyCardToPay = (data: { cardId: string, payType: number, zxOrderId:string, chooseCards:string[] }) => {
+export const buyCardToPay = (data: {
+    cardId: string;
+    payType: number;
+    zxOrderId: string;
+    chooseCards: string[];
+}) => {
     return post(`${serverIp}/client/us/card/buy/to/pay`, data);
 };
 
@@ -224,7 +228,7 @@ export const fyOrderInfo = (data: { orderNum: string }) => {
 };
 
 // 转写列表查询 {pageNum:1, pageSize:10, }
-export const zxOrderInfo = (data: { pageNum: number, pageSize:number }) => {
+export const zxOrderInfo = (data: { pageNum: number; pageSize: number }) => {
     return post(`${serverIp}/client/zx/order/list`, data);
 };
 
@@ -269,26 +273,26 @@ export const getCardEndDate = (data: any) => {
 };
 
 // 获取时长卡有效期  /client/fy/order/commit
-export const zxOrderDelete = (data: {id:string}) => {
+export const zxOrderDelete = (data: { id: string }) => {
     return post(`${serverIp}/client/zx/order/del`, data);
 };
 
 // 退卡
-export const cardRefund = (data: {id:string}) => {
+export const cardRefund = (data: { id: string }) => {
     return post(`${serverIp}/client/us/card/apply/refund`, data);
 };
 
 // /client/zx/sour/file/url
-export const getFileUrl = (data: {id:string}) => {
+export const getFileUrl = (data: { id: string }) => {
     return post(`${serverIp}/client/zx/sour/file/url`, data);
 };
 
 // 获取转写金额计算订单 /client/zx/order/jq/get/money
-export const getMoney = (data: {id:string}) => {
+export const getMoney = (data: { id: string; cardIds: string[]; buyCardId: string }) => {
     return post(`${serverIp}/client/zx/order/jq/get/money`, data);
 };
 
-
-
-
-
+//
+export const orderPay = (data: { id: string; cardIds: string[]; buyCardId: string; payType }) => {
+    return post(`${serverIp}/client/zx/order/jq/pay2`, data);
+};

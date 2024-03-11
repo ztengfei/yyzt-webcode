@@ -31,22 +31,24 @@ import {
     orderJpPay,
     buyCard,
     orderRgPay,
-    buyCardToPay
+    buyCardToPay,
+    getMoney,
+    orderPay
 } from "@/api/api";
 import { secondsToHMS } from "@/components/tool";
 
 import styles from "./index.module.css";
+import toast from "react-hot-toast";
 
 export default function Index() {
     const allCardList = useRef([]);
     // 时长卡类型
-    const [cardId, setCardId] = useState('');
+    const [cardId, setCardId] = useState("");
     // 选择了自己的时长卡
-    const [selectUserCard, setSelectUserCard] = useState<string[]>([])
+    const [selectUserCard, setSelectUserCard] = useState<string[]>([]);
 
     // 是否展示 购买时长卡和支付按钮
-    const [isShowPay, setIsShowPay] = useState<boolean>(true)
-
+    const [isShowPay, setIsShowPay] = useState<boolean>(true);
 
     const router = useRouter();
     const [userCard, setUserCard] = useState<any[]>([]);
@@ -55,7 +57,7 @@ export default function Index() {
     const [yearCardList, setYearCardList] = useState<any[]>([]);
     const [payType, changePayType] = useState(1);
     // 支付金额
-    // const [payPrice, setPayPrice] = useState("0.00");
+    const [payAmount, setPayAmount] = useState("0.00");
     const orderId = router.query.order;
     const splitCard = (allList: any, time) => {
         let moonList: any[] = [];
@@ -81,14 +83,14 @@ export default function Index() {
             if (!AllList) {
                 return;
             }
-            
+
             const fileAllTIme = getAllTime(data);
             const { moonList, yearList } = splitCard(AllList, fileAllTIme);
             setmoonCardList(moonList);
             setYearCardList(yearList);
             console.log(res);
         });
-    }
+    };
 
     useEffect(() => {
         if (!orderId) {
@@ -111,9 +113,7 @@ export default function Index() {
             time += item.fileTime;
         });
         return time;
-    }
-
-    
+    };
 
     useEffect(() => {
         // 当前选中的界面，如果没有默认个人信息
@@ -123,7 +123,6 @@ export default function Index() {
                 setUserCard(res.data);
             }
         });
-        
     }, []);
 
     const getCardItem = (id: string): any => {
@@ -143,7 +142,12 @@ export default function Index() {
             let cardInfo = getCardItem(cardId);
             Router.push({
                 pathname: "/pay/weixinPage",
-                query: { cardId: cardId, cardPrice: cardInfo ? cardInfo.cardPrice : 0, order: orderId, p:'tlem' }
+                query: {
+                    cardId: cardId,
+                    cardPrice: cardInfo ? cardInfo.cardPrice : 0,
+                    order: orderId,
+                    p: "tlem"
+                }
             });
 
             return;
@@ -171,13 +175,24 @@ export default function Index() {
             let cardInfo = getCardItem(cardId);
             Router.push({
                 pathname: "/pay/weixinPage",
-                query: { cardId: cardId, cardPrice: cardInfo ? cardInfo.cardPrice : 0, order: orderId, chooseCards: selectUserCard.join(','), p:'DM' }
+                query: {
+                    cardId: cardId,
+                    cardPrice: cardInfo ? cardInfo.cardPrice : 0,
+                    order: orderId,
+                    chooseCards: selectUserCard.join(","),
+                    p: "DM"
+                }
             });
 
             return;
         }
         // 购买时长卡， 支付宝支付返回表单
-        buyCardToPay({ cardId: cardId, payType: payType, zxOrderId:orderId as string, chooseCards:selectUserCard }).then((res: any) => {
+        buyCardToPay({
+            cardId: cardId,
+            payType: payType,
+            zxOrderId: orderId as string,
+            chooseCards: selectUserCard
+        }).then((res: any) => {
             // 使用市场卡支付
             // 跳转到支付列表
             const div = document.createElement("div");
@@ -194,7 +209,7 @@ export default function Index() {
             // 跳转到使用微信支付界面
             Router.push({
                 pathname: "/pay/weixinPage",
-                query: { order: orderId, p:'m' }
+                query: { order: orderId, p: "m" }
             });
             return;
         }
@@ -209,22 +224,58 @@ export default function Index() {
             fromEl && fromEl.submit();
         });
     };
-
     const submit = () => {
+        orderPay({
+            id: orderId as string,
+            cardIds: selectUserCard,
+            buyCardId: cardId,
+            payType
+        }).then((res: any) => {
+            if (res.code != 200) {
+                toast.error(res.msg);
+                return;
+            }
+            if (res.data.payStatus == 1) {
+                // 使用市场卡支付
+                // 跳转到详情列表
+                Router.push({
+                    pathname: "/transfer/complete",
+                    query: { order: orderId }
+                });
+            }
 
+            if (payType == 1) {
+                // 购买时长卡使用微信支付，需要跳转到微信支付界面，微信支付返回链接
+                Router.push({
+                    pathname: "/pay/weixinPage",
+                    query: {
+                        cardId: cardId,
+                        cardPrice: payAmount,
+                        order: orderId, // 订单id
+                        chooseCards: selectUserCard.join(","), // 选择的时长卡
+                        p: "DM"
+                        // payOrderNum: res.data.payOrderNum // 订单号
+                    }
+                });
+
+                return;
+            }
+        });
+    };
+
+    const submit_back = () => {
         // 纯现金支付
         if (!selectUserCard && !cardId && payType) {
-            payOrder(); 
+            payOrder();
         }
 
-        
         // 选中我的时长卡时长卡的总时长
         let cardAllTime = 0;
-        userCard.forEach((item)=>{
+        userCard.forEach((item) => {
             if (selectUserCard.includes(item.id)) {
                 cardAllTime += item.cardTime.usableTime;
             }
-        })
+        });
         // 选择了自己的时长卡 已经购买的时长卡足够使用
         if (cardAllTime >= allTime) {
             // 时长足够使用时长卡支付
@@ -235,17 +286,17 @@ export default function Index() {
                     pathname: "/transfer/complete",
                     query: { order: orderId }
                 });
-                return
+                return;
             });
-            return '0.00'
+            return "0.00";
         }
 
         // 购买时长卡的时长
         let payCardTime = 0;
         let payCardPrice = 0; // 购买时长卡的价钱
         if (cardId) {
-            const cardInfo = getCardItem(cardId)
-            payCardPrice += cardInfo.cardPrice
+            const cardInfo = getCardItem(cardId);
+            payCardPrice += cardInfo.cardPrice;
             payCardTime += cardInfo.usableTime;
         }
 
@@ -257,73 +308,20 @@ export default function Index() {
             goByCard();
             return;
         }
-
-        // TODO 时长卡不够还要选择其他的卡
-
-
-        
-
-
-        // 支付方式都没有选择
-        // if (!cardId && !payType) {
-        //     return;
-        // }
-        // // 没有选择时长卡支付或者购买时长卡支付
-        // if (!cardId && payType) {
-        //     payOrder(); // 直接使用现金支付
-        //     return;
-        // }
-        // // 当前是机器转写，并且使用市场卡支付
-        // if (cardType.type == "user") {
-        //     orderJpPay({ id: fileInfo.id, cardIds: [cardId] }).then((res: any) => {
-        //         // 使用市场卡支付
-        //         // 跳转到详情列表
-        //         Router.push({
-        //             pathname: "/transfer/complete",
-        //             query: { order: orderId }
-        //         });
-        //     });
-        //     return;
-        // } else {
-        //     goByCard();
-        //     return;
-        // }
-
-        // 当前是人工转写，没有时长卡
-        // if (fileInfo.zxFiles[0].zxType == 2) {
-        //     orderRgPay({ id: fileInfo.id, payType: payType });
-        // }
-
-        // orderJpPay({});
-        // Router.push({
-        //     pathname: "/transfer/complete",
-        //     query: { name: "Zeit" }
-        // });
     };
 
     // 修改时长卡类型
     const changeCardType = (key: string, type?: string) => {
         if (!key) {
-            setCardId('');
+            setCardId("");
             return;
         }
         setCardId(key);
-
-        // if (type == "user") {
-        //     setPayPrice("0.00");
-        // } else {
-        //     // 购买时长卡使用微信支付，需要跳转到微信支付界面，微信支付返回链接
-        //     const cardInfo1 = getCardItem(cardType.id) || { cardPrice: "0.00" };
-        //     setPayPrice(cardInfo1.cardPrice);
-        // }
-
-        // setCardType({ id: key, type: type || "newCard" });
     };
-    
 
     // 上传的全部音频时间
     const allTime = useMemo(() => {
-        return getAllTime(fileInfo)
+        return getAllTime(fileInfo);
         // if (!fileInfo || !fileInfo.zxFiles || !fileInfo.zxFiles.length) {
         //     return 0;
         // }
@@ -346,55 +344,52 @@ export default function Index() {
         // 获取选中时长卡的总时长
         // setIsShowPay(false)
         let cardAllTime = 0;
-        userCard.forEach((item)=>{
+        userCard.forEach((item) => {
             if (cardIds.includes(item.id)) {
                 cardAllTime += item.cardTime.usableTime;
             }
-        })
-        console.log('已选择时长卡时间+++', cardAllTime, allTime);
+        });
+        console.log("已选择时长卡时间+++", cardAllTime, allTime);
         if (cardAllTime > (allTime as number)) {
-            setIsShowPay(false)
-            changeCardType('');
+            setIsShowPay(false);
+            changeCardType("");
         } else {
-            setIsShowPay(true)
+            setIsShowPay(true);
         }
 
-
         setSelectUserCard([...cardIds]);
-    }
+    };
 
-    
     const getSelectedRend = () => {
         if (userCard && userCard.length) {
             if (selectUserCard.length) {
                 return <span className=" text-f602">（已选）</span>;
             }
-            return '';
+            return "";
         } else {
             return <span className="text-bc">（暂无）</span>;
         }
-    }
+    };
 
-    const payPrice = useMemo(()=>{
-        
+    const payPrice = useMemo(() => {
         // 选中我的时长卡时长卡的总时长
         let cardAllTime = 0;
-        userCard.forEach((item)=>{
+        userCard.forEach((item) => {
             if (selectUserCard.includes(item.id)) {
                 cardAllTime += item.cardTime.usableTime;
             }
-        })
+        });
         // 已经购买的时长卡足够使用
         if (cardAllTime >= allTime) {
-            return '0.00'
+            return "0.00";
         }
 
         // 购买时长卡的时长
         let payCardTime = 0;
         let payCardPrice = 0; // 购买时长卡的价钱
         if (cardId) {
-            const cardInfo = getCardItem(cardId)
-            payCardPrice += cardInfo.cardPrice
+            const cardInfo = getCardItem(cardId);
+            payCardPrice += cardInfo.cardPrice;
             payCardTime += cardInfo.usableTime;
         }
 
@@ -402,17 +397,38 @@ export default function Index() {
         const surplus = allTime - cardAllTime - payCardTime;
         // 新购买的时长卡足够支付，则只需要支付时长卡的费用
         if (surplus <= 0) {
-            return payCardPrice.toString()
+            return payCardPrice.toString();
         }
         // 旧时长卡时间 + 新购买时长卡时间，不够支付转写时间，则按照单价计费
-        const payNum = Math.ceil(surplus/60) * fileInfo.unitPrice;
-        console.log('Math.ceil(surplus/60), surplus', Math.ceil(surplus/60), surplus, allTime , cardAllTime , payCardTime );
+        const payNum = Math.ceil(surplus / 60) * fileInfo.unitPrice;
+        console.log(
+            "Math.ceil(surplus/60), surplus",
+            Math.ceil(surplus / 60),
+            surplus,
+            allTime,
+            cardAllTime,
+            payCardTime
+        );
         return (payCardPrice + payNum).toString();
         // 单价 unitPrice
         // console.log('allTime, payCardTime, payCardPrice, cardAllTime, fileInfo', allTime, payCardTime, payCardPrice, cardAllTime, fileInfo);
+    }, [fileInfo, userCard, cardId, selectUserCard]);
 
+    // 获取支付金额
 
-    }, [fileInfo, userCard, cardId, selectUserCard])
+    useEffect(() => {
+        getMoney({
+            id: orderId as string,
+            cardIds: selectUserCard,
+            buyCardId: cardId
+        }).then((res: any) => {
+            if (res.code == 200) {
+                setPayAmount(res.data.payAmount);
+            }
+            console.log("res++++", res);
+        });
+        // return (payCardPrice + payNum).toString();
+    }, [fileInfo, userCard, cardId, selectUserCard, orderId]);
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
@@ -447,7 +463,7 @@ export default function Index() {
                                     key={item.id}
                                     isShowCheck
                                     changeState={() => {
-                                        changeUserCard(item.id)
+                                        changeUserCard(item.id);
                                     }}
                                     isSelected={selectUserCard.includes(item.id)}
                                     bgType={item.cardName.indexOf("月") > -1 ? "moon" : "year"}
@@ -456,77 +472,76 @@ export default function Index() {
                             );
                         })}
                 </div>
-                {isShowPay && 
-                <div>
-                    <div className="mt-5 mb-4">
-                        <span>畅想套餐</span>
-                    </div>
+                {isShowPay && (
                     <div>
-                        <RadioGroup
-                            orientation="horizontal"
-                            classNames={{
-                                base: cn("flex-row flex-nowrap flex-1"),
-                                wrapper: cn("flex-row flex-nowrap flex-1")
-                            }}
-                            value={cardId}
-                            onValueChange={changeCardType}
-                        >
-                            <div className=" bg-white rounded-xl p-2 flex-1">
-                                <div className=" text-lg font-semibold  p-2 mb-1">包月畅想</div>
-                                {moonCardList.map((item: any) => {
-                                    return (
-                                        <RadioCard
-                                            key={item.id}
-                                            value={item.id}
-                                            cardType={item.cardType}
-                                            hours={item.hours}
-                                            usableTime={item.usableTime}
-                                            cardName={item.cardName}
-                                            origPrice={item.origPrice}
-                                            cardPrice={item.cardPrice}
-                                            bgType="moon"
-                                        ></RadioCard>
-                                    );
-                                })}
-
-
-                            </div>
-                            <div className=" bg-white rounded-xl p-2 flex-1">
-                                <div className=" text-lg font-semibold  p-2 mb-1">年度时长</div>
-
-                                {yearCardList.map((item: any) => {
-                                    return (
-                                        <RadioCard
-                                            key={item.id}
-                                            value={item.id}
-                                            cardType={item.cardType}
-                                            hours={item.hours}
-                                            usableTime={item.usableTime}
-                                            cardName={item.cardName}
-                                            origPrice={item.origPrice}
-                                            cardPrice={item.cardPrice}
-                                            bgType="year"
-                                        ></RadioCard>
-                                    );
-                                })}
-
-                            </div>
-                        </RadioGroup>
-                        {cardId && (
-                            <div
-                                className="text-93 text-xs cursor-pointer py-3"
-                                onClick={() => {
-                                    changeCardType("");
+                        <div className="mt-5 mb-4">
+                            <span>畅想套餐</span>
+                        </div>
+                        <div>
+                            <RadioGroup
+                                orientation="horizontal"
+                                classNames={{
+                                    base: cn("flex-row flex-nowrap flex-1"),
+                                    wrapper: cn("flex-row flex-nowrap flex-1")
                                 }}
+                                value={cardId}
+                                onValueChange={changeCardType}
                             >
-                                放弃优惠
-                            </div>
-                        )}
+                                <div className=" bg-white rounded-xl p-2 flex-1">
+                                    <div className=" text-lg font-semibold  p-2 mb-1">包月畅想</div>
+                                    {moonCardList.map((item: any) => {
+                                        return (
+                                            <RadioCard
+                                                key={item.id}
+                                                value={item.id}
+                                                cardType={item.cardType}
+                                                hours={item.hours}
+                                                usableTime={item.usableTime}
+                                                cardName={item.cardName}
+                                                origPrice={item.origPrice}
+                                                cardPrice={item.cardPrice}
+                                                bgType="moon"
+                                            ></RadioCard>
+                                        );
+                                    })}
+                                </div>
+                                <div className=" bg-white rounded-xl p-2 flex-1">
+                                    <div className=" text-lg font-semibold  p-2 mb-1">年度时长</div>
+
+                                    {yearCardList.map((item: any) => {
+                                        return (
+                                            <RadioCard
+                                                key={item.id}
+                                                value={item.id}
+                                                cardType={item.cardType}
+                                                hours={item.hours}
+                                                usableTime={item.usableTime}
+                                                cardName={item.cardName}
+                                                origPrice={item.origPrice}
+                                                cardPrice={item.cardPrice}
+                                                bgType="year"
+                                            ></RadioCard>
+                                        );
+                                    })}
+                                </div>
+                            </RadioGroup>
+                            {cardId && (
+                                <div
+                                    className="text-93 text-xs cursor-pointer py-3"
+                                    onClick={() => {
+                                        changeCardType("");
+                                    }}
+                                >
+                                    放弃优惠
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>}
-                
-                {isShowPay && <div>
-                    <div className="mt-5 mb-4 text-base">请选择支付方式</div>
+                )}
+
+                {isShowPay && (
+                    <div>
+                        <div className="mt-5 mb-4 text-base">请选择支付方式</div>
                         <div className=" py-3 text-base mb-3 w-full">
                             <RadioGroup
                                 orientation="horizontal"
@@ -544,10 +559,10 @@ export default function Index() {
                                 </PaymentRadio> */}
                             </RadioGroup>
                         </div>
-                </div>}
-                
+                    </div>
+                )}
             </div>
-            <BuyFooter submit={submit} zxPrice={payPrice}></BuyFooter>
+            <BuyFooter submit={submit} zxPrice={payAmount}></BuyFooter>
         </div>
     );
 }

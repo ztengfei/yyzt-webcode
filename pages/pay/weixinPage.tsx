@@ -28,7 +28,8 @@ import {
     buyCardToPay,
     buyCard,
     orderRgPay,
-    payStateQuery
+    payStateQuery,
+    orderPay
 } from "@/api/api";
 
 export default function Order() {
@@ -62,7 +63,7 @@ export default function Order() {
 
     // 跳转到支付订单信息界面
     const jumpToTargetPage = () => {
-        if (router.query.p == 'm' || router.query.p == 'DM') {
+        if (router.query.p == "m" || router.query.p == "DM") {
             // 如果是转写订单则跳转到订单详情
             // 当前页面类型
             Router.push({
@@ -73,7 +74,8 @@ export default function Order() {
         // if (router.query.p == 'DM') { // 从订单列表购买时长卡跳转过来的页面
         //     Router.back();
         // }
-        if (router.query.p == 'bala') { // 从商城购买时长卡
+        if (router.query.p == "bala") {
+            // 从商城购买时长卡
             Router.push({
                 pathname: "/shopping/payResulte",
                 query: { order: orderId }
@@ -132,7 +134,7 @@ export default function Order() {
     };
 
     const buyCardUrl = () => {
-        const {cardId:id} = router.query;
+        const { cardId: id } = router.query;
         // 获取微信支付链接
         if (!id) {
             return;
@@ -153,8 +155,6 @@ export default function Order() {
         };
     }, []);
 
-
-
     const createQrCode = (url: string) => {
         //
         if (!canvasRef.current) {
@@ -174,7 +174,7 @@ export default function Order() {
 
     const buyTransfereUrl = () => {
         // 获取微信支付链接
-        const {order} = router.query;
+        const { order } = router.query;
         // 购买时长卡， 支付宝支付返回表单
         orderRgPay({ id: order as string, payType: 1 }).then((res: any) => {
             console.log("res.code+++", res.code);
@@ -191,45 +191,48 @@ export default function Order() {
     };
 
     const byCardTOAudio = () => {
-        console.log('router.query++++', router.query);
-        const {cardId:cId, chooseCards, order} = router.query;
-        const userCards = chooseCards ? (chooseCards as string).split(',') : [];
-        
+        console.log("router.query++++", router.query);
+        const { cardId: cId, chooseCards, order } = router.query;
+        const userCards = chooseCards ? (chooseCards as string).split(",") : [];
 
         // 购买时长卡， 支付宝支付返回表单
-        buyCardToPay({ cardId: cId as string, payType: 1, zxOrderId:order as string, chooseCards: userCards }).then((res: any) => {
+        orderPay({
+            id: order as string,
+            buyCardId: cId as string,
+            payType: 1,
+            cardIds: userCards
+        }).then((res: any) => {
             console.log("res.code+++", res.code);
-            if (res.code == 201) {
+            if (res.code == 201 || res.data.payOrderNum == 1) {
                 setPayState(201); // 订单已经支付完成
                 changeJumpTime();
                 return;
             }
+
             createQrCode(res.data.formUrl);
             setPayOrderNum(res.data.payOrderNum);
             getPayState(res.data.payOrderNum);
             setGQText();
         });
-    }
+    };
 
     // 分配支付
     const distPay = () => {
-        const {p} = router.query;
-        console.log('p+++', p);
-        if (p == 'bala') {
+        const { p } = router.query;
+        console.log("p+++", p);
+        if (p == "bala") {
             buyCardUrl();
-        } else if (p == 'm') {
+        } else if (p == "m") {
             buyTransfereUrl();
-        } else if (p == 'DM') {
-            console.log('router.query++++', router.query);
+        } else if (p == "DM") {
+            console.log("router.query++++", router.query);
             byCardTOAudio();
         }
-    }
-
+    };
 
     useEffect(() => {
         distPay();
     }, [payType]);
-
 
     // 刷新url
     const refreshUrl = () => {
