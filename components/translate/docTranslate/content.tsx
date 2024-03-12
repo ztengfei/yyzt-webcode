@@ -1,5 +1,5 @@
 // import Layout from "@/components/layout";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import {
     Table,
     TableHeader,
@@ -11,6 +11,7 @@ import {
 } from "@nextui-org/table";
 import DeleteIcon from "@/components/icon/delete";
 import { Button, Chip } from "@nextui-org/react";
+import { fyOrderList } from "@/api/api";
 
 // 状态对应的颜色map
 const statusColorMap: any = {
@@ -79,6 +80,7 @@ const columns: any = [
 ];
 
 export default function KeyWordAndList(props: any) {
+    const { isFree } = props;
     const renderCell = useCallback((user: any, columnKey: any) => {
         const cellValue = user[columnKey];
 
@@ -107,17 +109,25 @@ export default function KeyWordAndList(props: any) {
         }
     }, []);
 
+    const getFyFilesList = () => {
+        // fyOrderList().then();
+    };
+
+    useEffect(() => {}, []);
+
     return (
         <>
-            <div className="w-[462px] p-2 bg-white rounded-lg flex flex-row items-center text-f602 text-sm mt-1">
-                <span className="inline-block w-[14px] h-[14px] text-center rounded-lg bg-f602 text-white text-xs mr-1">
-                    !
-                </span>
-                <span>中英日韩等多种语言翻译·更地道·更快速·排版准确</span>
-                <span className=" inline-block px-2 py-1 bg-[#FFF6F1] border border-f602 rounded ml-4">
-                    🔥限时免费
-                </span>
-            </div>
+            {!isFree && (
+                <div className="w-[462px] p-2 bg-white rounded-lg flex flex-row items-center text-f602 text-sm mt-1">
+                    <span className="inline-block w-[14px] h-[14px] text-center rounded-lg bg-f602 text-white text-xs mr-1">
+                        !
+                    </span>
+                    <span>中英日韩等多种语言翻译·更地道·更快速·排版准确</span>
+                    <span className=" inline-block px-2 py-1 bg-[#FFF6F1] border border-f602 rounded ml-4">
+                        🔥限时免费
+                    </span>
+                </div>
+            )}
             <div className="text-lg font-semibold mt-5 mb-4">上传文件（3）</div>
             <Table
                 aria-label="Example table with dynamic content"

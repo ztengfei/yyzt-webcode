@@ -223,7 +223,7 @@ export const fyCommit = (data: { upFileId: string; lanFrom: string; lanTo: strin
 };
 
 // 翻译订单查询
-export const fyOrderInfo = (data: { orderNum: string }) => {
+export const fyOrderList = (data: { orderNum: string }) => {
     return post(`${serverIp}/client/fy/order/list`, data);
 };
 

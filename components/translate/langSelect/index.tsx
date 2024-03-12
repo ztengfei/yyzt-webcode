@@ -17,8 +17,8 @@ const LanguageSelect = (props: uploadProps, ref: any) => {
             ? "flex flex-row w-full justify-between items-center"
             : "flex flex-row w-full mt-4 justify-between items-center";
     const { languages = [], languageChange } = props;
-    const [lanFrom, setLanFrom] = useState([]);
-    const [lanTo, setLanTo] = useState([]);
+    const [lanFrom, setLanFrom] = useState(["zh"]);
+    const [lanTo, setLanTo] = useState(["en"]);
 
     useImperativeHandle(ref, () => ({
         getSelectedLan: () => {
@@ -60,6 +60,7 @@ const LanguageSelect = (props: uploadProps, ref: any) => {
                 selectedKeys={lanFrom}
                 disallowEmptySelection
                 onSelectionChange={lanFromChange}
+                defaultSelectedKeys={["zh"]}
             >
                 {languages.map((item) => (
                     <SelectItem key={item.value} value={item.value}>
@@ -79,6 +80,7 @@ const LanguageSelect = (props: uploadProps, ref: any) => {
                 selectedKeys={lanTo}
                 disallowEmptySelection
                 onSelectionChange={lanToChange}
+                defaultSelectedKeys={["en"]}
             >
                 {languages.map((item) => (
                     <SelectItem key={item.value} value={item.value}>

@@ -35,6 +35,7 @@ import styles from "./index.module.css";
 import PaymentRadio from "@/components/common/paymentRadio";
 
 export default function Index() {
+    const [isFree, setIsFree] = useState(true);
     const modalRef = useRef();
     const [selected, setSelected] = useState("text");
     const [language, setLanuage] = useState();
@@ -85,7 +86,7 @@ export default function Index() {
                         <Tab key="doc" title="文档翻译">
                             <form className="flex flex-col h-full">
                                 {/* 文件上传组件 */}
-                                <Upload languages={language as any}></Upload>
+                                <Upload languages={language as any} isFree={isFree}></Upload>
                             </form>
                         </Tab>
                         <Tab key="text" title="文本翻译">
@@ -97,45 +98,47 @@ export default function Index() {
                     </Tabs>
                 </div>
                 <div className="flex flex-1 flex-col pl-3.5">
-                    {selected == "doc" && <DocContent></DocContent>}
+                    {selected == "doc" && <DocContent isFree={isFree}></DocContent>}
                     {selected == "text" && (
                         <TextContent translateText={translateText}></TextContent>
                     )}
                 </div>
             </div>
-            <div className="h-[76px] bg-white w-full">
-                <div className="h-[76px] mx-auto max-w-[1200px] flex flex-row justify-between  items-center">
-                    <div>
-                        <RadioGroup
-                            orientation="horizontal"
-                            value={payType as any}
-                            onValueChange={changePayType as any}
-                        >
-                            <PaymentRadio value={1} type="weixin" text="微信支付">
-                                微信支付
-                            </PaymentRadio>
-                            <PaymentRadio value={2} type="zhifubao" text="支付宝">
-                                支付宝
-                            </PaymentRadio>
-                        </RadioGroup>
-                    </div>
-                    <div>
-                        <span className=" text-base text-black">
-                            应付金额：<span className="text-f602">￥{80}</span>
-                        </span>
-                        <Button
-                            color="primary"
-                            className="w-[150px] h-[46px] ml-9 min-h-[46px]"
-                            onClick={() => {
-                                console.log("确认支付");
-                                // props.submit && props.submit();
-                            }}
-                        >
-                            确认支付
-                        </Button>
+            {!isFree && (
+                <div className="h-[76px] bg-white w-full">
+                    <div className="h-[76px] mx-auto max-w-[1200px] flex flex-row justify-between  items-center">
+                        <div>
+                            <RadioGroup
+                                orientation="horizontal"
+                                value={payType as any}
+                                onValueChange={changePayType as any}
+                            >
+                                <PaymentRadio value={1} type="weixin" text="微信支付">
+                                    微信支付
+                                </PaymentRadio>
+                                <PaymentRadio value={2} type="zhifubao" text="支付宝">
+                                    支付宝
+                                </PaymentRadio>
+                            </RadioGroup>
+                        </div>
+                        <div>
+                            <span className=" text-base text-black">
+                                应付金额：<span className="text-f602">￥{80}</span>
+                            </span>
+                            <Button
+                                color="primary"
+                                className="w-[150px] h-[46px] ml-9 min-h-[46px]"
+                                onClick={() => {
+                                    console.log("确认支付");
+                                    // props.submit && props.submit();
+                                }}
+                            >
+                                确认支付
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

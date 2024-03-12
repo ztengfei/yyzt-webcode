@@ -1,5 +1,5 @@
 // import Layout from "@/components/layout";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Modal, useDisclosure, Image, Popover, PopoverContent } from "@nextui-org/react";
 import Router, { useRouter } from "next/router";
 
@@ -9,21 +9,24 @@ import Editor, { MentionElement } from "@/components/common/editor";
 import AudioControl from "@/components/transfer/audioControl";
 import Link from "next/link";
 import { getZXResultDetail, orderDetail, getFileUrl } from "@/api/api";
-import Audio from '@/components/common/audio';
+import Audio from "@/components/common/audio";
+import useAudio from "@/components/common/audio/useAudio";
 
 import { toEditorData } from "@/components/common/editor/tool";
 import toast from "react-hot-toast";
 
 export default function Index() {
     const { isOpen, onOpen, onClose } = useDisclosure();
+
     const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: [], fileName: "" });
     // 编辑器初始化的数据
     const [initEditorData, setEditorData] = useState();
     // 当前转写订单中对应的详情
     const [fileInfo, setDileInfo] = useState<any>({});
     // 当前音频的url
-    const [audioUrl, setAudioUrl] = useState<string>('');
+    const [audioUrl, setAudioUrl] = useState<string>("");
     const [audioTime, setAudioTime] = useState<number>(0);
+    const audioControlRef = useRef();
     const router = useRouter();
     // 当前音频对应的id
     const audioId = router.query.id;
@@ -56,37 +59,41 @@ export default function Index() {
     useEffect(() => {
         // 获取当前界面的内容详情
         getTransferResult();
-        audioId && getFileUrl({id: audioId as string}).then((res:any)=>{
-            console.log('res+++++', res);
-            if (res.code != 200) {
-                toast.error('播放音频获取失败')
-                return
-            }
-            setAudioUrl(res.data.downUrl);
-            setAudioTime(res.data.time);
-        })
-
-
+        audioId &&
+            getFileUrl({ id: audioId as string }).then((res: any) => {
+                console.log("res+++++", res);
+                if (res.code != 200) {
+                    toast.error("播放音频获取失败");
+                    return;
+                }
+                // resetAudioSrc(res.data.downUrl);
+                setAudioUrl(res.data.downUrl);
+                setAudioTime(res.data.time);
+            });
     }, [audioId]);
 
-    useMemo(()=>{
-        
-    }, [])
+    // useMemo(() => {}, []);
 
-    const audioInfo = useMemo(() => {
-        if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
-            return { createTime: 0, fileTime: 0 };
-        }
-        const audioInfo = fileInfo.zxFiles.find((item) => {
-            return item.id == audioId;
-        });
-        return audioInfo;
-    }, [audioId, fileInfo]);
+    // const audioInfo = useMemo(() => {
+    //     if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
+    //         return { createTime: 0, fileTime: 0 };
+    //     }
+    //     const audioInfo = fileInfo.zxFiles.find((item) => {
+    //         return item.id == audioId;
+    //     });
+    //     return audioInfo;
+    // }, [audioId, fileInfo]);
 
     // 打开下载弹框
     const openModal = (type: string, id: string[], fileName: string) => {
         setDownLoadInfo({ type, id, fileName });
         onOpen();
+    };
+
+    // 播放音频
+    const playAudio = (start: number, end: number) => {
+        console.log(start, end);
+        audioControlRef.current && (audioControlRef.current as any).playAudioInterval(start, end);
     };
 
     return (
@@ -103,11 +110,19 @@ export default function Index() {
                         editorData={initEditorData}
                         audioId={audioId as string}
                         key={audioId as string}
+                        playAudio={playAudio}
                     ></Editor>
                 )}
             </div>
             <div className="h-[112px] bg-white w-full shadow-topxl fixed left-0 bottom-0 ">
-                <AudioControl audioTime={audioTime}></AudioControl>
+                <AudioControl
+                    audioTime={audioTime}
+                    audioUrl={audioUrl}
+                    ref={audioControlRef}
+                    // pauseAudio={pauseAudio}
+                    // audioPlay={audioPlay}
+                    // getSeek={getSeek}
+                ></AudioControl>
             </div>
             {/* <Audio audioUrl={audioUrl}></Audio> */}
             <div className="w-[166px] h-[54px] flex justify-center items-center fixed bottom-[160px] right-[25px] bg-white rounded-[27px] shadow-topx2">

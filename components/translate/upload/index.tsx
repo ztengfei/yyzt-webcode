@@ -15,6 +15,7 @@ import Loding from "./loding";
 import styles from "./index.module.css";
 interface uploadProps {
     languages: { value: string; label: string }[];
+    isFree: boolean; // 当前是否免费
 }
 
 // Our app

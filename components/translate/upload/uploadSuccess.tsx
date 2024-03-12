@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import ActiveIcon from "@/components/icon/active";
 import DeleteIcon from "@/components/icon/delete";
 import LanguageSelect from "./../langSelect";
-import { fyCommit, fyFileList, fyFiledel, fyOrderInfo } from "@/api/api";
+import { fyCommit, fyFileList, fyFiledel, fyOrderList } from "@/api/api";
 
 interface uploadSuccessType {
     setUploadState: React.Dispatch<React.SetStateAction<string>>;
@@ -43,8 +43,8 @@ export default function UploadSuccess(props: uploadSuccessType) {
         }
         const langs = languageRef.current.getSelectedLan();
         if (!langs.lanFrom || !langs.zxRemarks) {
-            toast.error('请选择语言');
-            
+            toast.error("请选择语言");
+
             // 提示请选择语言
             return;
         }
@@ -53,7 +53,7 @@ export default function UploadSuccess(props: uploadSuccessType) {
         fyCommit({ upFileId: file.id, lanFrom: langs.lanFrom, lanTo: langs.zxRemarks }).then(
             (res: any) => {
                 console.log("res+++", res.data);
-                fyOrderInfo({ orderNum: res.data }).then((res: any) => {
+                fyOrderList({ orderNum: res.data }).then((res: any) => {
                     console.log("12323");
                 });
             }

@@ -45,12 +45,13 @@ export interface editorType {
     editorData: any;
     audioId: string;
     key: string;
+    playAudio: (start: number, end: number) => void;
     // speakerClickCallback: (el: MentionElement) => void;
 }
 
 // 定义 Editor 对象
 const Editor = (props: editorType, ref) => {
-    const { audioId, editorData } = props;
+    const { audioId, editorData, playAudio } = props;
     const timer = useRef<number>(0);
 
     const editorChange = (value, ops) => {
@@ -110,7 +111,7 @@ const Editor = (props: editorType, ref) => {
     // 渲染 Slate 上下文。
     return (
         <Slate editor={editor} initialValue={initData as any}>
-            <HoverIngToobar></HoverIngToobar>
+            <HoverIngToobar playAudio={playAudio}></HoverIngToobar>
             <Editable
                 className="border-0 w-full h-full focus:outline-none focus-visible:border-0 p-[20px] overflow-auto"
                 renderElement={renderElement}

@@ -1,5 +1,6 @@
 import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import md5 from "md5";
+import SparkMD5 from "spark-md5";
 
 import { Button, CircularProgress } from "@nextui-org/react";
 
@@ -35,7 +36,7 @@ function Upload(props: uploadProps) {
     // 分片上传的进度
     const progressRef = useRef<number[]>([]);
     // 分片上传错误列表
-    const uploadErrorList = useRef<any>({})
+    const uploadErrorList = useRef<any>({});
 
     // 拖拽内容至当前盒子
     const onDragOver: React.DragEventHandler<HTMLDivElement> = (e) => {
@@ -56,7 +57,9 @@ function Upload(props: uploadProps) {
     // 取消上传
     const onCancel = () => {
         // 小文件取消上传
-        uploadServerRef.current && uploadServerRef.current.cancel();
+        uploadServerRef.current &&
+            uploadServerRef.current.cancel &&
+            uploadServerRef.current.cancel();
         // 多路取消上传
         if (chunkServerRef.current && chunkServerRef.current.length) {
             chunkServerRef.current.forEach((item) => {
@@ -167,7 +170,7 @@ function Upload(props: uploadProps) {
     };
 
     // 多路同时上传
-    const uploadNextChunk = async (chunks: number, file: any, upList?:number[]) => {
+    const uploadNextChunk = async (chunks: number, file: any, upList?: number[]) => {
         if (isCancelRef.current) {
             // 如果当前已经被取消上传则直接返回
             file.state = "cancel";
@@ -176,7 +179,7 @@ function Upload(props: uploadProps) {
         let servers = [];
         for (let i = 0; i < chunks; i++) {
             // 如果不是上传错误的分片不需要继续上传
-            if (upList && !upList.includes((i+1))){
+            if (upList && !upList.includes(i + 1)) {
                 continue;
             }
             var start = i * fileSlicSize;
@@ -210,7 +213,7 @@ function Upload(props: uploadProps) {
             //     });
             //     uploadErrorList.current[file.md5] = errorChan;
             // }
-            toast.error('文件上传失败，正在重新上传');
+            toast.error("文件上传失败，正在重新上传");
             // 上传失败后重新上传失败的分片
             if (mage.data.length) {
                 await uploadNextChunk(chunks, file, mage.data);
@@ -220,76 +223,79 @@ function Upload(props: uploadProps) {
         }
     };
 
-    const calculateFileMd5 = (file:any, chunkSize:number, callback:any) => {  
-        const chunks = Math.ceil(file.size / chunkSize);  
-        let spark = new Array(chunks);  
-        let currentChunk = 0;  
-        let loaded = 0;  
-        let hash = 0;  
-      
-        function loadNext() {  
-            const start = currentChunk * chunkSize;  
-            const end = Math.min(file.size, start + chunkSize);  
-            const chunk = file.slice(start, end);  
-      
-            const reader = new FileReader();  
-            reader.onload = function(e) {  
-                loaded += e.total;  
-                const chunkHash = md5.arrayBuffer(e.target.result);  
-                hash = md5.hmacUpdate(hash, chunkHash);  
-      
-                currentChunk++;  
-                if (currentChunk < chunks) {  
-                    loadNext();  
-                } else {  
-                    const finalHash = md5.hmacFinal(hash);  
-                    callback(null, finalHash);  
-                }  
-            };  
-            reader.onerror = function() {  
-                callback(new Error('Error reading file chunk'));  
-            };  
-            reader.readAsArrayBuffer(chunk);  
-        }  
-      
-        loadNext();  
-    } 
+    const calculateFileMd5 = (file: any, chunkSize?: number) => {
+        return new Promise((resolve: (value: string) => void, reject) => {
+            //  || File.prototype.mozSlice || File.prototype.webkitSlice
+            let blobSlice = File.prototype.slice;
+            chunkSize = 2097152; // Read in chunks of 2MB
+            const chunks = Math.ceil(file.size / chunkSize);
+            let currentChunk = 0;
+            const spark = new SparkMD5.ArrayBuffer();
+            const fileReader = new FileReader();
+
+            fileReader.onload = function (e) {
+                console.log("read chunk nr", currentChunk + 1, "of", chunks);
+                spark.append(e.target.result); // Append array buffer
+                currentChunk++;
+
+                if (currentChunk < chunks) {
+                    loadNext();
+                } else {
+                    console.info("computed hash", spark.end()); // Compute hash
+                    resolve(spark.end());
+                }
+            };
+
+            fileReader.onerror = function () {
+                console.warn("oops, something went wrong.");
+            };
+
+            function loadNext() {
+                var start = currentChunk * chunkSize,
+                    end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+                fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+            }
+
+            loadNext();
+        });
+    };
 
     const calculateMd5 = (file) => {
-        return new Promise((resolve:(value: string) => void, reject) => {
+        return new Promise((resolve: (value: string) => void, reject) => {
             const reader = new FileReader();
-            
+
             // 当文件加载完成时调用onload事件处理函数
             reader.onload = function (event) {
                 const arrayBufferView = event.target.result;
-                
+
                 // 创建ArrayBuffer对象
-                const buffer:any = ArrayBuffer.isView(arrayBufferView) ?
-                    arrayBufferView.buffer :
-                    arrayBufferView;
-                        
+                const buffer: any = ArrayBuffer.isView(arrayBufferView)
+                    ? arrayBufferView.buffer
+                    : arrayBufferView;
+
                 // 将ArrayBuffer转换为Uint8Array类型
-                const uint8Array:any = new Uint8Array(buffer);
-                console.log('uint8Array++++', uint8Array);
+                const uint8Array: any = new Uint8Array(buffer);
+                console.log("uint8Array++++", uint8Array);
                 // 初始化CryptoJS库
                 // CryptoJS.util.bin.words[0] = 123456789;
                 // CryptoJS.util.bin.words[1] = 987654321;
                 // 计算MD5值
-                const md5Hash:string = md5(uint8Array).toString();
+                const md5Hash: string = md5(uint8Array).toString();
                 resolve(md5Hash);
             };
-            
+
             // 开始读取文件内容
             reader.readAsArrayBuffer(file);
         });
-    }
+    };
 
     const fileUpload = async (files: FileList) => {
         for (let i = 0; i < files.length; i++) {
             isCancelRef.current = false;
             chunkServerRef.current = [];
             const file: any = files[i];
-            const fileMd5:string = await calculateMd5(file);
+            const fileMd5: string = await calculateFileMd5(file);
+            // calculateFileMd5(file);
             file.md5 = fileMd5;
             file.id = fileMd5;
             if (file.size <= fileSlicSize) {
@@ -298,7 +304,7 @@ function Upload(props: uploadProps) {
                 const chunks = Math.ceil(file.size / fileSlicSize); // 计算分片的数量
                 setCircular(0);
                 setIsupload(true);
-                
+
                 await uploadNextChunk(chunks, file);
                 setIsupload(false);
                 // 将上传文件同步至服务器

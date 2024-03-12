@@ -1,5 +1,12 @@
 // import Layout from "@/components/layout";
-import React, { useRef, useState, useMemo } from "react";
+import React, {
+    useRef,
+    useState,
+    useMemo,
+    useEffect,
+    forwardRef,
+    useImperativeHandle
+} from "react";
 import {
     Button,
     Popover,
@@ -16,6 +23,7 @@ import PauseIcon from "@/components/icon/audioPause";
 import GoIcon from "@/components/icon/audioGo";
 import BackIcon from "@/components/icon/audioBack";
 import SetingIcon from "@/components/icon/seting";
+import useAudio from "@/components/common/audio/useAudio";
 
 const getTimeString = (num: number) => {
     if (num < 10) {
@@ -40,28 +48,92 @@ const speeds = ["0.5X", "0.75X", "1X", "1.25X", "1.5X", "2X"];
 
 interface AudioControlTypes {
     audioTime: number; // 音频的总时长，单位毫秒
+    audioUrl: string;
+    // pauseAudio: () => void;
+    // audioPlay: () => void;
+    // getSeek: () => number;
 }
 
 const time = 1800000;
-const AudioControl = (props: AudioControlTypes) => {
-    const { audioTime } = props;
+const AudioControl = (props: AudioControlTypes, ref: any) => {
+    const { audioTime, audioUrl } = props; // , audioPlay, pauseAudio, getSeek
     // 音频条的时间
     const [targetTime, setTargetTime] = useState("00:00:00");
     // 当前的装填
-    const [audioState, steAudioState] = useState(false);
+    const [audioState, steAudioState] = useState(true);
     // 时间轴上对应的时间,默认开始时间为0
     const [sideTime, setSideTime] = useState(0);
+    const timerRef = useRef<number>();
+    const [speed, setSpeed] = useState(["1X"]);
+    const playTime = useRef<number>();
+
+    const audioPlayEnd = () => {
+        clearTimeout(timerRef.current);
+        steAudioState(true);
+    };
+
+    const [{ resetAudioSrc, pauseAudio, audioPlay, getSeek, getDuration, setSeek, setRate }] =
+        useAudio(audioPlayEnd);
+    useEffect(() => {
+        resetAudioSrc(audioUrl);
+        return () => {
+            clearTimeout(timerRef.current);
+            clearTimeout(playTime.current);
+        };
+    }, [audioUrl]);
+
+    useImperativeHandle(ref, () => ({
+        playAudioInterval: (start, end) => {
+            console.log(start, end);
+            clearTimeout(playTime.current);
+            setSeek(start / 1000);
+            playTime.current = window.setTimeout(() => {
+                pauseAudio();
+            }, end - start);
+            audioPlay();
+        }
+    }));
 
     // 声音进度条变化
     const onChange = (value: number | number[]) => {
+        // clearTimeout(timerRef.current);
         value = Array.isArray(value) ? value[0] : value;
+        console.log("value++++", value);
+        setSeek(Number(value / 1000));
         let hms = convertSecondsToHMS(value);
         setSideTime(value);
         setTargetTime(hms);
+        // getAudioSeek();
     };
     // 开始暂停播放按钮点击
     const setAudioState = () => {
+        if (audioState) {
+            audioPlay();
+            getAudioSeek();
+        } else {
+            pauseAudio();
+            clearTimeout(timerRef.current);
+        }
         steAudioState(!audioState);
+    };
+
+    // 获取音频进度
+    const getAudioSeek = () => {
+        clearTimeout(timerRef.current);
+        timerRef.current = window.setTimeout(() => {
+            const seek = getSeek();
+            const duration = getDuration();
+            const newTime = Number(seek * 1000);
+            console.log("seek++++", seek, duration);
+            if (audioState) {
+                let hms = convertSecondsToHMS(newTime);
+                setTargetTime(hms);
+                setSideTime(seek * 1000);
+                getAudioSeek();
+            } else {
+                clearTimeout(timerRef.current);
+            }
+        }, 500);
     };
 
     // 音频时间控制
@@ -70,14 +142,22 @@ const AudioControl = (props: AudioControlTypes) => {
         const changeNum = 5 * 1000;
         if (type == "forward") {
             newTIme = sideTime + changeNum < audioTime ? sideTime + changeNum : audioTime;
+            setSeek(Number(newTIme / 1000));
         }
         if (type == "back") {
             newTIme = sideTime < changeNum ? 0 : sideTime - changeNum;
+            setSeek(Number(newTIme / 1000));
         }
 
         let hms = convertSecondsToHMS(newTIme);
         setSideTime(newTIme);
         setTargetTime(hms);
+    };
+    const setAudioSpeed = (val) => {
+        console.log("val+++", [...val]);
+        const arr = [...val];
+        setRate(Number(arr[0].replace("X", "")));
+        setSpeed(val);
     };
 
     const showTime = useMemo(() => {
@@ -108,10 +188,10 @@ const AudioControl = (props: AudioControlTypes) => {
                             trigger: "h-[38px] min-h-[38px] bg-white border border-[#E3E9F0]",
                             label: "text-93 mb-2"
                         }}
-                        selectedKeys={["1X"]}
+                        selectedKeys={speed}
                         // defaultSelectedKeys={["1X"]}
                         onSelectionChange={(val) => {
-                            // setFileType(val as unknown as string[]);
+                            setAudioSpeed(val);
                         }}
                     >
                         {speeds.map((item) => {
@@ -218,4 +298,4 @@ const AudioControl = (props: AudioControlTypes) => {
     );
 };
 
-export default AudioControl;
+export default forwardRef(AudioControl);
