@@ -13,6 +13,7 @@ import {
 } from "@nextui-org/react";
 
 import { resultDown } from "@/api/api";
+import toast from "react-hot-toast";
 
 function VideoTransfrom(props: any) {
     const { downloadType, downliadId, fileName } = props;
@@ -20,7 +21,7 @@ function VideoTransfrom(props: any) {
     const [showRole, setShowRole] = useState(true);
     const [showTime, setShowTime] = useState(true);
     // 下载转写结果
-    const downloadCnt = () => {
+    const downloadCnt = (callback) => {
         console.log(
             "showTime, showRole, fileType, downliadId",
             showTime,
@@ -29,29 +30,37 @@ function VideoTransfrom(props: any) {
             downliadId
         );
         const type = [...fileType][0];
-        resultDown({
-            zxFileIds: downliadId,
-            hideRole: showRole ? 0 : 1,
-            hideTime: showRole ? 0 : 1,
-            extName: type
-        })
-            .then((res: any) => {
-                var elink = document.createElement("a");
-                elink.download = `${fileName}.${type}`;
-                let blob = null;
-                if (downliadId.length > 1) {
-                    elink.download = `${fileName}-${downliadId[0]}.zip`;
-                    blob = new Blob([res], { type: "application/octet-stream" });
-                } else {
-                    blob = new Blob([res], { type: "application/octet-stream" });
-                }
-                elink.style.display = "none";
-                elink.href = URL.createObjectURL(blob);
-                document.body.appendChild(elink);
-                elink.click();
-                document.body.removeChild(elink);
+        callback && callback();
+        toast.promise(
+            resultDown({
+                zxFileIds: downliadId,
+                hideRole: showRole ? 0 : 1,
+                hideTime: showRole ? 0 : 1,
+                extName: type
             })
-            .catch((error) => console.error("Error downloading file:", error));
+                .then((res: any) => {
+                    var elink = document.createElement("a");
+                    elink.download = `${fileName}.${type}`;
+                    let blob = null;
+                    if (downliadId.length > 1) {
+                        elink.download = `${fileName}-${downliadId[0]}.zip`;
+                        blob = new Blob([res], { type: "application/octet-stream" });
+                    } else {
+                        blob = new Blob([res], { type: "application/octet-stream" });
+                    }
+                    elink.style.display = "none";
+                    elink.href = URL.createObjectURL(blob);
+                    document.body.appendChild(elink);
+                    elink.click();
+                    document.body.removeChild(elink);
+                })
+                .catch((error) => console.error("Error downloading file:", error)),
+            {
+                loading: "正在生成文件...",
+                success: <b>文件下载成功!</b>,
+                error: <b>文件下载失败。</b>
+            }
+        );
 
         // let blob = new Blob([res], { type: `.zip` });
         //     //兼容ie
@@ -157,7 +166,9 @@ function VideoTransfrom(props: any) {
                                         <Button
                                             color="primary"
                                             className="w-[316px] h-[46px]"
-                                            onClick={downloadCnt}
+                                            onClick={() => {
+                                                downloadCnt(onClose);
+                                            }}
                                         >
                                             {downloadType == "all" ? "下载全部结果" : "下载结果"}
                                         </Button>

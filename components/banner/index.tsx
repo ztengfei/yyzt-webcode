@@ -8,6 +8,7 @@ import RightIcon from "@/components/icon/right";
 
 import styles from "./index.module.css";
 import { useState } from "react";
+import Router from "next/router";
 
 interface bannerProps {
     openModal: (type: "video" | "translate") => void;
@@ -29,19 +30,25 @@ export default function Banner(props: bannerProps) {
         }
     };
     return (
-        <div className="w-full h-[600px] relative">
+        <div className="w-full h-[600px] relative min-w-[1000px]">
             {/* <div className="w-full flex justify-between items-center "> */}
             <div
                 aria-label="上一个"
                 onClick={prev}
-                className="ml-[200px] border-0 cursor-pointer absolute h-full flex w-[44px] justify-center items-center z-10"
+                className={
+                    styles.prev +
+                    "  border-0 cursor-pointer absolute h-full flex w-[44px] justify-center items-center z-10"
+                }
             >
                 <LeftIcon size={44} />
             </div>
             <div
                 aria-label="下一个"
                 onClick={next}
-                className="mr-[200px] border-0  cursor-pointer absolute h-full flex w-[44px] justify-center items-center right-0 z-10"
+                className={
+                    styles.next +
+                    "  border-0  cursor-pointer absolute h-full flex w-[44px] justify-center items-center right-0 z-10"
+                }
             >
                 <RightIcon size={44} />
             </div>
@@ -60,13 +67,13 @@ export default function Banner(props: bannerProps) {
                 <div className="w-full h-full absolute left-0 top-0">
                     <div className="w-full bg-index-ban-bg  bg-no-repeat bg-cover ">
                         <div className="max-w-[1200px] mx-auto items-center h-[605px] pt-[50px] min-w-[1000px]">
-                            <div className="max-w-[1200px] mx-auto items-center h-[605px] pt-[50px] min-w-[1000px]">
+                            <div className="max-w-[1200px] mx-auto items-center h-[605px] pt-[50px] min-w-[1000px] truncate">
                                 <div className="flex flex-row justify-center items-center pt-[52px]">
                                     <Image
                                         width={424}
                                         height={447}
                                         alt="语音转写"
-                                        src="/images/index/banner-translate.png"
+                                        src="/images/index/banner1-top1.png"
                                     />
                                     <div className="ml-16">
                                         <div className="text-left">
@@ -119,6 +126,12 @@ export default function Banner(props: bannerProps) {
                                                 color="primary"
                                                 variant="faded"
                                                 className="h-[60px] w-[200px] opacity-60 text-white border border-white bg-transparent"
+                                                onClick={() => {
+                                                    Router.push({
+                                                        pathname: "/translate",
+                                                        query: { fyType: "doc" }
+                                                    });
+                                                }}
                                             >
                                                 翻译
                                             </Button>
@@ -131,13 +144,13 @@ export default function Banner(props: bannerProps) {
                 </div>
                 <div className="w-full h-full">
                     <div className="w-full bg-index-ban-bg  bg-no-repeat bg-cover ">
-                        <div className="max-w-[1200px] mx-auto items-center h-[605px] pt-[50px] min-w-[1000px]">
+                        <div className="max-w-[1200px] mx-auto items-center h-[605px] pt-[50px] min-w-[1000px] truncate">
                             <div className="flex flex-row justify-center items-center pt-[52px]">
                                 <Image
                                     width={424}
                                     height={447}
-                                    alt="语音转写"
-                                    src="/images/index/banner1-top1.png"
+                                    alt="文件翻译"
+                                    src="/images/index/banner-translate.png"
                                 />
                                 <div className="ml-16">
                                     <div className="text-left">
@@ -181,10 +194,22 @@ export default function Banner(props: bannerProps) {
                                         <Button
                                             color="primary"
                                             className="h-[60px] w-[200px] mr-[20px] opacity-60 text-white border border-white bg-transparent"
+                                            onClick={() => {
+                                                props.openModal("video");
+                                            }}
                                         >
                                             音频转文字
                                         </Button>
-                                        <Button color="primary" className="h-[60px] w-[200px]">
+                                        <Button
+                                            color="primary"
+                                            className="h-[60px] w-[200px]"
+                                            onClick={() => {
+                                                Router.push({
+                                                    pathname: "/translate",
+                                                    query: { fyType: "doc" }
+                                                });
+                                            }}
+                                        >
                                             翻译
                                         </Button>
                                     </div>

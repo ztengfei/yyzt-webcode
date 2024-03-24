@@ -27,6 +27,7 @@ import { orderDetail, zxFIleDown } from "@/api/api";
 export default function Order() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [downloadInfo, setDownLoadInfo] = useState({ type: "all", id: [], fileName: "" });
+    const [selected, setSelected] = useState([]);
 
     // 打开下载弹框
     const openModal = (type: string, id: string[], fileName: string) => {
@@ -35,7 +36,7 @@ export default function Order() {
     };
 
     const [fileInfo, setDileInfo] = useState<any>({});
-    const loopTimerRef = useRef<number>(0)
+    const loopTimerRef = useRef<number>(0);
 
     // 支付类型
     const [payType, changePayType] = useState(0);
@@ -43,11 +44,10 @@ export default function Order() {
     const router = useRouter();
     const orderId = router.query.order;
 
-
     const LoopGetFiles = (data) => {
         clearTimeout(loopTimerRef.current);
         if (!data.zxFiles || !data.zxFiles.length) {
-            return ;
+            return;
         }
         // 存在没有转写的则循环请求数据
         const isNoTrans = data.zxFiles.find((item) => {
@@ -59,7 +59,7 @@ export default function Order() {
         loopTimerRef.current = window.setTimeout(() => {
             getOrderData();
         }, 2000);
-    }
+    };
 
     const getOrderData = () => {
         orderDetail({ orderId: orderId }).then((res: any) => {
@@ -68,9 +68,9 @@ export default function Order() {
                 return;
             }
             setDileInfo(res.data);
-            LoopGetFiles(res.data)
+            LoopGetFiles(res.data);
         });
-    }
+    };
 
     useEffect(() => {
         if (!orderId) {
@@ -80,10 +80,8 @@ export default function Order() {
         getOrderData();
         return () => {
             clearTimeout(loopTimerRef.current);
-        }
+        };
     }, [orderId]);
-
-    
 
     const allFileId = useMemo(() => {
         if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
@@ -95,15 +93,35 @@ export default function Order() {
         return fileIds;
     }, [fileInfo]);
 
+    const isTranslateEnd = useMemo(() => {
+        if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
+            return false;
+        }
+        // 存在没有转写的则循环请求数据
+        const isNoTrans = fileInfo.zxFiles.find((item) => {
+            return item.zxStatus == 3;
+        });
+        // 如果当前转写完成
+        if (!isNoTrans) {
+            return true;
+        }
+        // 当前正在请求数据
+        return false;
+    }, [fileInfo]);
+
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col h-full bg-[#F7F8FA]">
-            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1">
+            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1 mb-[80px]">
                 <div className="mt-5 mb-4 text-base">订单信息</div>
                 <OrderEndInfo {...fileInfo}></OrderEndInfo>
 
                 <div className="mt-5 mb-4 text-base">音视频列表</div>
                 <div>
-                    <CheckboxGroup className="flex flex-col gap-1 w-full">
+                    <CheckboxGroup
+                        className="flex flex-col gap-1 w-full"
+                        value={selected}
+                        onValueChange={setSelected}
+                    >
                         {fileInfo.zxFiles &&
                             fileInfo.zxFiles.length &&
                             fileInfo.zxFiles.map((item: any, index: number) => {
@@ -126,26 +144,32 @@ export default function Order() {
                     </CheckboxGroup>
                 </div>
             </div>
-            <div className="h-[76px] bg-white w-full">
-                <div className="h-[76px] mx-auto max-w-[1200px] flex flex-row justify-end  items-center">
-                    <Button
-                        color="primary"
-                        variant="bordered"
-                        className="w-[150px] h-[46px] mr-5 min-h-[46px]"
-                    >
-                        转人工
-                    </Button>
-                    <Button
-                        color="primary"
-                        className="w-[150px] h-[46px] min-h-[46px]"
-                        onClick={() => {
-                            openModal("all", allFileId, fileInfo.orderNum);
-                        }}
-                    >
-                        下载全部结果
-                    </Button>
+            {isTranslateEnd && (
+                <div className="h-[76px] bg-white w-full fixed bottom-0">
+                    <div className="h-[76px] mx-auto max-w-[1200px] flex flex-row justify-end  items-center">
+                        {selected.length ? (
+                            <Button
+                                color="primary"
+                                variant="bordered"
+                                className="w-[150px] h-[46px] mr-5 min-h-[46px]"
+                            >
+                                转人工
+                            </Button>
+                        ) : (
+                            <></>
+                        )}
+                        <Button
+                            color="primary"
+                            className="w-[150px] h-[46px] min-h-[46px]"
+                            onClick={() => {
+                                openModal("all", allFileId, fileInfo.orderNum);
+                            }}
+                        >
+                            下载全部结果
+                        </Button>
+                    </div>
                 </div>
-            </div>
+            )}
 
             <Modal size={"3xl"} isOpen={isOpen} onClose={onClose} className="orange-drak">
                 <TransferDownload

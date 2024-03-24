@@ -29,7 +29,7 @@ const RadioVideo = (props: any) => {
             return <CustorChip color="waring">待支付</CustorChip>;
         }
         if (zxStatus == "3") {
-            return <CustorChip color="waring">待转写</CustorChip>;
+            return <CustorChip color="waring">转写中</CustorChip>;
         }
         if (zxStatus == "4") {
             return <CustorChip color="success">转写完成</CustorChip>;

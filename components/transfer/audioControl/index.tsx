@@ -49,6 +49,8 @@ const speeds = ["0.5X", "0.75X", "1X", "1.25X", "1.5X", "2X"];
 interface AudioControlTypes {
     audioTime: number; // 音频的总时长，单位毫秒
     audioUrl: string;
+    editorContorl: { isShowRole: boolean; isShowTime: boolean; isJump: boolean };
+    setEditorContorl: (data: { isShowRole: boolean; isShowTime: boolean; isJump: boolean }) => void;
     // pauseAudio: () => void;
     // audioPlay: () => void;
     // getSeek: () => number;
@@ -56,13 +58,14 @@ interface AudioControlTypes {
 
 const time = 1800000;
 const AudioControl = (props: AudioControlTypes, ref: any) => {
-    const { audioTime, audioUrl } = props; // , audioPlay, pauseAudio, getSeek
+    const { audioTime, audioUrl, editorContorl, setEditorContorl } = props; // , audioPlay, pauseAudio, getSeek
     // 音频条的时间
     const [targetTime, setTargetTime] = useState("00:00:00");
     // 当前的装填
     const [audioState, steAudioState] = useState(true);
     // 时间轴上对应的时间,默认开始时间为0
     const [sideTime, setSideTime] = useState(0);
+
     const timerRef = useRef<number>();
     const [speed, setSpeed] = useState(["1X"]);
     const playTime = useRef<number>();
@@ -89,8 +92,12 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
             setSeek(start / 1000);
             playTime.current = window.setTimeout(() => {
                 pauseAudio();
+                clearTimeout(timerRef.current);
+                steAudioState(true);
             }, end - start);
             audioPlay();
+            getAudioSeek();
+            steAudioState(false);
         }
     }));
 
@@ -257,6 +264,13 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
                                     </div>
                                     <div>
                                         <Switch
+                                            isSelected={editorContorl.isShowRole}
+                                            onValueChange={(val) => {
+                                                setEditorContorl({
+                                                    ...editorContorl,
+                                                    isShowRole: val
+                                                });
+                                            }}
                                             defaultSelected
                                             aria-label="显示说话人"
                                             color="primary"
@@ -270,6 +284,13 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
                                     </div>
                                     <div>
                                         <Switch
+                                            isSelected={editorContorl.isShowTime}
+                                            onValueChange={(val) => {
+                                                setEditorContorl({
+                                                    ...editorContorl,
+                                                    isShowTime: val
+                                                });
+                                            }}
                                             defaultSelected
                                             aria-label="显示时间码"
                                             color="primary"
@@ -283,6 +304,13 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
                                     </div>
                                     <div>
                                         <Switch
+                                            isSelected={editorContorl.isJump}
+                                            onValueChange={(val) => {
+                                                setEditorContorl({
+                                                    ...editorContorl,
+                                                    isJump: val
+                                                });
+                                            }}
                                             defaultSelected
                                             aria-label="跳过静音段"
                                             color="primary"

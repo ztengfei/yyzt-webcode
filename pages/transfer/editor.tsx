@@ -26,6 +26,15 @@ export default function Index() {
     // 当前音频的url
     const [audioUrl, setAudioUrl] = useState<string>("");
     const [audioTime, setAudioTime] = useState<number>(0);
+    // 是否展示说话人
+    const [editorContorl, setEditorContorl] = useState({
+        isShowRole: true,
+        isShowTime: true,
+        isJump: true
+    });
+    // 是否展示时间码
+    const [isShowTime, setIsShowTime] = useState(true);
+
     const audioControlRef = useRef();
     const router = useRouter();
     // 当前音频对应的id
@@ -111,6 +120,8 @@ export default function Index() {
                         audioId={audioId as string}
                         key={audioId as string}
                         playAudio={playAudio}
+                        isShowTime={editorContorl.isShowTime}
+                        isShowRole={editorContorl.isShowRole}
                     ></Editor>
                 )}
             </div>
@@ -119,6 +130,8 @@ export default function Index() {
                     audioTime={audioTime}
                     audioUrl={audioUrl}
                     ref={audioControlRef}
+                    editorContorl={editorContorl}
+                    setEditorContorl={setEditorContorl}
                     // pauseAudio={pauseAudio}
                     // audioPlay={audioPlay}
                     // getSeek={getSeek}

@@ -64,7 +64,10 @@ export default function Index() {
                         color="primary"
                         className="h-[54px] w-[162px] mt-[46px]"
                         onClick={() => {
-                            Router.push({ pathname: "/translate" });
+                            Router.push({
+                                pathname: "/translate",
+                                query: { fyType: "doc" }
+                            });
                         }}
                     >
                         立即体验

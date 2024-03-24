@@ -1,23 +1,38 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
-import { Button, CircularProgress, Image, Select, SelectItem } from "@nextui-org/react";
+import {
+    Button,
+    CircularProgress,
+    Image,
+    Modal,
+    ModalBody,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    Select,
+    SelectItem
+} from "@nextui-org/react";
 import toast from "react-hot-toast";
 
 import ActiveIcon from "@/components/icon/active";
 import DeleteIcon from "@/components/icon/delete";
 import LanguageSelect from "./../langSelect";
+import PayFyOrder from "./payFyOrder";
+
 import { fyCommit, fyFileList, fyFiledel, fyOrderList } from "@/api/api";
 
 interface uploadSuccessType {
     setUploadState: React.Dispatch<React.SetStateAction<string>>;
     languages: { value: string; label: string }[];
     uploadSuccessCB: (id: string) => void;
+    setOrderId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // 文件上传成功
 export default function UploadSuccess(props: uploadSuccessType) {
     const [file, setFile] = useState<any>({});
     const languageRef = useRef<any>();
+    const payFyOrderRef = useRef<any>();
     // 获取上传文件列表
     useEffect(() => {
         fyFileList().then((res: any) => {
@@ -52,10 +67,17 @@ export default function UploadSuccess(props: uploadSuccessType) {
 
         fyCommit({ upFileId: file.id, lanFrom: langs.lanFrom, lanTo: langs.zxRemarks }).then(
             (res: any) => {
-                console.log("res+++", res.data);
-                fyOrderList({ orderNum: res.data }).then((res: any) => {
-                    console.log("12323");
-                });
+                if (!res.data) {
+                    toast.error(res.msg || "翻译失败");
+                    return;
+                }
+                payFyOrderRef.current && payFyOrderRef.current.openModal(res.data);
+                props.setOrderId(res.data);
+                // if (res.code != 200) {
+                //     toast.error(res.msg);
+                // } else {
+                //     payFyOrderRef.current && payFyOrderRef.current.openModal(res.data);
+                // }
             }
         );
 
@@ -120,6 +142,7 @@ export default function UploadSuccess(props: uploadSuccessType) {
                     立即翻译
                 </Button>
             </div>
+            <PayFyOrder ref={payFyOrderRef} setUploadState={props.setUploadState}></PayFyOrder>
         </>
     );
 }

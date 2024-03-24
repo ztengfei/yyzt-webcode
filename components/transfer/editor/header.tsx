@@ -7,6 +7,7 @@ import DateIcon from "@/components/icon/date";
 import ClockIcon from "@/components/icon/clock";
 import SelectedIcon from "@/components/icon/selected";
 import DownloadIcon from "@/components/icon/download";
+import Xiaoyu from "@/components/icon/xiaoyu";
 import { timestampToDateTime2, secondsToHMS } from "@/components/tool";
 import Router from "next/router";
 
@@ -18,7 +19,6 @@ interface headerProps {
 }
 
 export default function OrderState({ openModal, fileInfo, orderId, audioId }: headerProps) {
-    
     const audioInfo = useMemo(() => {
         if (!fileInfo.zxFiles || !fileInfo.zxFiles.length) {
             return { createTime: 0, fileTime: 0 };
@@ -51,13 +51,13 @@ export default function OrderState({ openModal, fileInfo, orderId, audioId }: he
         <div className="h-[70px] bg-white w-full fixed left-0 top-0 z-10">
             <div className="h-[70px] mx-auto max-w-[1200px] flex flex-row justify-between  items-center">
                 <div className="flex flex-row items-center">
-                    <div className="flex flex-row items-center text-lg text-black mr-5 cursor-pointer">
-                        {"<"}{" "}
+                    <div className="flex flex-row items-center text-lg mr-5 cursor-pointer ">
                         <Link
-                            href={`/transfer/complete?order=${orderId}`}
+                            href={`/user?page=transferFile`}
                             replace
-                            className=" text-black "
+                            className=" text-black flex flex-row items-center hover:text-f602"
                         >
+                            <Xiaoyu></Xiaoyu>
                             文件列表
                         </Link>
                     </div>

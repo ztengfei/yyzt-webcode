@@ -1,7 +1,8 @@
+import { secondsToHMS } from "@/components/tool";
 import { Editor, Transforms } from "slate";
 
 const withPlugin = (editor: Editor & any, param: any) => {
-    const { isInline, isVoid, markableVoid, onChange } = editor;
+    const { isInline, isVoid, markableVoid, onChange, insertBreak } = editor;
 
     editor.isInline = (element) => {
         return (element as any).type === "mention" ? true : isInline(element);
@@ -36,6 +37,41 @@ const withPlugin = (editor: Editor & any, param: any) => {
         console.log("asdasdasdasd");
         param.editorChange && param.editorChange(editor.children, ops.operation);
         onChange();
+    };
+
+    const getStartTime = (data) => {
+        let start = 0;
+        for (let i = 0; i < data.length; i++) {
+            let leafs = (data[i] as any).children;
+            // endTime: 23120, startTime: 22210
+            for (let j = 0; j < leafs.length; j++) {
+                let { startTime, endTime } = leafs[j];
+                if (startTime) {
+                    start = startTime;
+                    return start;
+                }
+            }
+        }
+        return start;
+    };
+
+    editor.insertBreak = () => {
+        // 当前进行了换行
+        insertBreak();
+        console.log(editor.selection);
+        const data = editor.fragment(editor.selection);
+        console.log("data+++", data);
+        const roleTime = getStartTime(data);
+        const role = {
+            type: "mention",
+            roleName: "",
+            startTime: secondsToHMS(Math.floor(roleTime / 1000)),
+            character: "",
+            iconText: "",
+            iconBg: "",
+            children: [{ text: "" }]
+        };
+        editor.insertNode(role);
     };
 
     return editor;

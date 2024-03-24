@@ -3,25 +3,25 @@ import ReactDOM from "react-dom";
 import { Button, CircularProgress, Image, Select, SelectItem } from "@nextui-org/react";
 import toast from "react-hot-toast";
 
-import ActiveIcon from "@/components/icon/active";
-import DeleteIcon from "@/components/icon/delete";
-import LanguageSelect from "./../langSelect";
+// import ActiveIcon from "@/components/icon/active";
+// import DeleteIcon from "@/components/icon/delete";
+// import LanguageSelect from "./../langSelect";
 
-import { fyFileQuery } from "@/api/api";
+import { fyOrderInfo } from "@/api/api";
 
 interface footerType {
-    uploadId: string;
+    orderId: string;
     setUploadState: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // 文件上传成功
 export default function Loding(props: footerType) {
-    const { uploadId, setUploadState } = props;
+    const { orderId, setUploadState } = props;
 
-    const loopTimerRef = useRef<number>();
+    const loopTimer1Ref = useRef<number>();
 
     const getOrderData = () => {
-        fyFileQuery({ id: uploadId }).then((res: any) => {
+        fyOrderInfo({ id: orderId }).then((res: any) => {
             if (!res.data) {
                 toast.error("订单详情获取失败，请刷新重试");
                 return;
@@ -31,14 +31,14 @@ export default function Loding(props: footerType) {
     };
 
     const LoopGetFiles = (data) => {
-        clearTimeout(loopTimerRef.current);
-        if (data.parseStatus == 1) {
-            loopTimerRef.current = window.setTimeout(() => {
+        clearTimeout(loopTimer1Ref.current);
+        if (data.fyStatus == 3) {
+            loopTimer1Ref.current = window.setTimeout(() => {
                 getOrderData();
-            }, 500);
-        } else if (data.parseStatus == 2) {
-            setUploadState("analysisSuccess"); //文件解析成功
-        } else if (data.parseStatus == 3) {
+            }, 1000);
+        } else if (data.fyStatus == 4) {
+            setUploadState("translateSuccess"); //文件解析成功
+        } else if (data.fyStatus == 5) {
             toast.error("文件解析失败");
             setUploadState(""); //文件解析成功
         }
@@ -47,9 +47,9 @@ export default function Loding(props: footerType) {
     useEffect(() => {
         getOrderData();
         return () => {
-            clearTimeout(loopTimerRef.current);
+            clearTimeout(loopTimer1Ref.current);
         };
-    }, [uploadId]);
+    }, [orderId]);
 
     return (
         <>
@@ -68,7 +68,7 @@ export default function Loding(props: footerType) {
                         // value: "text-3xl font-semibold text-white",
                     }}
                 />
-                <div className="text-center text-[#333] mt-1">文档解析中,请稍等...</div>
+                <div className="text-center text-[#333] mt-1">正在翻译中,请稍等...</div>
                 {/* <Button className=" bg-white text-[#333] mt-3">取消</Button> */}
             </div>
         </>

@@ -15,7 +15,7 @@ const Paragraph = ({ attributes, children, element }: any) => {
 };
 
 const Element = (props: any) => {
-    const { attributes, children, element, editor } = props;
+    const { attributes, children, element, editor, isShowTime, isShowRole } = props;
     switch (element.type) {
         case "mention":
             return <Speaker {...props} editor={editor} />;

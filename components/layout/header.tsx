@@ -13,13 +13,14 @@ import {
 } from "@nextui-org/react";
 
 // import { useMemoizedFn } from "ahooks";
-import { useRouter } from "next/router";
+import Router, { useRouter } from "next/router";
 
 import NavbarBox from "./navbar";
 import NavbarUser from "./navbarUser";
 import { updataTokenTime } from "@/components/config";
 import { getTolocal, setToLocal } from "@/components/tool";
 import { refreshToken } from "@/api/api";
+import { useMemoizedFn } from "ahooks";
 
 // 头部导航，和头部相关功能
 function Header() {
@@ -46,7 +47,7 @@ function Header() {
     let initNavStyle = path == "/" || path.indexOf("login") > -1 ? "black" : "white";
     const [navStyle, setNavStyle] = useState(initNavStyle);
     const navStyleRef = useRef(initNavStyle);
-    console.log("navStyle++++", navStyle, isLogin);
+
     // 本地缓存发生改变
     const localChange = (e: StorageEvent) => {
         if (e.key == "expiresTime") {
@@ -63,9 +64,10 @@ function Header() {
         // router.events.on("routeChangeComplete", handleRouteChange);
         setIsLogin(getLoginState());
 
-        let navStyle = path == "/" || path.indexOf("login") > -1 ? "black" : "white";
-        setNavStyle(navStyle);
-        navStyleRef.current = navStyle;
+        let navStyle1 = path == "/" || path.indexOf("login") > -1 ? "black" : "white";
+        console.log("navStyle++++", navStyle1, path);
+        setNavStyle(navStyle1);
+        navStyleRef.current = navStyle1;
         return () => {
             window.removeEventListener("storage", localChange);
             // router.events.off("routeChangeComplete", handleRouteChange);
@@ -92,22 +94,39 @@ function Header() {
         }, updataTokenTime);
     }, []);
 
-    const onScrollPositionChange = useCallback(
-        (position: number) => {
-            if (path !== "/" && path.indexOf("login") == -1) {
-                // 部分页面导航底色为白色不需要重新替换导航颜色
-                return;
-            }
-            if (position > 50 && navStyleRef.current == "black") {
-                setNavStyle("white");
-                navStyleRef.current = "white";
-            } else if (position <= 50 && navStyleRef.current == "white") {
-                setNavStyle("black");
-                navStyleRef.current = "black";
-            }
-        },
-        [navStyle]
-    );
+    // const onScrollPositionChange =
+    //     ((path, navStyle, position) => {
+    //         console.log("onScrollPositionChange+++++", position);
+    //         if (path !== "/" && path.indexOf("login") == -1) {
+    //             // 部分页面导航底色为白色不需要重新替换导航颜色123
+    //             return;
+    //         }
+    //         if (position > 50 && navStyleRef.current == "black") {
+    //             setNavStyle("white");
+    //             navStyleRef.current = "white";
+    //         } else if (position <= 50 && navStyleRef.current == "white") {
+    //             setNavStyle("black");
+    //             navStyleRef.current = "black";
+    //         }
+    //     },
+    //     [router, navStyle, path]);
+
+    const onScrollPositionChange = useMemoizedFn((position) => {
+        console.log("onScrollPositionChange+++++", position);
+        if (path !== "/" && path.indexOf("login") == -1) {
+            // 部分页面导航底色为白色不需要重新替换导航颜色123
+            return;
+        }
+        if (position > 50 && navStyleRef.current == "black") {
+            setNavStyle("white");
+            navStyleRef.current = "white";
+        } else if (position <= 50 && navStyleRef.current == "white") {
+            setNavStyle("black");
+            navStyleRef.current = "black";
+        }
+    });
+
+    // useEventListener("scroll", onScrollPositionChange);
 
     if (path == "/transfer/editor") {
         return <></>;
@@ -126,8 +145,13 @@ function Header() {
                 <div
                     className={
                         (navStyle == "white" ? "bg-logo-blck" : "bg-login-text") +
-                        " bg-no-repeat bg-cover w-[122px] h-[37px] transition-all"
+                        " bg-no-repeat bg-cover w-[122px] h-[37px] transition-all cursor-pointer"
                     }
+                    onClick={() => {
+                        Router.push({
+                            pathname: "/"
+                        });
+                    }}
                 ></div>
                 {/* <span>icon</span>
                 <span className="font-bold text-inherit">云倚智听</span> */}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Navbar,
     NavbarBrand,
@@ -9,12 +9,16 @@ import {
     DropdownTrigger,
     Dropdown,
     DropdownMenu,
-    Avatar
+    Image,
+    Button,
+    Tooltip
 } from "@nextui-org/react";
 import Router, { useRouter } from "next/router";
 
 import { logout } from "@/api/api";
 import { removeLocal } from "@/components/tool";
+import RoleIcon from "@/components/icon/indexUser";
+import DownIcon from "@/components/icon/down";
 
 interface NavbarUserType {
     isLogin: boolean;
@@ -22,6 +26,7 @@ interface NavbarUserType {
 }
 // 头部导航，和头部相关功能
 function NavbarUser(props: NavbarUserType) {
+    const [isOpen, setIsOpen] = useState(false);
     if (!props.isLogin) {
         // 如果当前没有登录则只有返回首页按钮
         return <></>;
@@ -54,40 +59,128 @@ function NavbarUser(props: NavbarUserType) {
                 }
                 as="div"
             >
-                <Dropdown placement="bottom-end">
+                {/* <Dropdown placement="bottom-end">
                     <DropdownTrigger>
                         <span
                             className={
                                 " flex flex-row text-xs items-center min-w-[160px] justify-end"
                             }
                         >
-                            <span className={textColor + " mr-2 text-xs"}>你好，周腾飞</span>
-                            {/* <Avatar
-                                isBordered
-                                as="button"
-                                className="transition-transform w-6 h-6 text-tiny"
-                                color="secondary"
-                                name="周腾飞"
-                                size="sm"
-                                src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                            /> */}
+                            <Image
+                                src="/images/user/headerImage/1.jpg"
+                                width={24}
+                                height={24}
+                            ></Image>
+                            <span className={textColor + " mr-2 text-xs ml-2"}>你好，周腾飞</span>
                         </span>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Profile Actions" variant="flat">
-                        {/* <DropdownItem key="profile" className="h-14 gap-2">
-                            <p className="font-semibold">用户昵称</p>
-                            <p className="font-semibold">ID:J4834P</p>
-                        </DropdownItem> */}
-                        <DropdownItem key="settings">个人主页</DropdownItem>
-                        <DropdownItem key="team_settings">转文字文件</DropdownItem>
-                        <DropdownItem key="analytics">翻译文件</DropdownItem>
-                        <DropdownItem key="system">充值记录</DropdownItem>
+                        <DropdownItem
+                            key="settings"
+                            onClick={() => {
+                                Router.push("/user?page=useInfo");
+                            }}
+                        >
+                            个人主页
+                        </DropdownItem>
+                        <DropdownItem
+                            key="team_settings"
+                            onClick={() => {
+                                Router.push("/user?page=transferFile");
+                            }}
+                        >
+                            转文字文件
+                        </DropdownItem>
+                        <DropdownItem
+                            key="analytics"
+                            onClick={() => {
+                                Router.push("/user?page=translateFile");
+                            }}
+                        >
+                            翻译文件
+                        </DropdownItem>
+                        <DropdownItem
+                            key="system"
+                            onClick={() => {
+                                Router.push("/user?page=rechargeHistory");
+                            }}
+                        >
+                            充值记录
+                        </DropdownItem>
                         <DropdownItem key="configurations">关于我们</DropdownItem>
                         <DropdownItem key="logout" color="danger" onPress={loginOut}>
                             退出账号
                         </DropdownItem>
                     </DropdownMenu>
-                </Dropdown>
+                </Dropdown> */}
+
+                <Tooltip
+                    isOpen={isOpen}
+                    onOpenChange={(open) => setIsOpen(open)}
+                    content={
+                        <div className="py-2 px-6">
+                            <div
+                                key="settings"
+                                onClick={() => {
+                                    Router.push("/user?page=useInfo");
+                                }}
+                                className="py-2 hover:text-f602"
+                            >
+                                个人主页
+                            </div>
+                            <div
+                                key="team_settings"
+                                onClick={() => {
+                                    Router.push("/user?page=transferFile");
+                                }}
+                                className="py-2 hover:text-f602"
+                            >
+                                转文字文件
+                            </div>
+                            <div
+                                key="analytics"
+                                onClick={() => {
+                                    Router.push("/user?page=translateFile");
+                                }}
+                                className="py-2 hover:text-f602"
+                            >
+                                翻译文件
+                            </div>
+                            <div
+                                key="system"
+                                onClick={() => {
+                                    Router.push("/user?page=rechargeHistory");
+                                }}
+                                className="py-2 hover:text-f602"
+                            >
+                                充值记录
+                            </div>
+                            <div key="configurations" className="py-2 hover:text-f602">
+                                关于我们
+                            </div>
+                            <div
+                                key="logout"
+                                color="danger"
+                                onClick={loginOut}
+                                className="py-2 hover:text-f602"
+                            >
+                                退出账号
+                            </div>
+                        </div>
+                    }
+                >
+                    <Button
+                        variant="bordered"
+                        className={textColor + " border-0 ml-4 hover:text-f602"}
+                    >
+                        {/* <Image src="/images/user/headerImage/1.jpg" width={24} height={24}></Image> */}
+                        <RoleIcon></RoleIcon>
+                        <span className={"text-xs "}>你好，周腾飞</span>
+                        <span className={isOpen ? "rotate-180 transition-all" : "transition-all"}>
+                            <DownIcon size={22}></DownIcon>
+                        </span>
+                    </Button>
+                </Tooltip>
             </NavbarContent>
         </>
     );

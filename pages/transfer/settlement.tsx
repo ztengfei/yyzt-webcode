@@ -242,6 +242,7 @@ export default function Index() {
                     pathname: "/transfer/complete",
                     query: { order: orderId }
                 });
+                return;
             }
 
             if (payType == 1) {
@@ -432,7 +433,7 @@ export default function Index() {
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
-            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1">
+            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1 mb-[80px]">
                 <div className="text-base my-4">订单信息</div>
                 <div className=" bg-white rounded-xl leading-[52px] pl-4">
                     <span className="mr-10 text-sm font-medium">

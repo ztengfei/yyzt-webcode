@@ -84,12 +84,13 @@ function Upload(props: uploadProps) {
         // 开始上传
         const res: any = await uploadServerRef.current.response();
         console.log("结束文件上传");
-        if (res.errorCode == 0) {
+        if (res.code == 200) {
             // 上传
             file.states = "success"; // 上传成功
             props.setFileList(file);
         } else {
             file.state = "error"; // 文件上传失败
+            toast.error("文件上传失败");
         }
 
         setIsupload(false);
@@ -139,11 +140,12 @@ function Upload(props: uploadProps) {
             console.log("文件上传完成");
             // 全部上传完成合并文件
             const res: any = await fileMerge({ fileMd5: file.md5 });
-            if (res.errorCode == 0) {
+            if (res.code == 200) {
                 file.state = "success"; // 文件上传成功，切片合并成功
             } else {
                 // 切片合并失败
                 file.state = "error"; // 文件上传失败
+                toast.error("文件上传失败");
             }
         }
     };

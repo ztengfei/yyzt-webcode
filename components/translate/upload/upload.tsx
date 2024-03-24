@@ -1,14 +1,14 @@
 import React, { useState, useRef } from "react";
-import ReactDOM from "react-dom";
 import { Button, CircularProgress, Image, Select, SelectItem } from "@nextui-org/react";
-import md5 from "md5";
+import SparkMD5 from "spark-md5";
 
 import { fileSlicSize } from "@/components/config";
 import { fyUpLoadOne, fyUpLoadPart, fyFileMerge } from "@/api/api";
 
 import styles from "./index.module.css";
+import toast from "react-hot-toast";
 interface uploadProps {
-    setUploadState: React.Dispatch<React.SetStateAction<string>>;
+    setUploadState: (state: string, id: string) => void;
     // setProgress: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -79,12 +79,14 @@ function Upload(props: uploadProps) {
         // 开始上传
         const res: any = await uploadServerRef.current.response();
         console.log("结束文件上传");
-        if (res.errorCode == 0) {
+        if (res.code == 200) {
             // 上传
-            file.states = "success"; // 上传成功
+            file.state = "success"; // 上传成功
+            file.fileId = res.data;
             // props.setFileList();
         } else {
             file.state = "error"; // 文件上传失败
+            toast.error(res.msg);
         }
 
         setIsupload(false);
@@ -131,37 +133,84 @@ function Upload(props: uploadProps) {
         }
         const res: any = await Promise.all(servers);
         const mage: any = await fyFileMerge({ fileMd5: file.md5 }); // 继续上传下一个分片
-        if (mage.errorCode == 0) {
+        if (mage.code == 200) {
             file.state = "success"; // 文件上传成功，切片合并成功
+            file.fileId = res.data;
         } else {
             // 切片合并失败
             file.state = "error"; // 文件上传失败
+            toast.error(res.msg);
         }
     };
 
-    const fileUpload = async (files: any) => {
-        for (let i = 0; i < files.length; i++) {
-            isCancelRef.current = false;
-            chunkServerRef.current = [];
-            const file = files[i];
-            const fileMd5 = md5(file);
-            file.md5 = fileMd5 + new Date().getTime();
-            file.id = fileMd5 + new Date().getTime();
+    const calculateFileMd5 = (file: any, chunkSize?: number) => {
+        return new Promise((resolve: (value: string) => void, reject) => {
+            //  || File.prototype.mozSlice || File.prototype.webkitSlice
+            let blobSlice = File.prototype.slice;
+            chunkSize = 2097152; // Read in chunks of 2MB
+            const chunks = Math.ceil(file.size / chunkSize);
+            let currentChunk = 0;
+            const spark = new SparkMD5.ArrayBuffer();
+            const fileReader = new FileReader();
 
-            if (file.size <= fileSlicSize) {
-                await smallFileUpload(file);
-            } else {
-                const chunks = Math.ceil(file.size / fileSlicSize); // 计算分片的数量
-                setCircular(0);
-                setFileName(file.name);
-                setIsupload(true);
+            fileReader.onload = function (e) {
+                console.log("read chunk nr", currentChunk + 1, "of", chunks);
+                spark.append(e.target.result); // Append array buffer
+                currentChunk++;
 
-                await uploadNextChunk(chunks, file);
-                setIsupload(false);
-                // 将上传文件同步至服务器
+                if (currentChunk < chunks) {
+                    loadNext();
+                } else {
+                    console.info("computed hash", spark.end()); // Compute hash
+                    resolve(spark.end());
+                }
+            };
+
+            fileReader.onerror = function () {
+                console.warn("oops, something went wrong.");
+            };
+
+            function loadNext() {
+                var start = currentChunk * chunkSize,
+                    end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+                fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
             }
+
+            loadNext();
+        });
+    };
+
+    const fileUpload = async (files: any) => {
+        if (!files.length) {
+            return;
         }
-        setUploadState("uploadSuccess");
+
+        isCancelRef.current = false;
+        chunkServerRef.current = [];
+        // TODO 只上传第一个文件
+        const file = files[0];
+        const fileMd5 = await calculateFileMd5(file);
+        file.md5 = fileMd5;
+        file.id = fileMd5;
+
+        if (file.size <= fileSlicSize) {
+            await smallFileUpload(file);
+        } else {
+            const chunks = Math.ceil(file.size / fileSlicSize); // 计算分片的数量
+            setCircular(0);
+            setFileName(file.name);
+            setIsupload(true);
+
+            await uploadNextChunk(chunks, file);
+            setIsupload(false);
+            // 将上传文件同步至服务器
+        }
+        console.log("file.state++++", file.state);
+        if (file.state == "success") {
+            // file.state = "success"; // 文件上传成功，切片合并成功
+            // file.fileId = res.data;
+            setUploadState("uploadSuccess", file.fileId);
+        }
     };
 
     const drop: React.DragEventHandler<HTMLDivElement> = (e) => {

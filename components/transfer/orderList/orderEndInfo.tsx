@@ -70,14 +70,14 @@ export default function OrderState(props: any) {
             0: "取消",
             1: "审核中",
             2: "待支付",
-            3: "待转写",
-            4: "已完成",
+            3: "转写中",
+            4: "转写完成",
             5: "转写失败"
         };
         return stateMap[zxStatus] || "";
         // 0取消 1新建  2待支付 3待转写 4完成 5转写失败
     };
-
+    const zxText = zxType ? `${zxType == "1" ? "机器转写" : "人工精转"}-中文` : "";
     return (
         <>
             <div className="bg-white rounded-xl py-5 pl-4">
@@ -90,9 +90,7 @@ export default function OrderState(props: any) {
 
                     <span className="text-bc">
                         订单类型：
-                        <span className="text-black">
-                            {zxType == "1" ? "机器转写" : "人工精转"}-中文
-                        </span>
+                        <span className="text-black">{zxText}</span>
                     </span>
                     <span className="text-bc">
                         实付金额：<span className="text-black">￥{payType == 0 ? 0 : zxPrice}</span>

@@ -45,26 +45,20 @@ export interface editorType {
     editorData: any;
     audioId: string;
     key: string;
+    isShowTime: boolean;
+    isShowRole: boolean;
     playAudio: (start: number, end: number) => void;
+
     // speakerClickCallback: (el: MentionElement) => void;
 }
 
 // 定义 Editor 对象
 const Editor = (props: editorType, ref) => {
-    const { audioId, editorData, playAudio } = props;
+    const { audioId, editorData, playAudio, isShowTime, isShowRole } = props;
     const timer = useRef<number>(0);
 
-    const editorChange = (value, ops) => {
-        if (ops.type == "set_selection") {
-            return;
-        }
-
-        // console.log("serverData+++", data1);
-        // console.log("editorChange+++", value);
-    };
-
-    // 保存编辑器数据
-    const saveEditorData = () => {
+    // 一分钟自动保存编辑器数据
+    const saveEditorData = (time = 60 * 1000) => {
         clearTimeout(timer.current);
         timer.current = window.setTimeout(() => {
             let data1 = editorToServerData(editor.children);
@@ -76,8 +70,21 @@ const Editor = (props: editorType, ref) => {
                 .catch(() => {
                     saveEditorData();
                 });
-        }, 60 * 1000);
+        }, time);
     };
+
+    const editorChange = (value, ops) => {
+        if (ops.type == "set_selection") {
+            return;
+        }
+        if (ops.type != "remove_node") {
+            // 排除刷新后的自动保存
+            saveEditorData(3 * 1000);
+        }
+        // console.log("serverData+++", data1);
+        console.log("editorChange+++", value);
+    };
+
     useEffect(() => {
         saveEditorData();
         return () => {
@@ -94,9 +101,13 @@ const Editor = (props: editorType, ref) => {
         }
     }));
 
-    const renderElement = useCallback(
-        (elementProps: any) => <EditorElement editor={editor} {...elementProps} />,
-        []
+    const renderElement = (elementProps: any) => (
+        <EditorElement
+            editor={editor}
+            isShowTime={isShowTime}
+            isShowRole={isShowRole}
+            {...elementProps}
+        />
     );
 
     useEffect(() => {

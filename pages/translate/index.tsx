@@ -19,12 +19,9 @@ import {
     cn,
     RadioGroup
 } from "@nextui-org/react";
+import Router, { useRouter } from "next/router";
+
 import Upload from "@/components/translate/upload";
-import MachineFrom from "@/components/transfer/from/machineFrom";
-import PeopleFrom from "@/components/transfer/from/peopleFrom";
-import Keyword from "@/components/transfer/from/keyWord";
-import FileList from "@/components/transfer/from/fileList";
-import Footer from "@/components/transfer/footer";
 import TextTab from "@/components/translate/textTranslate/tabContent";
 import DocContent from "@/components/translate/docTranslate/content";
 import TextContent from "@/components/translate/textTranslate/content";
@@ -36,18 +33,30 @@ import PaymentRadio from "@/components/common/paymentRadio";
 
 export default function Index() {
     const [isFree, setIsFree] = useState(true);
-    const modalRef = useRef();
-    const [selected, setSelected] = useState("text");
+    const docContentRef = useRef<any>();
     const [language, setLanuage] = useState();
     const [payType, changePayType] = useState(0);
     // 文本翻译的翻译结果
     const [translateText, setTranslateText] = useState("");
+
+    const router = useRouter();
+
+    // 当前选中的界面，如果没有默认个人信息
+    const tabSelected = (router.query.fyType as string) || "doc";
+    console.log("pathname+++", tabSelected);
+
+    const tabClick = (key: string) => {
+        const href = `/translate?fyType=${key}`;
+        const as = href;
+        Router.push(href, as, { shallow: true });
+    };
 
     useEffect(() => {
         // 获取可以转写的语言
         langFy().then((res: any) => {
             if (!res.data) {
                 setLanuage([] as any);
+                return;
             }
             const lanusgeList = res.data.map((item: any) => {
                 return {
@@ -59,6 +68,10 @@ export default function Index() {
         });
     }, []);
 
+    const tsSuccess = () => {
+        docContentRef.current && docContentRef.current.resetData();
+    };
+
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col h-full min-h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[1200px] min-h-[500px] flex flex-row justify-around w-full flex-1 mb-8">
@@ -67,15 +80,15 @@ export default function Index() {
                         fullWidth
                         size="md"
                         aria-label="Tabs form"
-                        selectedKey={selected}
+                        selectedKey={tabSelected}
                         onSelectionChange={(key) => {
-                            setSelected(key as string);
+                            tabClick(key as string);
                         }}
                         classNames={{
                             base: "min-h-[62px] mt-[4px] bg-[#F5F5F5]",
                             tabList: [
                                 "gap-6 w-full relative rounded-none p-0 border-b border-divider justify-around  h-[66px] absolute left-0 top-0 bg-no-repeat bg-cover bg-tab-left border-0",
-                                selected == "doc" ? styles.activeLeft : styles.activeRight
+                                tabSelected == "doc" ? styles.activeLeft : styles.activeRight
                             ],
                             cursor: "hidden",
                             tab: "px-0 h-12 text-4",
@@ -86,7 +99,7 @@ export default function Index() {
                         <Tab key="doc" title="文档翻译">
                             <form className="flex flex-col h-full">
                                 {/* 文件上传组件 */}
-                                <Upload languages={language as any} isFree={isFree}></Upload>
+                                <Upload languages={language as any} tsSuccess={tsSuccess}></Upload>
                             </form>
                         </Tab>
                         <Tab key="text" title="文本翻译">
@@ -98,8 +111,8 @@ export default function Index() {
                     </Tabs>
                 </div>
                 <div className="flex flex-1 flex-col pl-3.5">
-                    {selected == "doc" && <DocContent isFree={isFree}></DocContent>}
-                    {selected == "text" && (
+                    {tabSelected == "doc" && <DocContent ref={docContentRef}></DocContent>}
+                    {tabSelected == "text" && (
                         <TextContent translateText={translateText}></TextContent>
                     )}
                 </div>

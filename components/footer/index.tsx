@@ -2,8 +2,8 @@ import { Image } from "@nextui-org/react";
 
 export default function Footer() {
     return (
-        <div className="w-full flex flex-col bg-[#1A1A1A]">
-            <div className="grid grid-cols-9 gap-9 text-white py-[37px] w-[1200px] mx-auto">
+        <div className="w-full flex flex-col bg-[#1A1A1A] min-w-[1000px]">
+            <div className="grid grid-cols-9 gap-9 text-white py-[37px] max-w-[1200px]  mx-auto">
                 <div className="min-w-[125px] col-span-2">
                     <Image
                         className="pb-[14px]"

@@ -24,6 +24,7 @@ import CodeBtn from "@/components/from/codeBtn";
 import { registerAccount } from "@/api/api";
 
 import styles from "./index.module.css";
+import { useEventListener } from "ahooks";
 
 const initInvalidInfo = {
     tel: "",
@@ -177,27 +178,17 @@ function Register() {
         }
     };
 
-    // // 增加登录监听
-    // const handleKeyPress = useCallback(
-    //     (event: any) => {
-    //         if (event.code === "Enter") {
-    //             event.preventDefault(); // 阻止默认行为，比如提交表单等
-    //             console.log("enter");
-    //             onLogin();
-    //         }
-    //     },
-    //     [phone, code, telEmail, password, againPassWord]
-    // );
-
-    // useEffect(() => {
-    //     document.addEventListener("keydown", handleKeyPress);
-    //     return () => {
-    //         document.removeEventListener("keydown", handleKeyPress);
-    //     };
-    // }, []);
+    // 增加修改密码监听
+    const handleKeyPress = (event: any) => {
+        if (event.code === "Enter") {
+            event.preventDefault(); // 阻止默认行为，比如提交表单等
+            onLogin();
+        }
+    };
+    useEventListener("keydown", handleKeyPress);
 
     return (
-        <div className="w-full h-full bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">
+        <div className="w-full h-full min-h-[650px] bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">
             <div className="h-full max-w-[1200px] mx-auto flex justify-end items-center min-h-[650px]">
                 <Card className="max-w-full w-[424px] h-[528px] bg-transparent">
                     <CardBody className="overflow-hidden p-0 bg-transparent relative flex-none">
@@ -215,8 +206,8 @@ function Register() {
                                 tabList: [
                                     "gap-6 w-full relative rounded-none p-0 border-b border-divider justify-around  h-[94px] absolute left-0 top-0 bg-no-repeat bg-cover bg-tab-left border-0",
                                     selected == "register-message"
-                                        ? styles.activeLeft
-                                        : styles.activeRight
+                                        ? " bg-loginTableLeft"
+                                        : " bg-loginTableRight"
                                 ],
                                 cursor: "hidden",
                                 tab: "text-66 px-0 h-12 text-[20px]",

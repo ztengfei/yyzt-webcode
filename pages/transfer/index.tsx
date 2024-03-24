@@ -178,8 +178,8 @@ export default function Index() {
                     });
                 }
             } else {
-                const text = res.msg || '提交失败';
-                toast.error(text)
+                const text = res.msg || "提交失败";
+                toast.error(text);
             }
         });
     };
@@ -208,7 +208,7 @@ export default function Index() {
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
-            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-row justify-around w-full flex-1">
+            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-row justify-around w-full flex-1  mb-[80px]">
                 <div className="w-[348px] relative rounded-2xl h-[595px] flex flex-col overflow-hidden rounded-[20px]">
                     <Tabs
                         fullWidth
@@ -250,7 +250,7 @@ export default function Index() {
                 </div>
                 <div className="flex flex-1 flex-col pl-3.5">
                     {/* 关键词 */}
-                    <Keyword></Keyword>
+                    {/* <Keyword></Keyword> */}
                     {/* 上传的文件列表 */}
                     <FileList
                         fileLists={fileList}

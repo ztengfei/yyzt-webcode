@@ -131,6 +131,7 @@ export const toEditorData = (data) => {
                     type: "mention",
                     roleName: role,
                     startTime: secondsToHMS(Math.floor(startTime / 1000)),
+                    timeNumber: startTime,
                     character: role,
                     iconText: role[0],
                     iconBg: getRoleBg(role),
@@ -156,7 +157,7 @@ export const toEditorData = (data) => {
     return editorData;
 };
 
-const getBlockRole = (blockData) => {
+const getBlockRole = (blockData, prevRole) => {
     const count = Math.min(blockData.length, 2);
     for (let i = 0; i < count; i++) {
         let { type, roleName } = blockData[i];
@@ -164,18 +165,18 @@ const getBlockRole = (blockData) => {
             return roleName;
         }
     }
-    return "";
+    return prevRole;
 };
 
 const getfirstTime = (blockData) => {
     const count = blockData.length;
     for (let i = 0; i < count; i++) {
-        let { startTime, type } = blockData[i];
-        if (startTime && type != "mention") {
-            return startTime;
+        let { timeNumber, type } = blockData[i];
+        if (timeNumber && type != "mention") {
+            return timeNumber;
         }
     }
-    return "";
+    return 0;
 };
 
 // 将页面的数据转化为服务保存的数据
@@ -184,7 +185,7 @@ export const editorToServerData = (children) => {
     let prevRole = "";
     for (let i = 0; i < children.length; i++) {
         let block = children[i];
-        let roleName = getBlockRole(block.children) || prevRole;
+        let roleName = getBlockRole(block.children, prevRole);
         prevRole = roleName;
         let firstTime = getfirstTime(block.children);
         const itemData = {
@@ -193,11 +194,14 @@ export const editorToServerData = (children) => {
             value: []
         };
         block.children.forEach((item) => {
-            itemData.value.push({
-                ...item
-            });
+            if (item.type != "mention" && item.text) {
+                itemData.value.push({
+                    ...item
+                });
+            }
         });
         serverData.push(itemData);
     }
+    // console.log("serverData+++++", serverData);
     return serverData;
 };

@@ -223,14 +223,21 @@ export const fyCommit = (data: { upFileId: string; lanFrom: string; lanTo: strin
 };
 
 // 翻译订单查询
-export const fyOrderList = (data: { orderNum: string }) => {
+export const fyOrderList = (data: any) => {
     return post(`${serverIp}/client/fy/order/list`, data);
+};
+
+// 翻译文档下载
+export const fyOrderDownload = (data: { id: string }) => {
+    return post(`${serverIp}/client/fy/result/file/down`, data);
 };
 
 // 转写列表查询 {pageNum:1, pageSize:10, }
 export const zxOrderInfo = (data: { pageNum: number; pageSize: number }) => {
     return post(`${serverIp}/client/zx/order/list`, data);
 };
+
+//
 
 // 文本翻译查询
 export const txtTranslate = (data: { from: string; to: string; src_text: string }) => {
@@ -292,7 +299,21 @@ export const getMoney = (data: { id: string; cardIds: string[]; buyCardId: strin
     return post(`${serverIp}/client/zx/order/jq/get/money`, data);
 };
 
-//
+// 支付转写订单总接口
 export const orderPay = (data: { id: string; cardIds: string[]; buyCardId: string; payType }) => {
     return post(`${serverIp}/client/zx/order/jq/pay2`, data);
+};
+
+// 支付翻译订单
+export const fyOrderPay = (data: { id: string; payType?: number }) => {
+    return post(`${serverIp}/client/fy/order/pay`, data);
+};
+
+// 文件详情
+export const fyFileQuery = (data: { id: string }) => {
+    return get(`${serverIp}/upload/fy/file/query`, data);
+};
+// 翻译订单详情123123
+export const fyOrderInfo = (data: { id: string }) => {
+    return get(`${serverIp}/client/fy/order/detail`, data);
 };

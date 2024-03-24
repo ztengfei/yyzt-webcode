@@ -17,6 +17,9 @@ import { login, loginProp, autnLoginPage } from "@/api/api";
 import { RASEncrypt, getTolocal, randomString, saveToWindow, setToLocal } from "@/components/tool";
 
 import styles from "./index.module.css";
+import { useEventListener } from "ahooks";
+import CloseIcon from "@/components/icon/close";
+import toast from "react-hot-toast";
 const initVal = {
     tel: "",
     code: "",
@@ -26,6 +29,7 @@ const initVal = {
 
 //  登陆界面
 function Login() {
+    const [wxSrc, setWxSrc] = useState("");
     const [selected, setSelected] = useState("login-message");
     //表单数据的状态
     const [invalidInfo, setInvalidInfo] = useState(initVal);
@@ -108,7 +112,17 @@ function Login() {
         setToLocal("loginType", type);
 
         const res: any = await autnLoginPage({ loginType: type });
+        if (res.code != 200) {
+            toast.error("登录失败");
+            return;
+        }
+        if (type == 1) {
+            setWxSrc(res.data);
+            return;
+        }
+
         const div = document.createElement("div");
+        // div.style.display = "none";
         div.innerHTML = res.data;
         document.body.appendChild(div);
         let fromEl = div.querySelector("form");
@@ -192,26 +206,24 @@ function Login() {
     }, []);
 
     // 增加登录监听
-    const handleKeyPress = useCallback(
-        (event: any) => {
-            if (event.code === "Enter") {
-                event.preventDefault(); // 阻止默认行为，比如提交表单等
-                onLogin();
-            }
-        },
-        [userName, code, password, disabled]
-    );
+    const handleKeyPress = (event: any) => {
+        if (event.code === "Enter") {
+            event.preventDefault(); // 阻止默认行为，比如提交表单等
+            onLogin();
+        }
+    };
+    useEventListener("keydown", handleKeyPress);
 
-    useEffect(() => {
-        // document.addEventListener("keydown", handleKeyPress);
-        // return () => {
-        //     document.removeEventListener("keydown", handleKeyPress);
-        // };
-    }, []);
+    // useEffect(() => {
+    //     document.addEventListener("keydown", handleKeyPress);
+    //     return () => {
+    //         document.removeEventListener("keydown", handleKeyPress);
+    //     };
+    // }, []);
 
     return (
-        <div className="w-full h-full bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">
-            <div className="h-full max-w-[1200px] mx-auto flex justify-end items-center min-h-[580px]">
+        <div className="w-full h-full min-h-[545px] bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">
+            <div className="h-full max-w-[1200px] mx-auto flex justify-end items-center min-h-[545px]">
                 <Card className="max-w-full w-[424px] h-[457px] bg-transparent">
                     <CardBody className="overflow-hidden p-0 bg-transparent relative flex-none">
                         <Tabs
@@ -388,6 +400,26 @@ function Login() {
                     </div>
                 </Card>
             </div>
+
+            {wxSrc && (
+                <div className="w-full justify-center items-center flex flex-col min-h-full bg-[rgba(0,0,0,.58)] fixed h-full bottom-0">
+                    <div className=" bg-white w-[380px] h-[468px] rounded-lg relative">
+                        <Button
+                            isIconOnly
+                            radius="full"
+                            className="w-[30px] h-[30px] min-w-[30px] bg-transparent mb-2 absolute right-2 top-2"
+                            onClick={() => {
+                                setWxSrc("");
+                            }}
+                        >
+                            <CloseIcon size={30} fill="#000"></CloseIcon>
+                        </Button>
+                        <div className="flex justify-center mt-[40px]">
+                            <iframe src={wxSrc} frameBorder="0" height={500}></iframe>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

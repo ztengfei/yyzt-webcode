@@ -13,11 +13,17 @@ import {
     CardFooter,
     SelectItem,
     Image,
-    Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,useDisclosure
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
+    useDisclosure
 } from "@nextui-org/react";
 
 import TransfleTable from "@/components/user/table/teansfer";
 import TranslateTable from "@/components/user/table/translate";
+import UserMange from "@/components/user/table/userMange";
 import CardItem from "@/components/user/card/card";
 import { userDurationList, cardRefund } from "@/api/api";
 import toast from "react-hot-toast";
@@ -26,41 +32,45 @@ export default function Index() {
     const modalRef = useRef();
     const [isFollowed, setIsFollowed] = useState(false);
     const [userCard, setUserCard] = useState([]);
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
-    const refundCardIdRef = useRef('');
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const refundCardIdRef = useRef("");
 
-    useEffect(()=>{
+    const getUserCardList = () => {
         userDurationList().then((res: any) => {
             if (res.data) {
                 setUserCard(res.data);
             }
         });
-    }, [])
+    };
+
+    useEffect(() => {
+        getUserCardList();
+    }, []);
 
     // 退卡程序
-    const refundCard = (id:string) => {
+    const refundCard = (id: string) => {
         console.log(id);
         refundCardIdRef.current = id;
         onOpen();
-        
-    }
+    };
     // 确认退卡
-    const onConfirm = (close:()=>void) => {
+    const onConfirm = (close: () => void) => {
         if (!refundCardIdRef.current) {
-            console.log('没有选择时长卡');
+            console.log("没有选择时长卡");
         }
-        cardRefund({id:refundCardIdRef.current}).then((res:any)=>{
+        cardRefund({ id: refundCardIdRef.current }).then((res: any) => {
             if (res.code == 200) {
-                toast.success('退卡成功')
+                toast.success("退卡成功");
+                getUserCardList();
             } else {
                 if (res.errorCode == 1007) {
-                    toast.error('当前时长卡正在使用无法退卡')
+                    toast.error("当前时长卡正在使用无法退卡");
                 }
-                toast.error('退卡失败')
+                toast.error("退卡失败");
             }
-        })
+        });
         close && close();
-    }
+    };
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
@@ -82,7 +92,10 @@ export default function Index() {
                                     <h5 className=" text-xs text-[#bcbcbc]">ID:12312312</h5>
                                     <div className="h-[24px] border-f602 flex flex-row items-center text-sm border rounded-full pr-3">
                                         <div className="bg-f602 px-1 text-white flex flex-row rounded-l-full h-full">
-                                            <Image src="/images/user/user-icon1.png" className="z-0"></Image>
+                                            <Image
+                                                src="/images/user/user-icon1.png"
+                                                className="z-0"
+                                            ></Image>
                                             包月畅享
                                         </div>
                                         <div className=" text-f602 pl-3">
@@ -145,20 +158,40 @@ export default function Index() {
                                         <span>账号管理</span>
                                     </div>
                                 }
-                            ></Tab>
+                            >
+                                <UserMange></UserMange>
+                            </Tab>
                         </Tabs>
                     </div>
                 </div>
                 <div className="w-[360px] ml-5 bg-white rounded-xl">
-                    <Link href="/shopping"><Image src="/images/user/shoping-icon.png"></Image></Link>
+                    <Link href="/shopping">
+                        <Image src="/images/user/shoping-icon.png"></Image>
+                    </Link>
                     <div className="p-5">
                         <div className="flex flex-row justify-between my-3">
                             <span className="font-medium text-lg">我的时长卡</span>
-                            <span className="font-medium text-lg text-f602">{userCard.length}张</span>
+                            <span className="font-medium text-lg text-f602">
+                                {userCard.length}张
+                            </span>
                         </div>
-                        {userCard.length && userCard.map((item, index)=>{
-                            return <CardItem isShowCheck={false} refundCard={()=>{refundCard(item.id)}} key={item.id} bgType={item.cardName.indexOf("月") > -1 ? "moon" : "year"} {...item}></CardItem>
-                        })}
+                        {!userCard.length ? (
+                            <div className=" text-center text-foreground-400 mt-8">暂无时长卡</div>
+                        ) : (
+                            userCard.map((item, index) => {
+                                return (
+                                    <CardItem
+                                        isShowCheck={false}
+                                        refundCard={() => {
+                                            refundCard(item.id);
+                                        }}
+                                        key={item.id}
+                                        bgType={item.cardName.indexOf("月") > -1 ? "moon" : "year"}
+                                        {...item}
+                                    ></CardItem>
+                                );
+                            })
+                        )}
                         {/* <CardItem></CardItem>
                         <CardItem></CardItem> */}
                     </div>
@@ -166,30 +199,29 @@ export default function Index() {
             </div>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange} className="orange-drak">
                 <ModalContent>
-                {(onClose) => (
-                    <>
-                    <ModalHeader className="flex flex-col gap-1">确认退卡</ModalHeader>
-                    <ModalBody>
-                        <p> 
-                        当前卡片优惠多多，确认要退卡
-                        </p>
-                        
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="danger" variant="light" onPress={onClose}>
-                        取消
-                        </Button>
-                        <Button color="primary" onPress={()=>{
-                            onConfirm(onClose)
-                        }}>
-                        确认
-                        </Button>
-                    </ModalFooter>
-                    </>
-                )}
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">确认退卡</ModalHeader>
+                            <ModalBody>
+                                <p>当前卡片优惠多多，确认要退卡</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onPress={onClose}>
+                                    取消
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    onPress={() => {
+                                        onConfirm(onClose);
+                                    }}
+                                >
+                                    确认
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
                 </ModalContent>
             </Modal>
-
         </div>
     );
 }

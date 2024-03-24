@@ -17,6 +17,8 @@ import styles from "./index.module.css";
 import CodeBtn from "@/components/from/codeBtn";
 import { forgotPwd } from "@/api/api";
 import { RASEncrypt, getTolocal, randomString, saveToWindow, setToLocal } from "@/components/tool";
+import toast from "react-hot-toast";
+import { useEventListener } from "ahooks";
 
 const initInvalidInfo = {
     tel: "",
@@ -127,8 +129,8 @@ function FindPassword() {
         // 校验通过
         setInvalidInfo({ ...initInvalidInfo });
         console.log("校验成功");
-        const timeDate = new Date().getTime();
-        const userKey = randomString(32);
+        // const timeDate = new Date().getTime();
+        // const userKey = randomString(32);
         // password RASEncrypt().encrypt(`${password},<<<,${timeDate},<<<,${userKey}`)
         try {
             const res: any = await forgotPwd({
@@ -138,15 +140,30 @@ function FindPassword() {
                 loginType: 11 // 0账号密码  1微信 2支付宝 11验证码
             });
             if (res.errorCode == 0) {
-                Router.push("/login");
+                toast.success("密码设置成功，请登录");
+                setTimeout(() => {
+                    Router.push("/login");
+                }, 800);
+                return;
             }
+            toast.error("密码设置失败");
         } catch (error) {
             // 接口异常
+            toast.error("服务异常");
         }
     };
 
+    // 增加修改密码监听
+    const handleKeyPress = (event: any) => {
+        if (event.code === "Enter") {
+            event.preventDefault(); // 阻止默认行为，比如提交表单等
+            onLogin();
+        }
+    };
+    useEventListener("keydown", handleKeyPress);
+
     return (
-        <div className="w-full h-full bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">
+        <div className="w-full h-full min-h-[600px] bg-login-bg  bg-no-repeat bg-cover absolute left-0 top-0">
             <div className="h-full max-w-[1200px] mx-auto flex justify-end items-center min-h-[600px]">
                 <Card className="max-w-full w-[424px] h-[455px] bg-white px-[33px]">
                     <div className="text-black text-[28px] mt-[34px] mb-[25px] font-semibold">

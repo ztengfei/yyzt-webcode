@@ -95,9 +95,6 @@ export default function Order() {
                             <PaymentRadio value={2} type="zhifubao" text="支付宝">
                                 支付宝
                             </PaymentRadio>
-                            {/* <PaymentRadio value="yinlian" type="yinlian" text="银联">
-                            银联
-                        </PaymentRadio> */}
                         </RadioGroup>
                     </div>
                 )}

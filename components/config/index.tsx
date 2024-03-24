@@ -1,5 +1,5 @@
 // 后台服务地址
-export const serverIp = "http://182.106.136.46:9000";
+export const serverIp = "http://61.136.101.151:9000";
 
 // 请求地址公钥
 export const PublicKey =

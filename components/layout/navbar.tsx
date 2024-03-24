@@ -71,7 +71,7 @@ function NavbarBox(props: NavbarType) {
 
     return (
         <>
-            <NavbarContent className="hidden sm:flex gap-4 text-xs">
+            <NavbarContent className="hidden sm:flex gap-8 text-xs">
                 <NavbarItem>
                     <Link
                         className={
@@ -92,8 +92,8 @@ function NavbarBox(props: NavbarType) {
                             " text-sm " +
                             getActiveClass(path.indexOf("/translate") > -1)
                         }
-                        href="/translate"
-                        // color={path.indexOf("/translate") > -1 ? "primary" : "foreground"}
+                        href="/translate?fyType=doc"
+                        // color={path.indexOf("/translate") > -1 ? "primary" : "foreground"} /transfer?fyType=${key}
                     >
                         翻译
                     </Link>
@@ -111,7 +111,7 @@ function NavbarBox(props: NavbarType) {
                 </NavbarItem>
             </NavbarContent>
 
-            <NavbarContent className="hidden sm:flex gap-4" justify="end">
+            <NavbarContent className="hidden sm:flex gap-8" justify="end">
                 <NavbarItem>
                     <Link
                         className={

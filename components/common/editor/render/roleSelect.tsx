@@ -1,6 +1,5 @@
-import React, { useMemo, useState, useImperativeHandle, forwardRef  } from "react";
-import { Checkbox, Input, } from "@nextui-org/react";
-
+import React, { useMemo, useState, useImperativeHandle, forwardRef } from "react";
+import { Checkbox, Input } from "@nextui-org/react";
 
 // 发言人节点渲染
 const Speaker = ({ roleInfo, editor, roleSelectChange }: any, ref) => {
@@ -18,7 +17,11 @@ const Speaker = ({ roleInfo, editor, roleSelectChange }: any, ref) => {
         for (let i = 0; i < blicks.length; i++) {
             let leafs = blicks[i].children;
             for (let j = 0; j < leafs.length; j++) {
-                if (leafs[j].type == "mention" && !roleNames.includes(leafs[j].roleName)) {
+                if (
+                    leafs[j].type == "mention" &&
+                    !roleNames.includes(leafs[j].roleName) &&
+                    leafs[j].roleName
+                ) {
                     roles.push(leafs[j]);
                     roleNames.push(leafs[j].roleName);
                 }
@@ -54,21 +57,23 @@ const Speaker = ({ roleInfo, editor, roleSelectChange }: any, ref) => {
 
     useImperativeHandle(ref, () => ({
         getSelectedData: () => {
-            return { name:inputVal, isSelected };
+            return { name: inputVal, isSelected };
         }
     }));
     const onKeyDown = (e) => {
         if (e.keyCode == 13) {
             roleSelectChange(inputVal, isSelected, roleInfo.roleName);
         }
-    }
-    
+    };
 
     return (
-        <div className="px-1 py-2 w-full">
+        <div className="px-1 py-2 w-full max-h-[340px] overflow-auto">
             <div className="text-sm text-[#838383] mb-1 whitespace-nowrap overflow-ellipsis overflow-hidden w-full">
-                
-                <Checkbox isSelected={isSelected} onValueChange={setIsSelected}>{`修改全部"${roleInfo.roleName}"为：`}</Checkbox>
+                <Checkbox
+                    isSelected={isSelected}
+                    isDisabled={!roleInfo.roleName}
+                    onValueChange={setIsSelected}
+                >{`修改全部"${roleInfo.roleName}"为：`}</Checkbox>
             </div>
             <Input
                 type="text"
@@ -109,16 +114,7 @@ const Speaker = ({ roleInfo, editor, roleSelectChange }: any, ref) => {
                             </div>
                         );
                     }
-                    // return <></>;
                 })}
-                {/* <div className="flex flex-row mt-2">
-                    <span className=" bg-f602 inline-block w-5 h-5 text-center text-white text-xs leading-5">
-                        曾
-                    </span>
-                    <span className="text-[#838383] text-sm ml-2 flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden">
-                        曾黎
-                    </span>
-                </div> */}
             </div>
         </div>
     );
