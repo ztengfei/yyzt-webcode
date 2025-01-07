@@ -29,7 +29,6 @@ interface keyWordListProp {
 function KeyWordAndList(props: keyWordListProp, ref: any) {
     const { fileLists, selectedFile, setSelectedFile } = props;
 
-    console.log("fileLists*****", fileLists);
     const [checked, setChecked] = useState([""]);
 
     useImperativeHandle(ref, () => ({
@@ -45,17 +44,19 @@ function KeyWordAndList(props: keyWordListProp, ref: any) {
     if (!fileLists || !fileLists.length) {
         return (
             <>
-                <div className="text-lg font-semibold mt-6 mb-4">上传文件（0）</div>
-                <div className="w-full flex-1 flex justify-center mt-[10%]">
-                    <Image src="/images/transfer/nodata.png"></Image>
+                <div className="text-lg font-semibold mt-6 mb-4 ml-[23px]">上传文件（0）</div>
+                <div className="w-full flex-1 flex justify-center mt-[30px]  ml-[23px]">
+                    <Image src="/images/transfer/nodata.png" width={250} height={150}></Image>
                 </div>
             </>
         );
     }
     return (
         <>
-            <div className="text-lg font-semibold mt-6 mb-4">上传文件（{fileLists.length}）</div>
-            <div className="max-h-[570px] overflow-auto">
+            <div className="text-lg font-semibold mt-6 mb-4  ml-[23px]">
+                文件列表（{fileLists.length}）
+            </div>
+            <div className="max-h-[570px] overflow-auto  ml-[23px]">
                 <CheckboxGroup
                     // label="Select cities"
                     color="primary"

@@ -133,7 +133,7 @@ export const toEditorData = (data) => {
                     startTime: secondsToHMS(Math.floor(startTime / 1000)),
                     timeNumber: startTime,
                     character: role,
-                    iconText: role[0],
+                    iconText: role ? role[0] : "",
                     iconBg: getRoleBg(role),
                     children: [{ text: "" }]
                 }
@@ -160,11 +160,11 @@ export const toEditorData = (data) => {
 const getBlockRole = (blockData, prevRole) => {
     const count = Math.min(blockData.length, 2);
     for (let i = 0; i < count; i++) {
-        let { type, roleName } = blockData[i];
+        let { type, roleName, timeNumber } = blockData[i];
         if (type == "mention") {
-            return roleName;
+            return { roleName, roleTime: timeNumber };
         }
-    }
+    } // {roleName, roleTime:''}
     return prevRole;
 };
 
@@ -182,15 +182,15 @@ const getfirstTime = (blockData) => {
 // 将页面的数据转化为服务保存的数据
 export const editorToServerData = (children) => {
     const serverData = [];
-    let prevRole = "";
+    let prevRole = {};
     for (let i = 0; i < children.length; i++) {
         let block = children[i];
-        let roleName = getBlockRole(block.children, prevRole);
-        prevRole = roleName;
-        let firstTime = getfirstTime(block.children);
+        let roleInfo = getBlockRole(block.children, prevRole);
+        prevRole = roleInfo;
+        // let firstTime = getfirstTime(block.children);
         const itemData = {
-            role: roleName,
-            startTime: firstTime,
+            role: roleInfo.roleName,
+            startTime: roleInfo.roleTime,
             value: []
         };
         block.children.forEach((item) => {

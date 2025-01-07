@@ -12,7 +12,7 @@ import {
 } from "@nextui-org/react";
 import Router from "next/router";
 
-import Paper from "./paper";
+// import Paper from "./paper";
 
 import styles from "./index.module.css";
 const initVal = {
@@ -52,10 +52,10 @@ function Login() {
                             }}
                         >
                             <Tab key="electron" title="申请电子发票">
-                                <Paper></Paper>
+                                {/* <Paper></Paper> */}
                             </Tab>
                             <Tab key="parger" title="申请纸质发票">
-                                <Paper></Paper>
+                                {/* <Paper></Paper> */}
                             </Tab>
                         </Tabs>
                     </CardBody>

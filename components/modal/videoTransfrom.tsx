@@ -82,7 +82,7 @@ function VideoTransfrom(props: any, ref: any) {
                                             // onClick={() => {
                                             //     goTransferPage("1");
                                             // }}
-                                            href="/transfer?type=1"
+                                            href="/transfer?zxType=machine"
                                             as={Link}
                                         >
                                             上传音频
@@ -107,7 +107,7 @@ function VideoTransfrom(props: any, ref: any) {
                                         <Button
                                             color="primary"
                                             className="w-[239px] h-[46px] mt-5"
-                                            href="/transfer?type=2"
+                                            href="/transfer?zxType=people"
                                             as={Link}
                                         >
                                             上传音频

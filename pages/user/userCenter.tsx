@@ -20,20 +20,25 @@ import {
     ModalFooter,
     useDisclosure
 } from "@nextui-org/react";
+import Router, { useRouter } from "next/router";
 
 import TransfleTable from "@/components/user/table/teansfer";
 import TranslateTable from "@/components/user/table/translate";
 import UserMange from "@/components/user/table/userMange";
 import CardItem from "@/components/user/card/card";
-import { userDurationList, cardRefund } from "@/api/api";
+import { userDurationList, cardRefund, getUserInfo } from "@/api/api";
 import toast from "react-hot-toast";
+import RoleIcon from "@/components/icon/role";
+import { formatDate, secondsToHMS } from "@/components/tool";
 
 export default function Index() {
     const modalRef = useRef();
+    const router = useRouter();
     const [isFollowed, setIsFollowed] = useState(false);
     const [userCard, setUserCard] = useState([]);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const refundCardIdRef = useRef("");
+    const [userInfo, serUserInfo] = useState<any>({});
 
     const getUserCardList = () => {
         userDurationList().then((res: any) => {
@@ -49,7 +54,6 @@ export default function Index() {
 
     // 退卡程序
     const refundCard = (id: string) => {
-        console.log(id);
         refundCardIdRef.current = id;
         onOpen();
     };
@@ -72,6 +76,17 @@ export default function Index() {
         close && close();
     };
 
+    useEffect(() => {
+        getUserInfo().then((res: any) => {
+            if (res.code != 200) {
+                return;
+            }
+            // let name = getUserName(res.data);
+            serUserInfo(res.data);
+            // setUserName(name);
+        });
+    }, [router]);
+
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-row justify-around w-full flex-1 mb-8">
@@ -79,18 +94,35 @@ export default function Index() {
                     <Card className="w-full px-2 py-1 bg-white rounded-xl mb-3">
                         <CardHeader className="justify-between relative">
                             <div className="flex gap-5 items-center">
-                                <Avatar
+                                {/* <Avatar
                                     isBordered
                                     radius="full"
                                     size="md"
                                     // src="/avatars/avatar-1.png"
                                     color="primary"
                                     name="周"
-                                />
+                                /> */}
+                                {userInfo.headImg ? (
+                                    // <div
+                                    //     className={"w-[24px] h-[24px] bg-[url('" + userInfo.headImg + "')]"}
+                                    // ></div>
+                                    <Image
+                                        src={`${userInfo.headImg}`}
+                                        width={24}
+                                        height={24}
+                                        className="block"
+                                        classNames={{
+                                            img: "w-[24px] h-[24px]",
+                                            wrapper: "w-[24px] h-[24px]"
+                                        }}
+                                    ></Image>
+                                ) : (
+                                    <RoleIcon></RoleIcon>
+                                )}
                                 <div className="flex flex-col gap-1 items-start justify-center">
-                                    <h4 className="font-medium ">周腾飞</h4>
-                                    <h5 className=" text-xs text-[#bcbcbc]">ID:12312312</h5>
-                                    <div className="h-[24px] border-f602 flex flex-row items-center text-sm border rounded-full pr-3">
+                                    <h4 className="font-medium ">{userInfo.userName}</h4>
+                                    {/* <h5 className=" text-xs text-[#bcbcbc]">ID:12312312</h5> */}
+                                    {/* <div className="h-[24px] border-f602 flex flex-row items-center text-sm border rounded-full pr-3">
                                         <div className="bg-f602 px-1 text-white flex flex-row rounded-l-full h-full">
                                             <Image
                                                 src="/images/user/user-icon1.png"
@@ -101,18 +133,46 @@ export default function Index() {
                                         <div className=" text-f602 pl-3">
                                             连续包月-到期至: 2024-10-21 本月剩余L20:14:13
                                         </div>
-                                    </div>
+                                    </div> */}
+                                    {userCard.map((item, index) => {
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="h-[24px] border-f602 flex flex-row items-center text-sm border rounded-full pr-3"
+                                            >
+                                                <div className="bg-f602 px-1 text-white flex flex-row rounded-l-full h-full">
+                                                    <Image
+                                                        src="/images/user/user-icon1.png"
+                                                        className="z-0"
+                                                    ></Image>
+                                                    {item.cardName}
+                                                </div>
+                                                <div className=" text-f602 pl-3">
+                                                    有效期至: {formatDate(item.endDate)} 本月剩余：
+                                                    {secondsToHMS(item.usableTime)}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
-                            <div className="text-sm text-[#5b5b5b] absolute right-[8px] top-[10px] cursor-pointer">
+                            {/* <div className="text-sm text-[#5b5b5b] absolute right-[8px] top-[10px] cursor-pointer">
                                 编辑
-                            </div>
+                            </div> */}
+                            <Link
+                                href="/user?page=useInfo"
+                                className="text-sm text-[#5b5b5b] absolute right-[8px] top-[10px] cursor-pointer"
+                            >
+                                编辑
+                            </Link>
                         </CardHeader>
                         <CardBody className="text-sm text-default-400 text-[#5b5b5b] p-2">
-                            <p>
-                                个人签名:
-                                大智若愚就是我,大智若愚就是我,大智若愚就是我,大智若愚就是我
-                            </p>
+                            {userInfo.relName && (
+                                <p>
+                                    个人签名:
+                                    {userInfo.relName}
+                                </p>
+                            )}
                         </CardBody>
                     </Card>
 
@@ -159,7 +219,7 @@ export default function Index() {
                                     </div>
                                 }
                             >
-                                <UserMange></UserMange>
+                                <UserMange userInfo={userInfo}></UserMange>
                             </Tab>
                         </Tabs>
                     </div>

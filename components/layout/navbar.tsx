@@ -32,7 +32,6 @@ function NavbarBox(props: NavbarType) {
     const textColor = useMemo(() => {
         return navStyle == "white" ? "text-black " : " text-white ";
     }, [navStyle]);
-    console.log("textColor+++++", textColor, navStyle);
     if (!props.isLogin) {
         if (path.indexOf("login") > -1) {
             // 如果当前没有登录则只有返回首页按钮
@@ -136,14 +135,15 @@ function NavbarBox(props: NavbarType) {
                             " text-sm " +
                             getActiveClass(path.indexOf("/user/userCenter") > -1)
                         }
-                        href="user/userCenter"
+                        href="/user/userCenter"
                         // color={path.indexOf("/user/userCenter") > -1 ? "primary" : "foreground"}
                     >
                         我的时长卡
                     </Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Badge content="5" color="primary">
+                    {/*  content="0"  */}
+                    <Badge color="primary" isInvisible={true}>
                         <Link
                             className={
                                 textColor +

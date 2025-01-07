@@ -7,7 +7,6 @@ const Speaker = ({ roleInfo, editor, roleSelectChange }: any, ref) => {
     const [isSelected, setIsSelected] = useState(false);
 
     const roleList = useMemo(() => {
-        console.log("editor++++", editor);
         if (!editor.children) {
             return [];
         }
@@ -50,7 +49,6 @@ const Speaker = ({ roleInfo, editor, roleSelectChange }: any, ref) => {
     };
     // 发言人点击选择
     const selectedRole = (item: any) => {
-        console.log("item", item);
         // setIsOpen(false);
         roleSelectChange(item.roleName, isSelected, roleInfo.roleName);
     };

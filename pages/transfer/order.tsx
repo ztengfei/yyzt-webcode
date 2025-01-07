@@ -72,7 +72,7 @@ export default function Order() {
                 <div className="mt-5 mb-4 text-base">音频列表</div>
                 <div>
                     {fileInfo.zxFiles &&
-                        fileInfo.zxFiles.length &&
+                        !!fileInfo.zxFiles.length &&
                         fileInfo.zxFiles.map((item: any, index: number) => {
                             return <VideoList key={item.id} {...item}></VideoList>;
                         })}

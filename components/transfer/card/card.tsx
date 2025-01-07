@@ -35,7 +35,6 @@ export default function CardList(props: cardListType) {
         <div
             className="h-[127px] w-[272px] rounded-2xl mr-2"
             onClick={() => {
-                console.log("12312312312332");
                 changeState && changeState();
             }}
         >

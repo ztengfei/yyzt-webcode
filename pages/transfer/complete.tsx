@@ -61,12 +61,24 @@ export default function Order() {
         }, 2000);
     };
 
+    // 如果当前文件转写完成这默认勾选
+    const sleaetedAllFile = (files) => {
+        let ids = [];
+        files.zxFiles.map((item) => {
+            if (item.zxStatus == "4") {
+                ids.push(item.id);
+            }
+        });
+        setSelected(ids);
+    };
+
     const getOrderData = () => {
         orderDetail({ orderId: orderId }).then((res: any) => {
             if (!res.data) {
                 toast.error("订单详情获取失败，请刷新重试");
                 return;
             }
+            sleaetedAllFile(res.data);
             setDileInfo(res.data);
             LoopGetFiles(res.data);
         });
@@ -111,19 +123,19 @@ export default function Order() {
 
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col h-full bg-[#F7F8FA]">
-            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1 mb-[80px]">
+            <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-col w-full flex-1 mb-[100px] overflow-auto">
                 <div className="mt-5 mb-4 text-base">订单信息</div>
                 <OrderEndInfo {...fileInfo}></OrderEndInfo>
 
                 <div className="mt-5 mb-4 text-base">音视频列表</div>
-                <div>
+                <div className="flex-1  overflow-auto h-[200px]">
                     <CheckboxGroup
                         className="flex flex-col gap-1 w-full"
                         value={selected}
                         onValueChange={setSelected}
                     >
                         {fileInfo.zxFiles &&
-                            fileInfo.zxFiles.length &&
+                            !!fileInfo.zxFiles.length &&
                             fileInfo.zxFiles.map((item: any, index: number) => {
                                 return (
                                     <RadioVideoList

@@ -164,7 +164,7 @@ export default function TeansferTable(props: any) {
                 classNames={{
                     wrapper: "bg-[#fff] shadow-none",
                     // table: "border-spacing-y-2.5",
-                    thead: "bg-[#EFEFEF]",
+                    // thead: "bg-[#EFEFEF]",
                     // wrapper: ["max-h-[382px]", "max-w-3xl"],
                     td: ["bg-[#fff] border-y-1 border-[#efefef]"]
                 }}

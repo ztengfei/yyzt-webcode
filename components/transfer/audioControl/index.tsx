@@ -87,7 +87,6 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
 
     useImperativeHandle(ref, () => ({
         playAudioInterval: (start, end) => {
-            console.log(start, end);
             clearTimeout(playTime.current);
             setSeek(start / 1000);
             playTime.current = window.setTimeout(() => {
@@ -105,7 +104,6 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
     const onChange = (value: number | number[]) => {
         // clearTimeout(timerRef.current);
         value = Array.isArray(value) ? value[0] : value;
-        console.log("value++++", value);
         setSeek(Number(value / 1000));
         let hms = convertSecondsToHMS(value);
         setSideTime(value);
@@ -131,7 +129,6 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
             const seek = getSeek();
             const duration = getDuration();
             const newTime = Number(seek * 1000);
-            console.log("seek++++", seek, duration);
             if (audioState) {
                 let hms = convertSecondsToHMS(newTime);
                 setTargetTime(hms);
@@ -161,7 +158,6 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
         setTargetTime(hms);
     };
     const setAudioSpeed = (val) => {
-        console.log("val+++", [...val]);
         const arr = [...val];
         setRate(Number(arr[0].replace("X", "")));
         setSpeed(val);
@@ -170,7 +166,6 @@ const AudioControl = (props: AudioControlTypes, ref: any) => {
     const showTime = useMemo(() => {
         return convertSecondsToHMS(audioTime);
     }, [audioTime]);
-    console.log("showTime++++", showTime);
     return (
         <div className="h-[112px] mx-auto max-w-[1200px] flex flex-col">
             <div className="flex flex-row w-full my-3">

@@ -16,7 +16,7 @@ export default function Footer(props: footerType) {
 
     return (
         <>
-            <div className="h-[76px] bg-white w-full fixed bottom-0 ">
+            <div className="h-[76px] bg-white w-full fixed bottom-0 z-50">
                 <div className="h-[76px] mx-auto max-w-[1200px] flex flex-row justify-end  items-center">
                     <span className="text-sm text-93">
                         我的时长卡：<span className="text-f602">{userCardInfo.count}张</span>

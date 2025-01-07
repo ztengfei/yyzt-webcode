@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Button, CircularProgress, Image, Select, SelectItem } from "@nextui-org/react";
 import SparkMD5 from "spark-md5";
 
-import { fileSlicSize } from "@/components/config";
+import { fileSlicSize, translateFileMaxSize } from "@/components/config";
 import { fyUpLoadOne, fyUpLoadPart, fyFileMerge } from "@/api/api";
 
 import styles from "./index.module.css";
@@ -135,47 +135,47 @@ function Upload(props: uploadProps) {
         const mage: any = await fyFileMerge({ fileMd5: file.md5 }); // 继续上传下一个分片
         if (mage.code == 200) {
             file.state = "success"; // 文件上传成功，切片合并成功
-            file.fileId = res.data;
+            file.fileId = mage.data;
         } else {
             // 切片合并失败
             file.state = "error"; // 文件上传失败
-            toast.error(res.msg);
+            toast.error(mage.msg);
         }
     };
 
     const calculateFileMd5 = (file: any, chunkSize?: number) => {
         return new Promise((resolve: (value: string) => void, reject) => {
-            //  || File.prototype.mozSlice || File.prototype.webkitSlice
-            let blobSlice = File.prototype.slice;
-            chunkSize = 2097152; // Read in chunks of 2MB
-            const chunks = Math.ceil(file.size / chunkSize);
-            let currentChunk = 0;
+            const chunkSize = 1024 * 1024; // 1MB chunk size
             const spark = new SparkMD5.ArrayBuffer();
             const fileReader = new FileReader();
+            let chunksLoaded = 0;
+            const chunksTotal = Math.ceil(file.size / chunkSize);
+
+            function loadNext() {
+                const start = chunksLoaded * chunkSize;
+                const end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+
+                fileReader.readAsArrayBuffer(file.slice(start, end));
+            }
 
             fileReader.onload = function (e) {
-                console.log("read chunk nr", currentChunk + 1, "of", chunks);
-                spark.append(e.target.result); // Append array buffer
-                currentChunk++;
-
-                if (currentChunk < chunks) {
-                    loadNext();
+                if (e.target.error) {
+                    reject(e.target.error);
                 } else {
-                    console.info("computed hash", spark.end()); // Compute hash
-                    resolve(spark.end());
+                    // Append array buffer
+                    spark.append(e.target.result);
+                    chunksLoaded++;
+
+                    if (chunksLoaded < chunksTotal) {
+                        loadNext();
+                    } else {
+                        // Done loading all chunks
+                        resolve(spark.end());
+                    }
                 }
             };
 
-            fileReader.onerror = function () {
-                console.warn("oops, something went wrong.");
-            };
-
-            function loadNext() {
-                var start = currentChunk * chunkSize,
-                    end = start + chunkSize >= file.size ? file.size : start + chunkSize;
-                fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
-            }
-
+            // Start loading the first chunk
             loadNext();
         });
     };
@@ -189,6 +189,11 @@ function Upload(props: uploadProps) {
         chunkServerRef.current = [];
         // TODO 只上传第一个文件
         const file = files[0];
+        if (file.size > translateFileMaxSize) {
+            toast.error("文件最大不能超过10M");
+            return;
+        }
+
         const fileMd5 = await calculateFileMd5(file);
         file.md5 = fileMd5;
         file.id = fileMd5;
@@ -205,7 +210,7 @@ function Upload(props: uploadProps) {
             setIsupload(false);
             // 将上传文件同步至服务器
         }
-        console.log("file.state++++", file.state);
+        console.log("file.state++++", file.state, file.fileId);
         if (file.state == "success") {
             // file.state = "success"; // 文件上传成功，切片合并成功
             // file.fileId = res.data;
@@ -278,7 +283,9 @@ function Upload(props: uploadProps) {
                                 svg: "w-[60px] h-[60px] drop-shadow-md"
                             }}
                         />
-                        <div className="px-2 text-center text-[#333] mt-1 ellipsis">{fileName}</div>
+                        <div className="px-5 text-center text-[#333] mt-1 text-wrap">
+                            {fileName}
+                        </div>
                         <Button className=" bg-white text-[#333] mt-3 w-[97px]" onClick={onCancel}>
                             取消
                         </Button>
@@ -286,7 +293,13 @@ function Upload(props: uploadProps) {
                 )}
             </div>
             {/*  multiple  */}
-            <input type="file" ref={inputRef} className="hidden" onChange={inputChange} />
+            <input
+                type="file"
+                ref={inputRef}
+                className="hidden"
+                onChange={inputChange}
+                accept=".xsl,.xlsx,.ppt,.pptx,.pdf,.doc,.docx"
+            />
         </div>
     );
 }

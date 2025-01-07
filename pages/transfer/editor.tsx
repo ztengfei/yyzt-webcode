@@ -70,7 +70,6 @@ export default function Index() {
         getTransferResult();
         audioId &&
             getFileUrl({ id: audioId as string }).then((res: any) => {
-                console.log("res+++++", res);
                 if (res.code != 200) {
                     toast.error("播放音频获取失败");
                     return;

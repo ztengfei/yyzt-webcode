@@ -102,7 +102,7 @@ function PeopleFrom(props: any, ref: any) {
 
     const modalCnt = useRef(modalInfos.role);
     // 选择语言
-    const [lanuage, setLanuage] = useState<React.Key[]>(["cn"]);
+    // const [lanuage, setLanuage] = useState<React.Key[]>(["cn"]);
     // 选择时效
     const [zxSpeed, setAgeing] = useState("normal");
     // 流畅度
@@ -110,7 +110,7 @@ function PeopleFrom(props: any, ref: any) {
     // 标记
     const [zxRemarks, setZxRemarks] = useState(["buenos-aires", "sydney"]);
 
-    const { language = [] } = props;
+    // const { language = [] } = props;
 
     const openModal = (type: "demo" | "time" | "role") => {
         modalCnt.current = modalInfos[type];
@@ -120,7 +120,7 @@ function PeopleFrom(props: any, ref: any) {
     useImperativeHandle(ref, () => ({
         getSelectedData: () => {
             return {
-                lanFrom: [...lanuage].join(","),
+                // lanFrom: [...lanuage].join(","),
                 zxRemarks: [...zxRemarks].join(","),
                 zxFlow,
                 zxSpeed
@@ -131,7 +131,7 @@ function PeopleFrom(props: any, ref: any) {
     return (
         <div className="">
             <div className="text-sm mb-[4px]">
-                <span className="text-f602">*</span>
+                {/* <span className="text-f602">*</span> */}
                 <span>标记</span>
             </div>
             {/* zxRemarks */}
@@ -184,7 +184,7 @@ function PeopleFrom(props: any, ref: any) {
                     </Button>
                 </Checkbox>
             </CheckboxGroup>
-            <div className="text-sm  mt-4 mb-[4px]">
+            {/* <div className="text-sm  mt-4 mb-[4px]">
                 <span className="text-f602">*</span>
                 <span>选择需要转化的音频语言</span>
             </div>
@@ -202,9 +202,9 @@ function PeopleFrom(props: any, ref: any) {
                 onSelectionChange={setLanuage as any}
             >
                 {(animal: any) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
-            </Select>
+            </Select> */}
             <div className="text-sm mt-2 mb-[4px]">
-                <span className="text-f602">*</span>
+                {/* <span className="text-f602">*</span> */}
                 <span>时效</span>
             </div>
 
@@ -218,7 +218,7 @@ function PeopleFrom(props: any, ref: any) {
             </RadioGroup>
 
             <div className="text-sm mt-2 mb-[4px]">
-                <span className="text-f602">*</span>
+                {/* <span className="text-f602">*</span> */}
                 <span>选择流畅度</span>
                 <Button
                     variant="light"

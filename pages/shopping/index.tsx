@@ -37,12 +37,10 @@ export default function Index() {
             const { moonList, yearList } = splitCard(AllList);
             setmoonCardList(moonList);
             setYearCardList(yearList);
-            console.log(res);
         });
     }, []);
 
     const goByCard = (cardInfo: any) => {
-        console.log("cardInfo+++", cardInfo);
         Router.push({
             pathname: "/shopping/balance",
             query: {

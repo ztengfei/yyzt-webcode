@@ -97,7 +97,6 @@ axios.interceptors.request.use(
 
         // upload/zx/result/down
         if (config.url && /\/upload\/zx\/result\/down/.test(config.url)) {
-            console.log("文件下载接口");
             // 登陆时返回的 refreshToken
             // config.headers["Content-type"] = "application/octet-stream";
             config.responseType = "blob";
@@ -110,7 +109,6 @@ axios.interceptors.request.use(
         return config;
     },
     function (error) {
-        console.log("请求拦截出现错误", error);
         // 对请求错误做些什么
         // 请求错误，删除请求中状态
         const key = getRequestKey(error.config);
@@ -133,7 +131,8 @@ axios.interceptors.response.use(
             response &&
             response.data &&
             response.data.code == 401 &&
-            response.data.errorCode == 0
+            response.data.errorCode == 0 &&
+            response.config.url.indexOf("client/user/info/qur") == -1
         ) {
             // 请重新登录
             Router.push("/login");

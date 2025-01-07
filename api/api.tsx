@@ -317,3 +317,29 @@ export const fyFileQuery = (data: { id: string }) => {
 export const fyOrderInfo = (data: { id: string }) => {
     return get(`${serverIp}/client/fy/order/detail`, data);
 };
+
+// 获取人员详情
+export const getUserInfo = () => {
+    return post(`${serverIp}/client/user/info/qur`, {});
+};
+
+// 修改个人信息
+export const userInfoUpData = (data) => {
+    return post(`${serverIp}/client/user/info/upd`, data);
+};
+
+export const headerUpLoadImg = (file: any, progressCallback: (pr: number) => void) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return uploadFile(`${serverIp}/client/user/img/upd?id=${file.id}`, formData, progressCallback);
+};
+
+// 修改个人信息
+export const getPayList = (data) => {
+    return post(`${serverIp}/pay/info/pay/list`, data);
+};
+
+// 修改个人信息
+export const addInvoice = (data) => {
+    return post(`${serverIp}/client/invoice/info/add`, data);
+};

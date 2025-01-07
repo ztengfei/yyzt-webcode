@@ -4,7 +4,7 @@ import SparkMD5 from "spark-md5";
 
 import { Button, CircularProgress } from "@nextui-org/react";
 
-import { fileSlicSize } from "@/components/config";
+import { fileSlicSize, uploadMaxLen } from "@/components/config";
 import { upLoadOne, upLoadPart, fileMerge } from "@/api/api";
 
 import styles from "./index.module.css";
@@ -13,10 +13,12 @@ import toast from "react-hot-toast";
 interface uploadProps {
     modelType: "people" | "machine" | "translate";
     setFileList: (file: File) => void;
+    setTabDisabled: Dispatch<SetStateAction<boolean>>;
 }
 
 // Our app
 function Upload(props: uploadProps) {
+    const { setTabDisabled } = props;
     const uploadServerRef = useRef<{ response: any; cancel: any }>({
         response: null,
         cancel: null
@@ -25,6 +27,8 @@ function Upload(props: uploadProps) {
     const [circular, setCircular] = useState(0);
     // 当前是否正在上传文件
     const [isUpload, setIsupload] = useState(false);
+    // 设置上传名称
+    const [fileName, setFileName] = useState(false);
     // 上传 input ref
     const inputRef = useRef<HTMLInputElement>(null);
     // 拖拽上传盒子样式
@@ -67,6 +71,7 @@ function Upload(props: uploadProps) {
             });
         }
         setIsupload(false);
+        setTabDisabled(false);
     };
 
     // 小文件整体上传
@@ -78,12 +83,11 @@ function Upload(props: uploadProps) {
         uploadServerRef.current = await upLoadOne(file, (progress: number) => {
             setCircular(progress);
         });
-        console.log("开始文件上传");
         setCircular(0);
         setIsupload(true);
+        setTabDisabled(true);
         // 开始上传
         const res: any = await uploadServerRef.current.response();
-        console.log("结束文件上传");
         if (res.code == 200) {
             // 上传
             file.states = "success"; // 上传成功
@@ -94,6 +98,7 @@ function Upload(props: uploadProps) {
         }
 
         setIsupload(false);
+        setTabDisabled(false);
     };
 
     // 分片上传_一步一步等待
@@ -117,7 +122,6 @@ function Upload(props: uploadProps) {
                     index: currentChunk
                 } as any,
                 (progress: number) => {
-                    console.log("文件上传进度", progress);
                     // 当前切片（已经上传的百分比 + 已经上传的切片大小）/ 总文件大小
                     let pro =
                         (((progress * fileSlicSize) / 100 + (currentChunk - 1) * fileSlicSize) /
@@ -128,7 +132,6 @@ function Upload(props: uploadProps) {
             );
             // 开始上传
             const res: any = await uploadServerRef.current.response();
-            console.log("结束文件上传");
             if (res.errorCode == 0) {
                 currentChunk++; // 成功上传一个分片，增加当前分片的索引
                 await uploadNextChunk(chunks, file); // 继续上传下一个分片
@@ -137,7 +140,6 @@ function Upload(props: uploadProps) {
                 file.state = "error"; // 文件上传失败
             }
         } else {
-            console.log("文件上传完成");
             // 全部上传完成合并文件
             const res: any = await fileMerge({ fileMd5: file.md5 });
             if (res.code == 200) {
@@ -162,7 +164,6 @@ function Upload(props: uploadProps) {
                 id: file.id
             },
             (progress: number) => {
-                console.log("文件上传进度", progress);
                 progressRef.current[currentChunk] = progress;
                 const count = progressRef.current.reduce((prev, curr) => prev + curr);
                 let pro = count / chunks;
@@ -195,7 +196,6 @@ function Upload(props: uploadProps) {
         }
         const res: any = await Promise.all(servers);
         const mage: any = await fileMerge({ fileMd5: file.md5 }); // 继续上传下一个分片
-        console.log(mage);
         if (mage.errorCode == 0) {
             file.state = "success"; // 文件上传成功，切片合并成功
             uploadErrorList.current[file.md5] = null;
@@ -225,7 +225,7 @@ function Upload(props: uploadProps) {
         }
     };
 
-    const calculateFileMd5 = (file: any, chunkSize?: number) => {
+    const calculateFileMd5_back = (file: any, chunkSize?: number) => {
         return new Promise((resolve: (value: string) => void, reject) => {
             //  || File.prototype.mozSlice || File.prototype.webkitSlice
             let blobSlice = File.prototype.slice;
@@ -261,6 +261,42 @@ function Upload(props: uploadProps) {
             loadNext();
         });
     };
+    const calculateFileMd5 = (file) => {
+        return new Promise((resolve: (value: string) => void, reject) => {
+            const chunkSize = 1024 * 1024; // 1MB chunk size
+            const spark = new SparkMD5.ArrayBuffer();
+            const fileReader = new FileReader();
+            let chunksLoaded = 0;
+            const chunksTotal = Math.ceil(file.size / chunkSize);
+
+            function loadNext() {
+                const start = chunksLoaded * chunkSize;
+                const end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+
+                fileReader.readAsArrayBuffer(file.slice(start, end));
+            }
+
+            fileReader.onload = function (e) {
+                if (e.target.error) {
+                    reject(e.target.error);
+                } else {
+                    // Append array buffer
+                    spark.append(e.target.result);
+                    chunksLoaded++;
+
+                    if (chunksLoaded < chunksTotal) {
+                        loadNext();
+                    } else {
+                        // Done loading all chunks
+                        resolve(spark.end());
+                    }
+                }
+            };
+
+            // Start loading the first chunk
+            loadNext();
+        });
+    };
 
     const calculateMd5 = (file) => {
         return new Promise((resolve: (value: string) => void, reject) => {
@@ -292,12 +328,17 @@ function Upload(props: uploadProps) {
     };
 
     const fileUpload = async (files: FileList) => {
+        if (files.length >= uploadMaxLen) {
+            toast.error("上传数量较多，请分次上传！");
+            return;
+        }
         for (let i = 0; i < files.length; i++) {
             isCancelRef.current = false;
             chunkServerRef.current = [];
             const file: any = files[i];
             const fileMd5: string = await calculateFileMd5(file);
             // calculateFileMd5(file);
+            setFileName(file.name);
             file.md5 = fileMd5;
             file.id = fileMd5;
             if (file.size <= fileSlicSize) {
@@ -306,9 +347,11 @@ function Upload(props: uploadProps) {
                 const chunks = Math.ceil(file.size / fileSlicSize); // 计算分片的数量
                 setCircular(0);
                 setIsupload(true);
+                setTabDisabled(true);
 
                 await uploadNextChunk(chunks, file);
                 setIsupload(false);
+                setTabDisabled(false);
                 // 将上传文件同步至服务器
             }
             props.setFileList(file);
@@ -333,7 +376,7 @@ function Upload(props: uploadProps) {
 
     const boxName = props.modelType;
     return (
-        <div className={styles["upload"] + " " + styles[boxName]}>
+        <div className={styles["upload"] + " flex-1"}>
             <div
                 className="lable-box cursor-pointer"
                 onDragOver={onDragOver}
@@ -348,7 +391,7 @@ function Upload(props: uploadProps) {
                         <div className="table-title">请选择要上传的音频视频拖拽次区域</div>
                         <div className="table-info">
                             格式支持:
-                            mp3、wav、pcm、n4a、m4v、amr、wma、aac、mp4、mpg、3gp单个文件最长5小时、最大2GB，单次支持上传100个
+                            mp3、wav、pcm、m4a、m4v、amr、wma、aac、mp4、mpg、3gp单个文件最长5小时、最大2GB，单次支持上传20个
                         </div>
                     </div>
                 )}
@@ -364,8 +407,9 @@ function Upload(props: uploadProps) {
                                 svg: "w-[60px] h-[60px] drop-shadow-md"
                             }}
                         />
-                        <div className="px-2 text-center text-[#333] mt-1 ellipsis">
-                            音频 2021-08-12 12:18:13.mp3
+                        {/* {fileName} */}
+                        <div className="px-5 text-center text-[#333] mt-1 text-wrap ">
+                            {fileName}
                         </div>
                         <Button className=" bg-white text-[#333] mt-3 w-[97px]" onClick={onCancel}>
                             取消
@@ -373,7 +417,14 @@ function Upload(props: uploadProps) {
                     </div>
                 )}
             </div>
-            <input type="file" ref={inputRef} className="hidden" onChange={inputChange} multiple />
+            <input
+                type="file"
+                ref={inputRef}
+                className="hidden"
+                onChange={inputChange}
+                multiple
+                accept=".mp3,.wav,.pcm,.m4a,.m4v,.amr,.wma,.aac,.mp4,.mpg,.3gp"
+            />
         </div>
     );
 }

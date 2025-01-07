@@ -1,5 +1,5 @@
 // import Layout from "@/components/layout";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
     Input,
     Button,
@@ -15,7 +15,8 @@ import CodeBtn from "@/components/from/codeBtn";
 interface modalType {
     isOpen: boolean;
     changeState: (state: boolean) => void;
-    type: "email" | "phone";
+    type: "email" | "phone" | "";
+    target: string;
 }
 
 const initVal = {
@@ -34,19 +35,32 @@ export default function ChangeModal(props: modalType) {
     // 校验邮箱
     const validateEmail = (value: string) => value.match(/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/i);
 
+    const typeName = useMemo(() => {
+        if (props.type == "email") {
+            return "邮箱";
+        }
+        if (props.type == "phone") {
+            return "手机号";
+        }
+        return "";
+    }, [props.type]);
+
     const getInvalidInfo = (type?: string) => {
         if (!userName) {
-            setInvalidInfo({ userName: "请输入邮箱", code: "" });
+            setInvalidInfo({ userName: `请输入${typeName}`, code: "" });
             return false;
         }
         if (!validatePhon(userName) && !validateEmail(userName)) {
             setInvalidInfo({
                 code: "",
-                userName: "请输入正确的邮箱"
+                userName: `请输入正确的${typeName}`
             });
             return false;
         }
-
+        // 当前只需要验证手机号
+        if (type == "hasPhone") {
+            return true;
+        }
         if (!code) {
             setInvalidInfo({ userName: "", code: "请输入验证码" });
             return false;
@@ -95,16 +109,16 @@ export default function ChangeModal(props: modalType) {
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1 border-b border-[#eaeaea]">
-                            变更邮箱
+                            变更{typeName}
                         </ModalHeader>
                         <ModalBody>
                             <div>
                                 <div className="text-[#666666] text-sm mt-1 mb-1 flex justify-between">
-                                    <span>邮箱</span>
+                                    <span>{typeName}</span>
                                 </div>
                                 <Input
                                     type="Email"
-                                    placeholder="邮箱"
+                                    placeholder={"请输入" + typeName}
                                     size="sm"
                                     isInvalid={!!invalidInfo.userName}
                                     color={invalidInfo.userName ? "danger" : "default"}

@@ -5,6 +5,9 @@ const nextConfig = {
         /** Do not run ESLint during production builds (`next build`). */
         ignoreDuringBuilds: true
     }
+    // devServer: {
+    //     port: 8000
+    // }
     // output: "export"
 };
 

@@ -8,6 +8,8 @@ import Footer from "@/components/footer";
 import VideoTransfromModal from "@/components/modal/videoTransfrom";
 
 import Router from "next/router";
+import { getTolocal } from "@/components/tool";
+import toast from "react-hot-toast";
 
 // import styles from "./index.module.css";
 
@@ -16,8 +18,22 @@ export default function Index() {
 
     const openModal = (type: "video" | "translate") => {
         console.log("123132132");
+        if (isLogin()) {
+            return;
+        }
         // 打开人工转写和机器转写弹框，或者直接跳转到翻译界面
         modalRef.current && modalRef.current.openModal();
+    };
+    const isLogin = () => {
+        const userKey = getTolocal("userKey");
+        if (!userKey) {
+            toast.error("未登录，请登录后使用该功能");
+            Router.push({
+                pathname: "/login"
+            });
+            return true;
+        }
+        return false;
     };
     return (
         <div className="w-full absolute left-0 top-0">
@@ -37,6 +53,9 @@ export default function Index() {
                         color="primary"
                         className="h-[54px] w-[162px] mt-[46px]"
                         onClick={() => {
+                            if (isLogin()) {
+                                return;
+                            }
                             Router.push({ pathname: "/transfer" });
                         }}
                     >
@@ -64,6 +83,9 @@ export default function Index() {
                         color="primary"
                         className="h-[54px] w-[162px] mt-[46px]"
                         onClick={() => {
+                            if (isLogin()) {
+                                return;
+                            }
                             Router.push({
                                 pathname: "/translate",
                                 query: { fyType: "doc" }

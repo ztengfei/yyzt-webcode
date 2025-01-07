@@ -45,8 +45,6 @@ export default function OrderState({ openModal, fileInfo, orderId, audioId }: he
         Router.push(href, as, { shallow: true });
     };
 
-    console.log("fileInfo", fileInfo.zxFiles);
-
     return (
         <div className="h-[70px] bg-white w-full fixed left-0 top-0 z-10">
             <div className="h-[70px] mx-auto max-w-[1200px] flex flex-row justify-between  items-center">
@@ -61,7 +59,7 @@ export default function OrderState({ openModal, fileInfo, orderId, audioId }: he
                             文件列表
                         </Link>
                     </div>
-                    {fileInfo.zxFiles && fileInfo.zxFiles.length && (
+                    {fileInfo.zxFiles && !!fileInfo.zxFiles.length && (
                         <Select
                             // label="文件格式："
                             className="h-[44px] w-[204px]"

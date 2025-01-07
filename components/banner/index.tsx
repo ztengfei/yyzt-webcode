@@ -82,7 +82,7 @@ export default function Banner(props: bannerProps) {
                                             </span>
                                         </div>
                                         <div className="text-[57px] relative">
-                                            <span className="text-f602">音频</span>
+                                            <span className="text-f602">音视频</span>
                                             <span className="text-FFEBD5">快速转为文字</span>
                                             <div className="absolute right-[-68px] bottom-0 h-[44px]">
                                                 <Image
@@ -120,7 +120,7 @@ export default function Banner(props: bannerProps) {
                                                     props.openModal("video");
                                                 }}
                                             >
-                                                音频转文字
+                                                转文字
                                             </Button>
                                             <Button
                                                 color="primary"
@@ -198,7 +198,7 @@ export default function Banner(props: bannerProps) {
                                                 props.openModal("video");
                                             }}
                                         >
-                                            音频转文字
+                                            转文字
                                         </Button>
                                         <Button
                                             color="primary"

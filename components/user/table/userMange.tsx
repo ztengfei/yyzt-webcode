@@ -1,5 +1,5 @@
 // import Layout from "@/components/layout";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
     Tabs,
     Tab,
@@ -36,21 +36,32 @@ import MessageIcon from "@/components/icon/message";
 import RechargeIcon from "@/components/icon/recharge";
 import ChangeModal from "./changeModal";
 
-const rabList = [
-    { key: "useInfo", title: "个人信息", icon: <UserInfoIcon size={22} /> },
-    { key: "transferFile", title: "转文字文件", icon: <TransrferFileIcon size={22} /> },
-    { key: "translateFile", title: "翻译文件", icon: <TranslateFileIcon size={22} /> },
-    { key: "rechargeHistory", title: "充值记录", icon: <RechargeIcon size={22} /> },
-    { key: "message", title: "消息", icon: <MessageIcon size={22} /> }
-];
-
-export default function Index() {
-    const modalRef = useRef();
+export default function Index(props: any) {
+    const { phone, email } = props.userInfo || {};
     const [isOpen, setIsopen] = useState(false);
 
     const onClose = () => {
         setIsopen(false);
     };
+    const tgname = useMemo(() => {
+        if (phone) {
+            return "手机号";
+        }
+        if (email) {
+            return "邮箱";
+        }
+        return "";
+    }, [phone, email]);
+
+    const tgType = useMemo(() => {
+        if (phone) {
+            return "phone";
+        }
+        if (email) {
+            return "email";
+        }
+        return "";
+    }, [phone, email]);
 
     return (
         <div className="w-full flex flex-row  ">
@@ -59,7 +70,7 @@ export default function Index() {
                 {/* <div className="grid gap-4 grid-cols-2"> */}
                 <div>
                     <div className="text-[#666666] text-sm mb-2 flex justify-between">
-                        <span>登录邮箱/登录手机号</span>
+                        <span>登录{tgname}</span>
                         <span
                             className="text-f602 cursor-pointer"
                             onClick={() => {
@@ -69,7 +80,7 @@ export default function Index() {
                             变更
                         </span>
                     </div>
-                    <Input type="text" placeholder="邮箱/手机号" size="sm" isReadOnly />
+                    <Input type="text" placeholder={phone || email} size="sm" isReadOnly />
                 </div>
 
                 {/* <div className="mt-8">
@@ -89,7 +100,12 @@ export default function Index() {
                 {/* </div> */}
             </div>
 
-            <ChangeModal isOpen={isOpen} changeState={onClose} type={"email"}></ChangeModal>
+            <ChangeModal
+                isOpen={isOpen}
+                changeState={onClose}
+                target={phone || email}
+                type={tgType}
+            ></ChangeModal>
         </div>
     );
 }

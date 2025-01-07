@@ -10,7 +10,7 @@ import {
     CardHeader,
     Avatar
 } from "@nextui-org/react";
-import Router from "next/router";
+import Router, { useRouter } from "next/router";
 
 import CodeBtn from "@/components/from/codeBtn";
 import { login, loginProp, autnLoginPage } from "@/api/api";
@@ -39,6 +39,10 @@ function Login() {
     const [code, setCode] = React.useState<string>("");
     const [password, setPasword] = React.useState<string>("");
     const [disabled, setDisabled] = useState(false);
+    const router = useRouter();
+    const parouter = router.query;
+    const { code: routerCode } = parouter;
+
     // 校验手机号
     const validatePhon = (value: string) => value.match(/^1[3-9]\d{9}$/i);
     // 校验邮箱
@@ -182,30 +186,39 @@ function Login() {
         localStorage.removeItem("loginType");
         setDisabled(true);
         if (res.code == 200) {
-            const { accessToken, refreshToken, expiresTime } = res.data;
+            const { accessToken, refreshToken, expiresTime, openid } = res.data;
             setToLocal("accessToken", accessToken);
             setToLocal("refreshToken", refreshToken);
             setToLocal("expiresTime", expiresTime);
             setToLocal("userTime", timeDate);
             setToLocal("userKey", userKey);
-            Router.push({
-                pathname: "/",
-                query: { code: "Zeit", state: "success" }
-            });
+            if (!accessToken) {
+                Router.push({
+                    pathname: "/login/addPhone",
+                    query: { openid }
+                });
+                return;
+            } else {
+                Router.push({
+                    pathname: "/"
+                    // query: { code: "Zeit", state: "success" }
+                });
+            }
+
             return;
         }
         showErrorMes(res.errorCode, res.msg);
     };
 
     useEffect(() => {
-        const routerQuery = Router.query;
         const loginType = getTolocal("loginType");
-        if (loginType && routerQuery.code) {
+        console.log(routerCode);
+        if (loginType && routerCode) {
             onLogin(Number(loginType) as 1 | 2);
         }
-    }, []);
+    }, [routerCode]);
 
-    // 增加登录监听
+    // 增加登录监听  code=031aZM0w3kckw23e0g2w30pou52aZM0t&state=1q6bw7iap7gir4bfaaw24vhcq26xvgx6
     const handleKeyPress = (event: any) => {
         if (event.code === "Enter") {
             event.preventDefault(); // 阻止默认行为，比如提交表单等

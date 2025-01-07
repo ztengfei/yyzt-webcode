@@ -8,17 +8,19 @@
 } */
 /* 机器快转内容高度 */
 .upload :global(.lable-box) {
-    height: 340px !important;
+    /* height: 410px !important; */
 }
 /* 人工精转内容高度 */
 .people :global(.lable-box) {
-    height: 190px !important;
+    /* height: 260px !important; */
+    flex: 1;
     margin-bottom: 0;
 }
 
 .upload :global(.lable-box) {
+    flex: 1;
     width: 308px;
-    height: 340px;
+    /* height: 340px; */
     background: #fff8f4;
     border-radius: 8px;
     border: 2px dashed #e2c6b6;

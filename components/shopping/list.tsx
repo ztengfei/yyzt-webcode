@@ -29,13 +29,13 @@ const rows: any = [
         key: "1",
         type: "3小时·机器快转时长卡",
         fileName: "1年·2024年11月15日到期",
-        duration: "38.8",
+        duration: "38.8"
     },
     {
         key: "2",
         type: "包月会员",
         fileName: "连续包月",
-        duration: "88.00",
+        duration: "88.00"
     }
 ];
 
@@ -51,8 +51,7 @@ const columns: any = [
     {
         key: "duration",
         label: "金额"
-    },
-    
+    }
 ];
 
 export default function TeansferTable(props: any) {
@@ -93,7 +92,7 @@ export default function TeansferTable(props: any) {
                 classNames={{
                     wrapper: "bg-[#fff] shadow-none",
                     // table: "border-spacing-y-2.5",
-                    thead: "bg-[#EFEFEF]",
+                    // thead: "bg-[#EFEFEF]",
                     // wrapper: ["max-h-[382px]", "max-w-3xl"],
                     td: ["bg-[#fff] border-y-1 border-[#efefef]"]
                 }}

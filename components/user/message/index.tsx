@@ -44,12 +44,12 @@ export default function Message() {
                 <div className=" text-lg font-semibold mb-4">通知</div>
                 <div className="w-full flex items-start gap-1 bg-[#F7F8FA] p-3 rounded-lg">
                     <BellIcon className="mt-2"></BellIcon>
-                    <div className="w-full flex flex-col">
+                    {/* <div className="w-full flex flex-col">
                         <div className="">
                             当前系统公告内容跑马灯当前系当前系统公告,当前系统公告内容跑马灯当前系当前系统公告,当前系统公告内容跑马灯当前系当前系统公告
                         </div>
                         <div className="text-xs text-[#b6b6b6]">2023-01-21 00:03:12备份</div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <div className="bg-white rounded-xl p-4 flex-1">
@@ -99,7 +99,7 @@ export default function Message() {
                     </div>
                 </div>
                 <div className="">
-                    <div className="w-full flex items-start gap-1 bg-[#F7F8FA] p-3 rounded-lg mb-2.5">
+                    {/* <div className="w-full flex items-start gap-1 bg-[#F7F8FA] p-3 rounded-lg mb-2.5">
                         <BellIcon className="mt-2"></BellIcon>
                         <div className="w-full flex flex-col">
                             <div className="">
@@ -127,7 +127,7 @@ export default function Message() {
                             </div>
                             <div className="text-xs text-[#b6b6b6]">2023-01-21 00:03:12备份</div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

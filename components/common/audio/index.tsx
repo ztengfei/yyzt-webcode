@@ -4,7 +4,6 @@ export default function Audio(props: any) {
     const { audioUrl, audioName } = props;
     const audioRef = useRef<any>();
     useEffect(() => {
-        console.log("audio play+++++", audioUrl);
         // audioRef.current && audioRef.current.play()
     }, [audioUrl]);
 

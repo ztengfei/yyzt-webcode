@@ -22,20 +22,13 @@ function VideoTransfrom(props: any) {
     const [showTime, setShowTime] = useState(true);
     // 下载转写结果
     const downloadCnt = (callback) => {
-        console.log(
-            "showTime, showRole, fileType, downliadId",
-            showTime,
-            showRole,
-            [...fileType],
-            downliadId
-        );
         const type = [...fileType][0];
         callback && callback();
         toast.promise(
             resultDown({
                 zxFileIds: downliadId,
                 hideRole: showRole ? 0 : 1,
-                hideTime: showRole ? 0 : 1,
+                hideTime: showTime ? 0 : 1,
                 extName: type
             })
                 .then((res: any) => {

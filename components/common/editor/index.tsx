@@ -82,7 +82,6 @@ const Editor = (props: editorType, ref) => {
             saveEditorData(3 * 1000);
         }
         // console.log("serverData+++", data1);
-        console.log("editorChange+++", value);
     };
 
     useEffect(() => {

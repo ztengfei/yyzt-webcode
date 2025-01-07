@@ -16,9 +16,9 @@ import {
 } from "@nextui-org/react";
 
 function MachineFrom(props: any, ref: any) {
-    const [lanuage, setLanuage] = useState(["cn"]);
+    // const [lanuage, setLanuage] = useState(["cn"]);
     const [major, setMajor] = useState(["common"]);
-    const { language = [] } = props;
+    // const { language = [] } = props;
     const area = [
         { label: "通用", value: "common", description: "" },
         { label: "医药", value: "medicine", description: "" },
@@ -27,13 +27,14 @@ function MachineFrom(props: any, ref: any) {
 
     useImperativeHandle(ref, () => ({
         getSelectedData: () => {
-            return { lanFrom: [...lanuage].join(","), zxMajor: [...major].join(",") };
+            //  lanFrom: [...lanuage].join(","),
+            return { zxMajor: [...major].join(",") };
         }
     }));
 
     return (
         <div className="">
-            <div className="text-sm mb-1 mt-2 ">
+            {/* <div className="text-sm mb-1 mt-2 ">
                 <span className="text-f602">*</span>
                 <span>选择需要转化的音频语言</span>
             </div>
@@ -51,9 +52,9 @@ function MachineFrom(props: any, ref: any) {
                 onSelectionChange={setLanuage as any}
             >
                 {(animal: any) => <SelectItem key={animal.value}>{animal.label}</SelectItem>}
-            </Select>
+            </Select> */}
             <div className="text-sm  mt-4 mb-[4px]">
-                <span className="text-f602">*</span>
+                {/* <span className="text-f602">*</span> */}
                 <span>选择专业领域</span>
             </div>
             <Select

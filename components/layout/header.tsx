@@ -26,7 +26,6 @@ import { useMemoizedFn } from "ahooks";
 function Header() {
     const router = useRouter();
     const path = router.pathname;
-    console.log("path+++++++", path);
 
     const getLoginState = () => {
         // 获取当前页面是否登录
@@ -65,7 +64,6 @@ function Header() {
         setIsLogin(getLoginState());
 
         let navStyle1 = path == "/" || path.indexOf("login") > -1 ? "black" : "white";
-        console.log("navStyle++++", navStyle1, path);
         setNavStyle(navStyle1);
         navStyleRef.current = navStyle1;
         return () => {
@@ -112,7 +110,6 @@ function Header() {
     //     [router, navStyle, path]);
 
     const onScrollPositionChange = useMemoizedFn((position) => {
-        console.log("onScrollPositionChange+++++", position);
         if (path !== "/" && path.indexOf("login") == -1) {
             // 部分页面导航底色为白色不需要重新替换导航颜色123
             return;

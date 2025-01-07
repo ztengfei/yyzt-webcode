@@ -43,7 +43,6 @@ export default function Index() {
 
     // 当前选中的界面，如果没有默认个人信息
     const tabSelected = (router.query.fyType as string) || "doc";
-    console.log("pathname+++", tabSelected);
 
     const tabClick = (key: string) => {
         const href = `/translate?fyType=${key}`;

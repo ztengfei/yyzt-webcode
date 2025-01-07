@@ -350,7 +350,6 @@ export default function Index() {
                 cardAllTime += item.cardTime.usableTime;
             }
         });
-        console.log("已选择时长卡时间+++", cardAllTime, allTime);
         if (cardAllTime > (allTime as number)) {
             setIsShowPay(false);
             changeCardType("");
@@ -426,7 +425,6 @@ export default function Index() {
             if (res.code == 200) {
                 setPayAmount(res.data.payAmount);
             }
-            console.log("res++++", res);
         });
         // return (payCardPrice + payNum).toString();
     }, [fileInfo, userCard, cardId, selectUserCard, orderId]);
@@ -515,7 +513,7 @@ export default function Index() {
                                                 key={item.id}
                                                 value={item.id}
                                                 cardType={item.cardType}
-                                                hours={item.hours}
+                                                hours={Math.floor(item.usableTime / 3600)}
                                                 usableTime={item.usableTime}
                                                 cardName={item.cardName}
                                                 origPrice={item.origPrice}

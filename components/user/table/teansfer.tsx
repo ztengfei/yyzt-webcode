@@ -98,13 +98,14 @@ export default function TeansferTable(props: any) {
     const [tableData, setTableData] = useState<any>([]);
     // modal 控制器
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    const deleteRef = useRef<string>("");
 
     const getFileName = (zxFiles) => {
         const names = [];
         zxFiles.forEach((item, index) => {
-            if (index != 0) {
-                names.push(item.fileName);
-            }
+            // if (index != 0) {
+            names.push(item.fileName);
+            // }
         });
         return names;
     };
@@ -140,7 +141,8 @@ export default function TeansferTable(props: any) {
                             <div
                                 className="text-sm cursor-pointer text-97"
                                 onClick={() => {
-                                    deleteItem(user.id);
+                                    deleteRef.current = user.id;
+                                    onOpen();
                                 }}
                             >
                                 删除
@@ -170,7 +172,8 @@ export default function TeansferTable(props: any) {
                             <div
                                 className="text-sm cursor-pointer text-97"
                                 onClick={() => {
-                                    deleteItem(user.id);
+                                    deleteRef.current = user.id;
+                                    onOpen();
                                 }}
                             >
                                 删除
@@ -192,7 +195,8 @@ export default function TeansferTable(props: any) {
                             <div
                                 className="text-sm cursor-pointer text-97"
                                 onClick={() => {
-                                    deleteItem(user.id);
+                                    deleteRef.current = user.id;
+                                    onOpen();
                                 }}
                             >
                                 删除
@@ -204,7 +208,8 @@ export default function TeansferTable(props: any) {
                     <div
                         className="text-sm cursor-pointer text-97"
                         onClick={() => {
-                            deleteItem(user.id);
+                            deleteRef.current = user.id;
+                            onOpen();
                         }}
                     >
                         删除
@@ -266,6 +271,7 @@ export default function TeansferTable(props: any) {
                 if (res.code == 200) {
                     // 删除成功
                     toast.success("订单删除成功");
+                    onOpenChange();
                     // 重新获取订单数据
                     getTableData(currentPage);
                 } else {
@@ -275,6 +281,10 @@ export default function TeansferTable(props: any) {
             .catch(() => {
                 toast.error("订单删除失败");
             });
+    };
+
+    const deleteSubmit = (callBack) => {
+        deleteItem(deleteRef.current);
     };
 
     // 获取会议数据
@@ -294,7 +304,7 @@ export default function TeansferTable(props: any) {
                 classNames={{
                     wrapper: "bg-[#fff] shadow-none",
                     // table: "border-spacing-y-2.5",
-                    thead: "bg-[#EFEFEF]",
+                    thead: "",
                     // wrapper: ["max-h-[382px]", "max-w-3xl"],
                     td: ["bg-[#fff] border-y-1 border-[#efefef]"]
                 }}
@@ -321,31 +331,26 @@ export default function TeansferTable(props: any) {
                 />
             )}
 
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <Modal size={"sm"} isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1 text-center text-[22px]">
-                                平台用户协议
+                            <ModalHeader className="flex flex-col gap-1 text-left text-[16px]">
+                                是否删除该转写文件
                             </ModalHeader>
-                            <ModalBody className="text-[#939393] text-[14px]">
-                                <p>感谢您信任并使用</p>
-                                <p>我们根据最新的法律法规、监管政策要求</p>
-                                <p>
-                                    如果您是未满14周岁的未成年人，请您通知您的父母或其他监护人共同阅读上述协议，并在您使用我们的服务前，取得您的父母或其他监护人的同意。
-                                </p>
-                                <p>如您同意，请点击“同意并继续”，开始接受我们的产品与服务。</p>
+                            <ModalBody className="text-[#939393] text-[14px] pl-9">
+                                <p>文件删除后不可恢复！</p>
                             </ModalBody>
-                            <ModalFooter>
-                                {/* <Button color="danger" variant="light" onPress={onClose}>
+                            <ModalFooter className=" flex justify-end">
+                                <Button variant="flat" onPress={onClose}>
                                     取消
-                                </Button> */}
+                                </Button>
                                 <Button
                                     color="primary"
-                                    className="m-auto w-[300px] h-[46px] bg-f602"
-                                    onPress={onClose}
+                                    className="ml-5 bg-f602"
+                                    onPress={deleteSubmit}
                                 >
-                                    我同意
+                                    确认
                                 </Button>
                             </ModalFooter>
                         </>

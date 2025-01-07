@@ -28,13 +28,11 @@ const withPlugin = (editor: Editor & any, param: any) => {
         Transforms.removeNodes(editor, {
             at: [0]
         });
-        console.log("value+++++", value);
         // Insert array of children nodes
         Transforms.insertNodes(editor, value);
         // 如果存在撤销栈还需要删除撤销栈
     };
     editor.onChange = (ops) => {
-        console.log("asdasdasdasd");
         param.editorChange && param.editorChange(editor.children, ops.operation);
         onChange();
     };
@@ -58,14 +56,13 @@ const withPlugin = (editor: Editor & any, param: any) => {
     editor.insertBreak = () => {
         // 当前进行了换行
         insertBreak();
-        console.log(editor.selection);
         const data = editor.fragment(editor.selection);
-        console.log("data+++", data);
         const roleTime = getStartTime(data);
         const role = {
             type: "mention",
             roleName: "",
             startTime: secondsToHMS(Math.floor(roleTime / 1000)),
+            timeNumber: roleTime,
             character: "",
             iconText: "",
             iconBg: "",

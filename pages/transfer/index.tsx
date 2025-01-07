@@ -23,6 +23,9 @@ import Upload from "@/components/transfer/upload";
 import MachineFrom from "@/components/transfer/from/machineFrom";
 import PeopleFrom from "@/components/transfer/from/peopleFrom";
 import Keyword from "@/components/transfer/from/keyWord";
+
+import LanuageSelect from "@/components/transfer/from/LanuageSelect";
+
 import FileList from "@/components/transfer/from/fileList";
 import Footer from "@/components/transfer/footer";
 import { zxFileList, zxFiledel, orderCommit, langZx, cardCount } from "@/api/api";
@@ -38,7 +41,6 @@ export default function Index() {
 
     // 当前选中的界面，如果没有默认个人信息
     const selected = router.query.zxType || "machine";
-    console.log("pathname+++", selected);
 
     const tabClick = (key: string) => {
         const href = `/transfer?zxType=${key}`;
@@ -58,6 +60,9 @@ export default function Index() {
     // 用户可用时长卡的数量和时间
     const [userCardInfo, setUserCardInfo] = useState({});
 
+    // 切换的tab是否是禁用的状态
+    const [isDisabled, setTabDisabled] = useState(false);
+
     // 选中内容的总时长
     // const [allTime ,setAllTime] = useState<number>(0);
 
@@ -74,19 +79,28 @@ export default function Index() {
         return time;
     }, [selectedFile, fileList]);
 
-    console.log("allTime++++", allTime);
-
     // 机器快转
     const machineFromRef = useRef<any>();
     // 人工精转
     const peopleFromRef = useRef<any>();
+    // 语言选择
+    const lanuageFromRef = useRef<any>();
 
     const fileListRef = useRef<any>();
+
+    const setFileListAndId = (data) => {
+        let ids = data.map((item) => {
+            return item.id;
+        });
+        setFileList(data);
+        setSelectedFile(ids);
+    };
 
     useEffect(() => {
         zxFileList().then((res: any) => {
             // console.log(res);
-            setFileList(res.data);
+            // setFileList(res.data);
+            setFileListAndId(res.data);
         });
 
         // 获取可以转写的语言
@@ -116,7 +130,8 @@ export default function Index() {
         try {
             const res: any = await zxFileList();
             if (res.errorCode == 0) {
-                setFileList(res.data);
+                // setFileList(res.data);
+                setFileListAndId(res.data);
             }
             console.log(res);
         } catch (error) {}
@@ -138,12 +153,14 @@ export default function Index() {
             param.zxType = 2;
             // { lanFrom: lanuage, zxRemarks, zxFlow, zxSpeed }
             let fromData = peopleFromRef.current.getSelectedData();
+            let langInfo = lanuageFromRef.current.getSelectedData();
             param.zxRemarks = 2;
-            param = { ...param, ...fromData };
+            param = { ...param, ...fromData, ...langInfo };
         } else {
             let fromData = machineFromRef.current.getSelectedData();
+            let langInfo = lanuageFromRef.current.getSelectedData();
             param.zxType = 1;
-            param = { ...param, ...fromData };
+            param = { ...param, ...fromData, ...langInfo };
         }
         // 上传文件id
         param.upFileIds = selectedFile;
@@ -158,12 +175,9 @@ export default function Index() {
 
         param.zxFiles = selectedFiles;
 
-        console.log("param+++++", param);
-
         // 提交转写接口
         orderCommit(param).then((res: any) => {
             if (res.code == 200) {
-                console.log("订单提交成功+++", res);
                 if (selected == "machine") {
                     // 跳转到机器转写详情界面
                     Router.push({
@@ -209,12 +223,13 @@ export default function Index() {
     return (
         <div className="w-full absolute left-0 top-0 flex flex-col min-h-full bg-[#F7F8FA]">
             <div className="mt-[80px]  mx-auto max-w-[1200px] flex flex-row justify-around w-full flex-1  mb-[80px]">
-                <div className="w-[348px] relative rounded-2xl h-[595px] flex flex-col overflow-hidden rounded-[20px]">
+                <div className="w-[348px] relative rounded-2xl max-h-[595px] flex flex-col overflow-hidden rounded-[20px]">
                     <Tabs
                         fullWidth
                         size="md"
                         aria-label="Tabs form"
                         selectedKey={selected as string}
+                        isDisabled={isDisabled}
                         onSelectionChange={(key) => {
                             tabClick(key as string);
                         }}
@@ -227,21 +242,29 @@ export default function Index() {
                             cursor: "hidden",
                             tab: "px-0 h-12 text-4",
                             tabContent: "group-data-[selected=true]:text-f602",
-                            panel: "bg-white px-[19px] flex-1"
+                            panel: "bg-white px-[19px] flex-1 flex"
                         }}
                     >
                         <Tab key="machine" title="机器快转">
-                            <form className="flex flex-col">
+                            <form className="flex flex-col flex-1">
                                 {/* 文件上传组件 */}
-                                <Upload modelType={"machine"} setFileList={pushFile}></Upload>
+                                <Upload
+                                    modelType={"machine"}
+                                    setFileList={pushFile}
+                                    setTabDisabled={setTabDisabled}
+                                ></Upload>
                                 {/* 选择的类型 */}
                                 <MachineFrom ref={machineFromRef} language={language}></MachineFrom>
                             </form>
                         </Tab>
                         <Tab key="people" title="人工精转">
-                            <form className="flex flex-col gap-4">
+                            <form className="flex flex-col gap-4  flex-1">
                                 {/* 文件上传组件 */}
-                                <Upload modelType="people" setFileList={pushFile}></Upload>
+                                <Upload
+                                    modelType="people"
+                                    setFileList={pushFile}
+                                    setTabDisabled={setTabDisabled}
+                                ></Upload>
                                 {/* 转写相关的参数 */}
                                 <PeopleFrom ref={peopleFromRef} language={language}></PeopleFrom>
                             </form>
@@ -249,6 +272,7 @@ export default function Index() {
                     </Tabs>
                 </div>
                 <div className="flex flex-1 flex-col pl-3.5">
+                    <LanuageSelect language={language} ref={lanuageFromRef}></LanuageSelect>
                     {/* 关键词 */}
                     {/* <Keyword></Keyword> */}
                     {/* 上传的文件列表 */}

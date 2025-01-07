@@ -8,9 +8,7 @@ const useAudio = (props: any) => {
         soundRef.current = new Howl({
             src: [audioSrc],
             html5: true,
-            onplay: (a, b, c) => {
-                console.log("onplay+++", a, b, c);
-            },
+            onplay: (a, b, c) => {},
             onend: () => {
                 props.audioPlayEnd && props.audioPlayEnd();
             }

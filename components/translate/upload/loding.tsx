@@ -21,18 +21,22 @@ export default function Loding(props: footerType) {
     const loopTimerRef = useRef<number>();
 
     const getOrderData = () => {
-        fyFileQuery({ id: uploadId }).then((res: any) => {
-            if (!res.data) {
-                toast.error("订单详情获取失败，请刷新重试");
-                return;
-            }
-            LoopGetFiles(res.data);
-        });
+        fyFileQuery({ id: uploadId })
+            .then((res: any) => {
+                if (!res.data) {
+                    toast.error("订单详情获取失败，请刷新重试");
+                    return;
+                }
+                LoopGetFiles(res.data);
+            })
+            .catch(() => {
+                setUploadState(""); //文件解析成功
+            });
     };
 
     const LoopGetFiles = (data) => {
         clearTimeout(loopTimerRef.current);
-        if (data.parseStatus == 1) {
+        if (data.parseStatus == 1 || data.parseStatus == 0) {
             loopTimerRef.current = window.setTimeout(() => {
                 getOrderData();
             }, 500);

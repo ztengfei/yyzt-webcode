@@ -166,7 +166,7 @@ function KeyWordAndList(props: any, ref: any) {
                 classNames={{
                     wrapper: "bg-[#F7F8FA] shadow-none border-spacing-y-2.5",
                     table: "border-spacing-y-2.5",
-                    thead: "bg-[#EFEFEF]",
+                    // thead: "bg-[#EFEFEF]",
                     // wrapper: ["max-h-[382px]", "max-w-3xl"],
                     td: ["bg-[#fff] border-y-8 border-[#F7F8FA]"]
                 }}
